@@ -23,12 +23,19 @@ const loadStripeSafely = async () => {
     // Check if using live keys in development
     if (publishableKey.startsWith('pk_live_') && process.env.NODE_ENV === 'development') {
       console.warn('⚠️ Using live Stripe keys in development mode. This may cause issues.')
+      // For development with live keys, use a fallback approach
+      return await loadStripe(publishableKey, {
+        apiVersion: '2023-10-16',
+        stripeAccount: undefined
+      })
     }
     
     console.log('Loading Stripe with key:', publishableKey.substring(0, 20) + '...')
     
-    // Load Stripe without timeout for better reliability
-    return await loadStripe(publishableKey)
+    // Load Stripe with explicit options
+    return await loadStripe(publishableKey, {
+      apiVersion: '2023-10-16'
+    })
   } catch (error) {
     console.error('Failed to load Stripe:', error)
     return null
@@ -150,7 +157,7 @@ function PaymentForm({
         setLoadingTimeout(true)
         setStripeError('Stripe is taking too long to load. Please refresh the page.')
       }
-    }, 15000) // Increased to 15 seconds
+    }, 8000) // Reduced to 8 seconds for faster feedback
 
     return () => clearTimeout(timer)
   }, [stripe, elements])
@@ -158,6 +165,47 @@ function PaymentForm({
   // Show loading state while Stripe is initializing
   if (!stripe || !elements) {
     console.log('PaymentForm: Showing loading state -', { stripe: !!stripe, elements: !!elements })
+    
+    // If we've been loading for too long, show a fallback option
+    if (loadingTimeout) {
+      return (
+        <div className="max-w-2xl mx-auto">
+          <div className="flex items-center mb-6">
+            <button
+              onClick={onBack}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors duration-200"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Back to tickets
+            </button>
+          </div>
+          <div className="card text-center py-12">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment System Unavailable</h3>
+            <p className="text-gray-600 mb-4">
+              We're experiencing technical difficulties with our payment system.
+            </p>
+            {stripeError && (
+              <p className="text-red-600 mt-2 text-sm mb-4">Error: {stripeError}</p>
+            )}
+            <div className="space-y-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium"
+              >
+                Try Again
+              </button>
+              <div className="text-sm text-gray-500">
+                <p>If the issue persists, please contact us:</p>
+                <p className="font-medium">info@catchtheevent.com</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    
+    // Show loading state
     return (
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center mb-6">
@@ -170,30 +218,9 @@ function PaymentForm({
           </button>
         </div>
         <div className="card text-center py-12">
-          {loadingTimeout ? (
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          ) : (
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          )}
-          <p className="text-gray-600">
-            {loadingTimeout ? 'Payment system temporarily unavailable' : 'Loading secure payment form...'}
-          </p>
-          {stripeError && (
-            <p className="text-red-600 mt-2 text-sm">Error: {stripeError}</p>
-          )}
-          {loadingTimeout && (
-            <div className="mt-4 space-y-2">
-              <p className="text-sm text-gray-500">
-                Please try refreshing the page or contact support if the issue persists.
-              </p>
-              <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-              >
-                Refresh Page
-              </button>
-            </div>
-          )}
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading secure payment form...</p>
+          <p className="text-sm text-gray-500 mt-2">This may take a few moments</p>
         </div>
       </div>
     )
