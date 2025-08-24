@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Minus, Plus, CreditCard, CheckCircle, AlertCircle } from 'lucide-react'
+import { X, Minus, Plus, CreditCard, CheckCircle, AlertCircle, Calendar, Clock, MapPin } from 'lucide-react'
 import CheckoutForm from './CheckoutForm'
 
 interface TicketType {
@@ -11,7 +11,7 @@ interface TicketType {
   price: number
   description: string
   available: number
-  benefits?: string[]
+  benefits: string[]
 }
 
 interface TicketSelectorProps {
@@ -26,60 +26,48 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
   const ticketTypes: TicketType[] = [
     {
-      id: 'regular',
-      name: 'Regular Ticket',
-      price: 34.99,
-      description: 'Standard admission to the Garba event',
-      available: 1000
+      id: 'exclusive-pass',
+      name: 'Catch The Event Exclusive Rangtaali Garba Pass',
+      price: 20.00,
+      description: 'Exclusive admission to the Garba event with special benefits',
+      available: 1000,
+      benefits: [
+        'Exclusive event access',
+        'Special Garba experience',
+        'Priority entry',
+        'Event memorabilia'
+      ]
     }
   ]
-
-
 
   const getTotalTickets = () => {
     return Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
   }
 
-  const getTicketPrice = () => {
-    const totalTickets = getTotalTickets()
-    if (totalTickets >= 10) {
-      return 28.00 // Group of 10+ tickets
-    } else if (totalTickets >= 5) {
-      return 30.00 // Group of 5+ tickets
-    } else {
-      return 34.99 // Regular ticket price
-    }
+  const getTicketPrice = (ticketId: string) => {
+    const ticket = ticketTypes.find(t => t.id === ticketId)
+    return ticket ? ticket.price : 0
   }
 
   const getSubtotal = () => {
-    const totalTickets = getTotalTickets()
-    const pricePerTicket = getTicketPrice()
-    return totalTickets * pricePerTicket
+    return Object.entries(selectedTickets).reduce((total, [ticketId, count]) => {
+      return total + (getTicketPrice(ticketId) * count)
+    }, 0)
   }
 
-  const getConvenienceFee = () => {
-    const totalTickets = getTotalTickets()
-    return totalTickets * 1.00 // $1.00 per ticket
-  }
-
-  const getProcessingFee = () => {
-    const totalTickets = getTotalTickets()
-    return totalTickets * 1.10 // $1.10 per ticket
-  }
-
-  const getHST = () => {
-    const subtotal = getSubtotal()
-    const convenienceFee = getConvenienceFee()
-    const processingFee = getProcessingFee()
-    return (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
-  }
-
-  const getTotalPrice = () => {
-    const subtotal = getSubtotal()
-    const convenienceFee = getConvenienceFee()
-    const processingFee = getProcessingFee()
-    const hst = getHST()
-    return subtotal + convenienceFee + processingFee + hst
+  const handleTicketChange = (ticketId: string, change: number) => {
+    const currentCount = selectedTickets[ticketId] || 0
+    const newCount = Math.max(0, currentCount + change) // No maximum limit
+    
+    if (newCount === 0) {
+      const { [ticketId]: removed, ...rest } = selectedTickets
+      setSelectedTickets(rest)
+    } else {
+      setSelectedTickets(prev => ({
+        ...prev,
+        [ticketId]: newCount
+      }))
+    }
   }
 
   const handleProceedToCheckout = () => {
@@ -93,230 +81,168 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   }
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black bg-opacity-50"
-          onClick={onClose}
-        />
-
-        {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          className="relative bg-white rounded-2xl shadow-2xl max-w-sm sm:max-w-2xl lg:max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Select Your Tickets</h2>
-              <p className="text-sm sm:text-base text-gray-600">{eventDetails.title}</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto modal-container" suppressHydrationWarning>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col my-2"
+      >
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+              <CreditCard className="w-5 h-5 text-white" />
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">Select Your Tickets</h2>
+              <p className="text-sm text-gray-600">Rangtaali Hamilton 2025</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Close ticket selector"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
 
-          <div className="overflow-y-auto max-h-[calc(95vh-140px)] sm:max-h-[calc(90vh-140px)]">
-            {currentStep === 'selection' ? (
-              <div className="p-4 sm:p-6">
-                {/* Ticket Selection */}
-                <div className="card mb-8">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Select Number of Tickets</h3>
-                    <p className="text-sm sm:text-base text-gray-600">Choose your quantity and see the pricing tiers</p>
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto min-h-0 modal-content">
+          {currentStep === 'selection' ? (
+            <div className="p-4">
+              {/* Event Details */}
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 mb-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-3">Event Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="flex items-center">
+                    <Calendar className="w-4 h-4 text-pink-500 mr-2" />
+                    <span className="text-sm text-gray-700">{eventDetails.date}</span>
                   </div>
-
-                  {/* Pricing Tiers Display */}
-                  <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4 text-center">Ticket Pricing Tiers</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                      <div className={`p-4 rounded-lg border-2 text-center transition-all duration-200 ${
-                        getTotalTickets() >= 1 && getTotalTickets() < 5 
-                          ? 'border-primary-500 bg-primary-50' 
-                          : 'border-gray-200 bg-gray-50'
-                      }`}>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">$34.99</div>
-                        <div className="text-sm text-gray-600 mb-2">Regular Ticket</div>
-                        <div className="text-xs text-gray-500">1-4 tickets</div>
-                      </div>
-                      
-                      <div className={`p-4 rounded-lg border-2 text-center transition-all duration-200 ${
-                        getTotalTickets() >= 5 && getTotalTickets() < 10 
-                          ? 'border-primary-500 bg-primary-50' 
-                          : 'border-gray-200 bg-gray-50'
-                      }`}>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">$30.00</div>
-                        <div className="text-sm text-gray-600 mb-2">Group Discount</div>
-                        <div className="text-xs text-gray-500">5-9 tickets</div>
-                        <div className="text-xs text-green-600 font-medium">Save $4.99 each!</div>
-                      </div>
-                      
-                      <div className={`p-4 rounded-lg border-2 text-center transition-all duration-200 ${
-                        getTotalTickets() >= 10 
-                          ? 'border-primary-500 bg-primary-50' 
-                          : 'border-gray-200 bg-gray-50'
-                      }`}>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">$28.00</div>
-                        <div className="text-sm text-gray-600 mb-2">Best Value</div>
-                        <div className="text-xs text-gray-500">10+ tickets</div>
-                        <div className="text-xs text-green-600 font-medium">Save $6.99 each!</div>
-                      </div>
-                    </div>
+                  <div className="flex items-center">
+                    <Clock className="w-4 h-4 text-pink-500 mr-2" />
+                    <span className="text-sm text-gray-700">{eventDetails.time}</span>
                   </div>
-                  
-                  <div className="flex items-center justify-center space-x-4 mb-6">
-                    <label htmlFor="ticketQuantity" className="text-lg font-semibold text-gray-900">
-                      Number of Tickets:
-                    </label>
-                    <div className="flex items-center space-x-3">
-                      <button
-                        onClick={() => {
-                          const currentValue = selectedTickets['regular'] || 0
-                          if (currentValue > 0) {
-                            setSelectedTickets({ regular: currentValue - 1 })
-                          }
-                        }}
-                        disabled={(selectedTickets['regular'] || 0) === 0}
-                        className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                      >
-                        <Minus className="w-5 h-5" />
-                      </button>
-                      <input
-                        id="ticketQuantity"
-                        type="number"
-                        min="0"
-                        max="1000"
-                        value={selectedTickets['regular'] || 0}
-                        onChange={(e) => {
-                          const value = parseInt(e.target.value) || 0
-                          setSelectedTickets({ regular: value })
-                        }}
-                        className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center text-lg font-semibold focus:ring-2 focus:ring-primary-500 focus:border-transparent [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      />
-                      <button
-                        onClick={() => {
-                          const currentValue = selectedTickets['regular'] || 0
-                          if (currentValue < 1000) {
-                            setSelectedTickets({ regular: currentValue + 1 })
-                          }
-                        }}
-                        disabled={(selectedTickets['regular'] || 0) >= 1000}
-                        className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                      >
-                        <Plus className="w-5 h-5" />
-                      </button>
-                    </div>
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 text-pink-500 mr-2" />
+                    <span className="text-sm text-gray-700">{eventDetails.venue}</span>
                   </div>
-
-                   {/* Combined Price Display */}
-                   {getTotalTickets() > 0 && (
-                     <div className="text-center p-4 bg-primary-50 rounded-lg border-2 border-primary-200">
-                       <p className="text-lg font-semibold text-gray-900 mb-1">
-                         {getTotalTickets()} ticket{getTotalTickets() !== 1 ? 's' : ''} selected
-                       </p>
-                       <p className="text-3xl font-bold text-primary-600 mb-1">
-                         ${getTicketPrice().toFixed(2)} per ticket
-                       </p>
-                       <p className="text-sm text-gray-600">
-                         {getTotalTickets() >= 10 ? 'Group of 10+ discount' : 
-                          getTotalTickets() >= 5 ? 'Group of 5+ discount' : 'Regular price'}
-                       </p>
-                       {getTotalTickets() >= 5 && (
-                         <p className="text-sm text-green-600 font-medium mt-1">
-                           🎉 Group discount applied!
-                         </p>
-                       )}
-                     </div>
-                   )}
                 </div>
+              </div>
 
-                {/* Summary */}
-                {getTotalTickets() > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="card bg-primary-50 border-primary-200"
-                  >
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-lg font-semibold text-gray-900">
-                            {getTotalTickets()} ticket{getTotalTickets() !== 1 ? 's' : ''} selected
-                          </p>
+              {/* Ticket Types */}
+              <div className="space-y-4">
+                {ticketTypes.map((ticket) => (
+                  <div key={ticket.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="text-base font-semibold text-gray-900 mb-2">{ticket.name}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{ticket.description}</p>
+                        <div className="text-xl font-bold text-pink-600">${ticket.price.toFixed(2)}</div>
+                      </div>
+                      <div className="ml-4">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => handleTicketChange(ticket.id, -1)}
+                            disabled={(selectedTickets[ticket.id] || 0) === 0}
+                            className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="w-6 text-center font-semibold text-sm">{selectedTickets[ticket.id] || 0}</span>
+                          <button
+                            onClick={() => handleTicketChange(ticket.id, 1)}
+                            className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
                         </div>
                       </div>
-                      
-                      {/* Price Breakdown */}
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Subtotal:</span>
-                          <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Convenience Fee:</span>
-                          <span className="text-gray-900">${getConvenienceFee().toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Payment Processing:</span>
-                          <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">HST (13%):</span>
-                          <span className="text-gray-900">${getHST().toFixed(2)}</span>
-                        </div>
-                      </div>
-                      
-                      {/* Total */}
-                      <div className="border-t border-primary-200 pt-4">
-                        <div className="flex justify-between text-lg font-bold">
-                          <span className="text-gray-900">Total:</span>
-                          <span className="text-primary-600">${getTotalPrice().toFixed(2)}</span>
-                        </div>
-                      </div>
-                      
-                      <button
-                        onClick={handleProceedToCheckout}
-                        className="w-full btn-primary flex items-center justify-center"
-                      >
-                        <CreditCard className="w-5 h-5 mr-2" />
-                        Proceed to Checkout
-                      </button>
                     </div>
-                  </motion.div>
-                )}
-
-                {getTotalTickets() === 0 && (
-                  <div className="text-center py-8">
-                    <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-600">Please select at least one ticket to continue</p>
+                    
+                    {/* Benefits */}
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <h5 className="font-semibold text-gray-900 mb-2 text-sm">Included Benefits:</h5>
+                      <ul className="space-y-1">
+                        {ticket.benefits.map((benefit, index) => (
+                          <li key={index} className="flex items-center text-xs text-gray-700">
+                            <CheckCircle className="w-3 h-3 text-green-500 mr-2 flex-shrink-0" />
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            ) : (
-              <div className="p-6">
-                <CheckoutForm
-                  selectedTickets={selectedTickets}
-                  ticketTypes={ticketTypes}
-                  totalPrice={getTotalPrice()}
-                  eventDetails={eventDetails}
-                  onBack={handleBackToSelection}
-                  onSuccess={onClose}
-                />
+
+              {/* Summary */}
+              {getTotalTickets() > 0 && (
+                <div className="mt-6 bg-gray-50 rounded-xl p-4">
+                  <h3 className="text-base font-semibold text-gray-900 mb-3">Order Summary</h3>
+                  <div className="space-y-2">
+                    {Object.entries(selectedTickets).map(([ticketId, count]) => {
+                      const ticket = ticketTypes.find(t => t.id === ticketId)
+                      return (
+                        <div key={ticketId} className="flex justify-between text-sm">
+                          <span className="text-gray-700">{ticket?.name} x {count}</span>
+                          <span className="font-semibold">${(ticket?.price || 0) * count}</span>
+                        </div>
+                      )
+                    })}
+                    <div className="border-t border-gray-200 pt-2 mt-3">
+                      <div className="flex justify-between text-base font-bold">
+                        <span>Total</span>
+                        <span>${getSubtotal().toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <CheckoutForm
+              selectedTickets={selectedTickets}
+              ticketTypes={ticketTypes}
+              totalPrice={getSubtotal()}
+              eventDetails={eventDetails}
+              onBack={handleBackToSelection}
+              onSuccess={() => {
+                onClose()
+              }}
+              onClose={onClose}
+            />
+          )}
+        </div>
+
+        {/* Footer - Fixed */}
+        {currentStep === 'selection' && (
+          <div className="border-t border-gray-200 p-4 flex-shrink-0 bg-white modal-footer">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                {getTotalTickets()} ticket{getTotalTickets() !== 1 ? 's' : ''} selected
               </div>
-            )}
+              <div className="flex space-x-3">
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleProceedToCheckout}
+                  disabled={getTotalTickets() === 0}
+                  className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
+            </div>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+        )}
+      </motion.div>
+    </div>
   )
 } 

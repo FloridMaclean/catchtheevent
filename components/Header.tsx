@@ -1,14 +1,43 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Ensure we're on the client side
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Render a simple loading state during SSR to prevent hydration mismatches
+  if (!isClient) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b border-slate-200">
+        <div className="container-max px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center">
+              <div className="h-12 w-32 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="hidden md:flex items-center space-x-8">
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-8 w-24 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className="md:hidden">
+              <div className="h-6 w-6 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+    )
+  }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b border-slate-200">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-lg border-b border-slate-200" suppressHydrationWarning>
       <div className="container-max px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}

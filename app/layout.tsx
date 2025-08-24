@@ -1,68 +1,26 @@
-import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Metadata } from 'next'
 import './globals.css'
+import SEOHead from './components/SEOHead'
 import StructuredData from './components/StructuredData'
 import WebVitals from './components/WebVitals'
 import ServiceWorker from './components/ServiceWorker'
-import SEOHead from './components/SEOHead'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial']
+})
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://rangtaali.catchtheevent.com'),
   title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar | Live Garba Event | Catch The Event',
   description: 'Experience an Unforgettable Night of Garba in Hamilton! Purchase tickets for Rangtaali Hamilton 2025 featuring Aishwarya Majmudar. Live Navratri celebration at Gage Park, Hamilton, ON. Book your tickets now!',
-  keywords: [
-    'rangtaali hamilton 2025',
-    'aishwarya majmudar',
-    'garba event hamilton',
-    'navratri celebration canada',
-    'live garba performance',
-    'hamilton event tickets',
-    'gage park hamilton',
-    'indian cultural event',
-    'garba dance hamilton',
-    'rangtaali tickets',
-    'aishwarya majmudar concert',
-    'navratri hamilton 2025',
-    'indian music event',
-    'cultural celebration hamilton',
-    'garba night hamilton'
-  ],
   authors: [{ name: 'Catch The Event' }],
+  keywords: ['rangtaali hamilton 2025', 'aishwarya majmudar', 'garba event hamilton', 'navratri celebration canada', 'live garba performance', 'hamilton event tickets', 'gage park hamilton', 'indian cultural event', 'garba dance hamilton', 'rangtaali tickets', 'aishwarya majmudar concert', 'navratri hamilton 2025', 'indian music event', 'cultural celebration hamilton', 'garba night hamilton'],
   creator: 'Catch The Event',
   publisher: 'Catch The Event',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL('https://rangtaali.catchtheevent.com'),
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar',
-    description: 'Experience an Unforgettable Night of Garba in Hamilton! Live Navratri celebration featuring Aishwarya Majmudar.',
-    url: 'https://rangtaali.catchtheevent.com',
-    siteName: 'Catch The Event',
-    images: [
-      {
-        url: '/images/Rangtaali_bg.png',
-        width: 1200,
-        height: 630,
-        alt: 'Rangtaali Hamilton 2025 - Live Garba Event',
-      },
-    ],
-    locale: 'en_CA',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar',
-    description: 'Experience an Unforgettable Night of Garba in Hamilton! Live Navratri celebration.',
-    images: ['/images/Rangtaali_bg.png'],
-    creator: '@catchtheevent',
-  },
   robots: {
     index: true,
     follow: true,
@@ -74,15 +32,36 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  formatDetection: {
+    telephone: false,
+    address: false,
+    email: false,
+  },
   verification: {
     google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
     yahoo: 'your-yahoo-verification-code',
+    yandex: 'your-yandex-verification-code',
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
     title: 'Rangtaali Hamilton 2025',
+    statusBarStyle: 'default',
+  },
+  openGraph: {
+    title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar',
+    description: 'Experience an Unforgettable Night of Garba in Hamilton! Live Navratri celebration featuring Aishwarya Majmudar.',
+    url: 'https://rangtaali.catchtheevent.com',
+    siteName: 'Catch The Event',
+    locale: 'en_CA',
+    type: 'website',
+    images: ['/images/Rangtaali_bg.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar | Live Garba Event | Catch The Event',
+    description: 'Experience an Unforgettable Night of Garba in Hamilton! Purchase tickets for Rangtaali Hamilton 2025 featuring Aishwarya Majmudar. Live Navratri celebration at Gage Park, Hamilton, ON. Book your tickets now!',
+    images: ['/images/Rangtaali_bg.png'],
+    creator: '@catch_the_event',
   },
 }
 

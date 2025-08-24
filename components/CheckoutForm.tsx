@@ -7,8 +7,11 @@ import PurchaseSummary from './PurchaseSummary'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 
-// Load Stripe
-const stripePromise = loadStripe('pk_live_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy')
+// Load Stripe with error handling
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy').catch((error) => {
+  console.error('Failed to load Stripe:', error)
+  return null
+})
 
 interface CheckoutFormProps {
   selectedTickets: { [key: string]: number }
@@ -17,6 +20,7 @@ interface CheckoutFormProps {
   eventDetails: any
   onBack: () => void
   onSuccess: () => void
+  onClose: () => void
 }
 
 const getTotalTickets = (selectedTickets: { [key: string]: number }) => {
@@ -24,14 +28,7 @@ const getTotalTickets = (selectedTickets: { [key: string]: number }) => {
 }
 
 const getTicketPrice = (selectedTickets: { [key: string]: number }) => {
-  const totalTickets = getTotalTickets(selectedTickets)
-  if (totalTickets >= 10) {
-    return 28.00 // Group of 10+ tickets
-  } else if (totalTickets >= 5) {
-    return 30.00 // Group of 5+ tickets
-  } else {
-    return 34.99 // Regular ticket price
-  }
+  return 20.00 // Fixed price for Exclusive Rangtaali Garba Pass
 }
 
 const getSubtotal = (selectedTickets: { [key: string]: number }, ticketTypes: any[]) => {
@@ -80,7 +77,8 @@ function PaymentForm({
   totalPrice,
   eventDetails,
   onBack,
-  onSuccess
+  onSuccess,
+  onClose
 }: CheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
@@ -112,7 +110,8 @@ function PaymentForm({
   const [customerInfo, setCustomerInfo] = useState({
     firstName: '',
     lastName: '',
-    email: ''
+    email: '',
+    phone: ''
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -130,7 +129,7 @@ function PaymentForm({
     }
 
     // Validate customer info
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email) {
+    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone) {
       setError('Please fill in all required fields')
       return
     }
@@ -309,6 +308,19 @@ function PaymentForm({
                 required
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number *
+              </label>
+              <input
+                type="tel"
+                value={customerInfo.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                className="input-field"
+                placeholder="Enter your phone number"
+                required
+              />
+            </div>
           </div>
         </div>
 
@@ -372,7 +384,8 @@ export default function CheckoutForm({
   totalPrice,
   eventDetails,
   onBack,
-  onSuccess
+  onSuccess,
+  onClose
 }: CheckoutFormProps) {
   return (
     <Elements stripe={stripePromise}>
@@ -383,6 +396,7 @@ export default function CheckoutForm({
         eventDetails={eventDetails}
         onBack={onBack}
         onSuccess={onSuccess}
+        onClose={onClose}
       />
     </Elements>
   )

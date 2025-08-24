@@ -35,13 +35,7 @@ export async function POST(request: NextRequest) {
     const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
     // Calculate proper pricing for email
     const getTicketPrice = (totalTickets: number) => {
-      if (totalTickets >= 10) {
-        return 28.00
-      } else if (totalTickets >= 5) {
-        return 30.00
-      } else {
-        return 34.99
-      }
+      return 20.00 // Fixed price for Exclusive Rangtaali Garba Pass
     }
 
     const getSubtotal = (totalTickets: number) => {
@@ -104,6 +98,7 @@ export async function POST(request: NextRequest) {
               <p><strong>Date:</strong> ${eventDetails.date}</p>
               <p><strong>Venue:</strong> ${eventDetails.venue}</p>
               <p><strong>Address:</strong> ${eventDetails.address}</p>
+              <p><strong>Phone:</strong> ${customerInfo.phone}</p>
               <p><strong>Tickets:</strong> ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}</p>
               <p><strong>Convenience Fee:</strong> $${getConvenienceFee(totalTickets).toFixed(2)}</p>
               <p><strong>Payment Processing:</strong> $${getProcessingFee(totalTickets).toFixed(2)}</p>
@@ -152,6 +147,7 @@ export async function POST(request: NextRequest) {
       - Date: ${eventDetails.date}
       - Venue: ${eventDetails.venue}
       - Address: ${eventDetails.address}
+      - Phone: ${customerInfo.phone}
       - Tickets: ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}
       - Convenience Fee: $${getConvenienceFee(totalTickets).toFixed(2)}
       - Payment Processing: $${getProcessingFee(totalTickets).toFixed(2)}

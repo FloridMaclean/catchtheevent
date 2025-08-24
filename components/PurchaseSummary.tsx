@@ -13,6 +13,7 @@ interface PurchaseSummaryProps {
     firstName: string
     lastName: string
     email: string
+    phone: string
   }
   onClose: () => void
 }
@@ -33,13 +34,7 @@ export default function PurchaseSummary({
   const totalTickets = Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
   
   const getTicketPrice = () => {
-    if (totalTickets >= 10) {
-      return 28.00 // Group of 10+ tickets
-    } else if (totalTickets >= 5) {
-      return 30.00 // Group of 5+ tickets
-    } else {
-      return 34.99 // Regular ticket price
-    }
+    return 20.00 // Fixed price for Exclusive Rangtaali Garba Pass
   }
 
   const getSubtotal = () => {
@@ -82,6 +77,7 @@ export default function PurchaseSummary({
         eventVenue: eventDetails.venue,
         customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
         customerEmail: customerInfo.email,
+        customerPhone: customerInfo.phone,
         totalTickets: totalTickets,
         totalAmount: totalAmount,
         paymentIntentId: paymentIntent.id,
