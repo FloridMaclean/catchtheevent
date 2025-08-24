@@ -165,27 +165,31 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
               <div className="space-y-4">
                 {ticketTypes.map((ticket) => (
                   <div key={ticket.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-4">
                       <div className="flex-1">
                         <h4 className="text-base font-semibold text-gray-900 mb-2">{ticket.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{ticket.description}</p>
                         <div className="text-xl font-bold text-pink-600">${ticket.price.toFixed(2)}</div>
                       </div>
-                      <div className="ml-4">
-                        <div className="flex items-center space-x-2">
+                      <div className="flex-shrink-0 self-center sm:self-start">
+                        <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
                           <button
                             onClick={() => handleTicketChange(ticket.id, -1)}
                             disabled={(selectedTickets[ticket.id] || 0) === 0}
-                            className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            aria-label="Decrease ticket quantity"
                           >
-                            <Minus className="w-3 h-3" />
+                            <Minus className="w-4 h-4 text-gray-600" />
                           </button>
-                          <span className="w-6 text-center font-semibold text-sm">{selectedTickets[ticket.id] || 0}</span>
+                          <span className="w-12 text-center font-bold text-lg text-gray-900 bg-gray-50 rounded px-2 py-1 min-w-0">
+                            {selectedTickets[ticket.id] || 0}
+                          </span>
                           <button
                             onClick={() => handleTicketChange(ticket.id, 1)}
-                            className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                            aria-label="Increase ticket quantity"
                           >
-                            <Plus className="w-3 h-3" />
+                            <Plus className="w-4 h-4 text-gray-600" />
                           </button>
                         </div>
                       </div>
