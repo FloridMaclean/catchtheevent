@@ -27,20 +27,26 @@ const loadStripeSafely = async () => {
     
     console.log('Loading Stripe with key:', publishableKey.substring(0, 20) + '...')
     
-    // Add a timeout to prevent hanging
-    const timeoutPromise = new Promise<null>((_, reject) => {
-      setTimeout(() => reject(new Error('Stripe loading timeout')), 8000)
-    })
-    
-    const stripePromise = loadStripe(publishableKey)
-    return await Promise.race([stripePromise, timeoutPromise])
+    // Load Stripe without timeout for better reliability
+    return await loadStripe(publishableKey)
   } catch (error) {
     console.error('Failed to load Stripe:', error)
     return null
   }
 }
 
-const stripePromise = loadStripeSafely()
+// Create a more robust Stripe promise
+const stripePromise = (async () => {
+  try {
+    console.log('CheckoutForm: Starting Stripe load...')
+    const result = await loadStripeSafely()
+    console.log('CheckoutForm: Stripe load result -', !!result)
+    return result
+  } catch (error) {
+    console.error('CheckoutForm: Stripe load error -', error)
+    return null
+  }
+})()
 
 interface CheckoutFormProps {
   selectedTickets: { [key: string]: number }
@@ -134,20 +140,24 @@ function PaymentForm({
     phone: ''
   })
   
-  // Add timeout for Stripe loading
+  // Add timeout for Stripe loading with debugging
   React.useEffect(() => {
+    console.log('PaymentForm: Stripe loading status -', { stripe: !!stripe, elements: !!elements })
+    
     const timer = setTimeout(() => {
       if (!stripe || !elements) {
+        console.log('PaymentForm: Stripe loading timeout reached')
         setLoadingTimeout(true)
         setStripeError('Stripe is taking too long to load. Please refresh the page.')
       }
-    }, 10000) // 10 second timeout
+    }, 15000) // Increased to 15 seconds
 
     return () => clearTimeout(timer)
   }, [stripe, elements])
   
   // Show loading state while Stripe is initializing
   if (!stripe || !elements) {
+    console.log('PaymentForm: Showing loading state -', { stripe: !!stripe, elements: !!elements })
     return (
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center mb-6">
