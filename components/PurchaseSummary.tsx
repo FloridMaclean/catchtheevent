@@ -70,23 +70,37 @@ export default function PurchaseSummary({
     try {
       setIsGenerating(true)
       
-      // Create purchase summary data
+      // Create purchase summary data with detailed user information
       const purchaseData = {
+        // Event Information
         eventTitle: eventDetails.title,
         eventDate: eventDetails.date,
         eventVenue: eventDetails.venue,
-        customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
+        eventAddress: eventDetails.address,
+        
+        // Customer Information
+        customerFirstName: customerInfo.firstName,
+        customerLastName: customerInfo.lastName,
+        customerFullName: `${customerInfo.firstName} ${customerInfo.lastName}`,
         customerEmail: customerInfo.email,
         customerPhone: customerInfo.phone,
+        
+        // Ticket Information
         totalTickets: totalTickets,
-        totalAmount: totalAmount,
-        paymentIntentId: paymentIntent.id,
-        purchaseDate: new Date().toISOString(),
         ticketPrice: getTicketPrice(),
         subtotal: getSubtotal(),
         convenienceFee: getConvenienceFee(),
         processingFee: getProcessingFee(),
-        hst: getHST()
+        hst: getHST(),
+        totalAmount: totalAmount,
+        
+        // Payment Information
+        paymentIntentId: paymentIntent.id,
+        purchaseDate: new Date().toISOString(),
+        
+        // QR Code Metadata
+        qrGeneratedAt: new Date().toISOString(),
+        qrVersion: '1.0'
       }
 
       // Generate QR code with purchase data
@@ -518,6 +532,17 @@ export default function PurchaseSummary({
                 <p className="text-sm text-gray-600">
                   Present this QR code at the event entrance
                 </p>
+                <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                  <p className="text-xs text-blue-700 font-medium mb-2">
+                    QR Code contains your details:
+                  </p>
+                  <div className="text-xs text-blue-600 space-y-1">
+                    <p>• Name: {customerInfo.firstName} {customerInfo.lastName}</p>
+                    <p>• Email: {customerInfo.email}</p>
+                    <p>• Phone: {customerInfo.phone}</p>
+                    <p>• Tickets: {totalTickets} × ${getTicketPrice()}</p>
+                  </div>
+                </div>
                 <div className="flex gap-3 justify-center">
                   <button
                     onClick={downloadQRCode}

@@ -109,6 +109,13 @@ export async function POST(request: NextRequest) {
             <div class="qr-section">
               <h3 style="margin-top: 0;">📱 Entry QR Code</h3>
               <p><strong>Your QR code is attached to this email. Present it at the event entrance.</strong></p>
+              <p style="margin-top: 10px; font-size: 13px; color: #666; background: #f0f8ff; padding: 10px; border-radius: 5px;">
+                <strong>QR Code contains:</strong><br>
+                • Your name: ${customerInfo.firstName} ${customerInfo.lastName}<br>
+                • Email: ${customerInfo.email}<br>
+                • Phone: ${customerInfo.phone}<br>
+                • Ticket details and payment information
+              </p>
               <p style="margin-top: 15px; font-size: 14px; color: #666;">
                 <strong>Payment ID:</strong> ${paymentIntentId}<br>
                 <strong>Purchase Date:</strong> ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -156,6 +163,12 @@ export async function POST(request: NextRequest) {
 
       Entry QR Code:
       Your QR code is attached to this email. Present it at the event entrance.
+
+      QR Code contains:
+      - Your name: ${customerInfo.firstName} ${customerInfo.lastName}
+      - Email: ${customerInfo.email}
+      - Phone: ${customerInfo.phone}
+      - Ticket details and payment information
 
       Payment ID: ${paymentIntentId}
       Purchase Date: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

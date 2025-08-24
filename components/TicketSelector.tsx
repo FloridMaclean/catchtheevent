@@ -55,6 +55,29 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     }, 0)
   }
 
+  const getConvenienceFee = () => {
+    return getTotalTickets() * 1.00 // $1.00 per ticket
+  }
+
+  const getProcessingFee = () => {
+    return getTotalTickets() * 1.10 // $1.10 per ticket
+  }
+
+  const getHST = () => {
+    const subtotal = getSubtotal()
+    const convenienceFee = getConvenienceFee()
+    const processingFee = getProcessingFee()
+    return (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
+  }
+
+  const getTotalAmount = () => {
+    const subtotal = getSubtotal()
+    const convenienceFee = getConvenienceFee()
+    const processingFee = getProcessingFee()
+    const hst = getHST()
+    return subtotal + convenienceFee + processingFee + hst
+  }
+
   const handleTicketChange = (ticketId: string, change: number) => {
     const currentCount = selectedTickets[ticketId] || 0
     const newCount = Math.max(0, currentCount + change) // No maximum limit
@@ -198,10 +221,31 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                         </div>
                       )
                     })}
-                    <div className="border-t border-gray-200 pt-2 mt-3">
+                    
+                    {/* Price Breakdown */}
+                    <div className="border-t border-gray-200 pt-2 mt-3 space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">Subtotal:</span>
+                        <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">Convenience Fee:</span>
+                        <span className="text-gray-900">${getConvenienceFee().toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">Payment Processing:</span>
+                        <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-600">HST (13%):</span>
+                        <span className="text-gray-900">${getHST().toFixed(2)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-gray-200 pt-2">
                       <div className="flex justify-between text-base font-bold">
                         <span>Total</span>
-                        <span>${getSubtotal().toFixed(2)}</span>
+                        <span>${getTotalAmount().toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
@@ -212,7 +256,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
             <CheckoutForm
               selectedTickets={selectedTickets}
               ticketTypes={ticketTypes}
-              totalPrice={getSubtotal()}
+              totalPrice={getTotalAmount()}
               eventDetails={eventDetails}
               onBack={handleBackToSelection}
               onSuccess={() => {

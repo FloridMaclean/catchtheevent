@@ -8,8 +8,39 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import React from 'react'
 
-// Load Stripe with error handling
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy')
+// Load Stripe with better error handling and fallback
+const loadStripeSafely = async () => {
+  try {
+    // Try both environment variable names for compatibility
+    const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 
+                          process.env.STRIPE_PUBLISHABLE_KEY || 
+                          'pk_test_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy'
+    
+    if (!publishableKey || publishableKey === 'your-stripe-publishable-key') {
+      throw new Error('Stripe publishable key not configured')
+    }
+    
+    // Check if using live keys in development
+    if (publishableKey.startsWith('pk_live_') && process.env.NODE_ENV === 'development') {
+      console.warn('⚠️ Using live Stripe keys in development mode. This may cause issues.')
+    }
+    
+    console.log('Loading Stripe with key:', publishableKey.substring(0, 20) + '...')
+    
+    // Add a timeout to prevent hanging
+    const timeoutPromise = new Promise<null>((_, reject) => {
+      setTimeout(() => reject(new Error('Stripe loading timeout')), 8000)
+    })
+    
+    const stripePromise = loadStripe(publishableKey)
+    return await Promise.race([stripePromise, timeoutPromise])
+  } catch (error) {
+    console.error('Failed to load Stripe:', error)
+    return null
+  }
+}
+
+const stripePromise = loadStripeSafely()
 
 interface CheckoutFormProps {
   selectedTickets: { [key: string]: number }
@@ -52,6 +83,14 @@ const getHST = (selectedTickets: { [key: string]: number }, ticketTypes: any[]) 
   return (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
 }
 
+const getTotalAmount = (selectedTickets: { [key: string]: number }, ticketTypes: any[]) => {
+  const subtotal = getSubtotal(selectedTickets, ticketTypes)
+  const convenienceFee = getConvenienceFee(selectedTickets)
+  const processingFee = getProcessingFee(selectedTickets)
+  const hst = getHST(selectedTickets, ticketTypes)
+  return subtotal + convenienceFee + processingFee + hst
+}
+
 // Stripe Card Element styling
 const cardElementOptions = {
   style: {
@@ -80,8 +119,20 @@ function PaymentForm({
 }: CheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
+  
+  // All hooks must be called at the top level, before any conditional returns
   const [stripeError, setStripeError] = useState<string | null>(null)
   const [loadingTimeout, setLoadingTimeout] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [paymentIntent, setPaymentIntent] = useState<any>(null)
+  const [customerInfo, setCustomerInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: ''
+  })
   
   // Add timeout for Stripe loading
   React.useEffect(() => {
@@ -109,35 +160,34 @@ function PaymentForm({
           </button>
         </div>
         <div className="card text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          {loadingTimeout ? (
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          ) : (
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          )}
           <p className="text-gray-600">
-            {loadingTimeout ? 'Stripe loading timeout' : 'Loading secure payment form...'}
+            {loadingTimeout ? 'Payment system temporarily unavailable' : 'Loading secure payment form...'}
           </p>
           {stripeError && (
-            <p className="text-red-600 mt-2">Error: {stripeError}</p>
+            <p className="text-red-600 mt-2 text-sm">Error: {stripeError}</p>
           )}
           {loadingTimeout && (
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Refresh Page
-            </button>
+            <div className="mt-4 space-y-2">
+              <p className="text-sm text-gray-500">
+                Please try refreshing the page or contact support if the issue persists.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+              >
+                Refresh Page
+              </button>
+            </div>
           )}
         </div>
       </div>
     )
   }
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
-  const [paymentIntent, setPaymentIntent] = useState<any>(null)
-  const [customerInfo, setCustomerInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: ''
-  })
 
   const handleInputChange = (field: string, value: string) => {
     setCustomerInfo(prev => ({
@@ -170,7 +220,7 @@ function PaymentForm({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: Math.round(totalPrice * 100), // Convert to cents
+          amount: Math.round(getTotalAmount(selectedTickets, ticketTypes) * 100), // Convert to cents
           customerInfo,
           selectedTickets,
           eventDetails
@@ -281,7 +331,7 @@ function PaymentForm({
             <div className="border-t pt-3">
               <div className="flex justify-between items-center">
                 <p className="text-lg font-bold text-gray-900">Total</p>
-                <p className="text-2xl font-bold text-primary-600">${totalPrice.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary-600">${getTotalAmount(selectedTickets, ticketTypes).toFixed(2)}</p>
               </div>
             </div>
           </div>
