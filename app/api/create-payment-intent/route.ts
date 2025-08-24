@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
       metadata: {
         customerEmail: customerInfo.email,
         customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
-        customerPhone: customerInfo.phone,
         eventTitle: eventDetails.title,
         eventDate: eventDetails.date,
         tickets: JSON.stringify(selectedTickets),

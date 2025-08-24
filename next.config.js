@@ -1,36 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Enable experimental features
-  experimental: {
-    optimizePackageImports: ['framer-motion', 'lucide-react']
-  },
-
-  // Image optimization
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'rangtaali.catchtheevent.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'catchtheevent.com',
-        port: '',
-        pathname: '/**',
-      }
-    ],
+    domains: ['images.unsplash.com', 'localhost'],
     formats: ['image/webp', 'image/avif'],
   },
-
-  // Security headers
   async headers() {
     return [
       {
@@ -76,8 +49,6 @@ const nextConfig = {
       },
     ]
   },
-
-  // Redirects
   async redirects() {
     return [
       {
@@ -87,27 +58,9 @@ const nextConfig = {
       },
     ]
   },
-
-  // Performance optimizations
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
-
-  // Environment variables for production
-  env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://rangtaali.catchtheevent.com',
-    NEXT_PUBLIC_APP_NAME: 'Rangtaali Hamilton 2025',
-    NEXT_PUBLIC_APP_DESCRIPTION: 'Premier event ticketing platform',
-  },
-
-  // Output configuration for production
-  output: 'standalone',
-  
-  // Disable server-side image optimization in production (use CDN instead)
-  images: {
-    ...nextConfig.images,
-    unoptimized: process.env.NODE_ENV === 'production',
-  },
 }
 
 module.exports = nextConfig 
