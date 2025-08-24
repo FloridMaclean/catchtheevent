@@ -71,8 +71,14 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   }
 
   const handleProceedToCheckout = () => {
+    console.log('Proceed to checkout clicked')
+    console.log('Total tickets:', getTotalTickets())
+    console.log('Selected tickets:', selectedTickets)
     if (getTotalTickets() > 0) {
+      console.log('Setting step to checkout')
       setCurrentStep('checkout')
+    } else {
+      console.log('No tickets selected')
     }
   }
 

@@ -6,12 +6,10 @@ import { ArrowLeft, CreditCard, User, CheckCircle, AlertCircle } from 'lucide-re
 import PurchaseSummary from './PurchaseSummary'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import React from 'react'
 
 // Load Stripe with error handling
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy').catch((error) => {
-  console.error('Failed to load Stripe:', error)
-  return null
-})
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_51RK06wRvqInccQHjbZjqsjP8sc2RKy4IQT6arWCPC6zAcvlVgVkr7avQXz0RMOsEJI8KNKnatFpasL7IJRfft9rv001mscOZcy')
 
 interface CheckoutFormProps {
   selectedTickets: { [key: string]: number }
@@ -82,6 +80,20 @@ function PaymentForm({
 }: CheckoutFormProps) {
   const stripe = useStripe()
   const elements = useElements()
+  const [stripeError, setStripeError] = useState<string | null>(null)
+  const [loadingTimeout, setLoadingTimeout] = useState(false)
+  
+  // Add timeout for Stripe loading
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!stripe || !elements) {
+        setLoadingTimeout(true)
+        setStripeError('Stripe is taking too long to load. Please refresh the page.')
+      }
+    }, 10000) // 10 second timeout
+
+    return () => clearTimeout(timer)
+  }, [stripe, elements])
   
   // Show loading state while Stripe is initializing
   if (!stripe || !elements) {
@@ -98,7 +110,20 @@ function PaymentForm({
         </div>
         <div className="card text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading secure payment form...</p>
+          <p className="text-gray-600">
+            {loadingTimeout ? 'Stripe loading timeout' : 'Loading secure payment form...'}
+          </p>
+          {stripeError && (
+            <p className="text-red-600 mt-2">Error: {stripeError}</p>
+          )}
+          {loadingTimeout && (
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              Refresh Page
+            </button>
+          )}
         </div>
       </div>
     )
