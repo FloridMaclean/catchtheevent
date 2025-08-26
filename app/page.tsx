@@ -6,18 +6,10 @@ import Image from 'next/image'
 import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-// Dynamic imports for better code splitting
-const TicketSelector = dynamic(() => import('../components/TicketSelector'), {
-  loading: () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg p-6">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading ticket selector...</p>
-      </div>
-    </div>
-  ),
-  ssr: false
-})
+// Import TicketSelector directly to test
+import TicketSelector from '../components/TicketSelector'
+
+
 
 const Header = dynamic(() => import('../components/Header'), {
   ssr: false
@@ -30,6 +22,13 @@ const Footer = dynamic(() => import('../components/Footer'), {
 export default function Home() {
   const [showTicketSelector, setShowTicketSelector] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  
+  // Debug environment variables
+  useEffect(() => {
+    console.log('Environment check:')
+    console.log('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Set' : 'Not set')
+    console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? 'Set' : 'Not set')
+  }, [])
 
   // Ensure we're on the client side
   useEffect(() => {
@@ -38,6 +37,7 @@ export default function Home() {
 
   // Prevent body scrolling when modal is open
   useEffect(() => {
+    console.log('showTicketSelector changed to:', showTicketSelector)
     if (showTicketSelector) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -253,7 +253,13 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 1.2 }}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowTicketSelector(true)}
+              onClick={() => {
+                console.log('Buy button clicked!')
+                console.log('Current showTicketSelector state:', showTicketSelector)
+                alert('Button clicked! Testing...')
+                setShowTicketSelector(true)
+                console.log('Setting showTicketSelector to true')
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()

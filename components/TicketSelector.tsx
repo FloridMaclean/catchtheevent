@@ -116,15 +116,15 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col my-2"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col my-2 mx-auto"
       >
         {/* Header - Fixed */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 flex-1 justify-center">
             <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center">
               <CreditCard className="w-5 h-5 text-white" />
             </div>
-            <div>
+            <div className="text-center">
               <h2 className="text-xl font-bold text-gray-900">Select Your Tickets</h2>
               <p className="text-sm text-gray-600">Rangtaali Hamilton 2025</p>
             </div>
@@ -139,12 +139,12 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto min-h-0 modal-content">
+        <div className="flex-1 flex">
           {currentStep === 'selection' ? (
-            <div className="p-4">
+            <div className="p-4 flex flex-col items-center w-full max-w-2xl">
               {/* Event Details */}
-              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3">Event Details</h3>
+              <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 mb-6 w-full">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 text-center">Event Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 text-pink-500 mr-2" />
@@ -162,7 +162,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
               </div>
 
               {/* Ticket Types */}
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 {ticketTypes.map((ticket) => (
                   <div key={ticket.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-4">
@@ -213,7 +213,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
               {/* Summary */}
               {getTotalTickets() > 0 && (
-                <div className="mt-6 bg-gray-50 rounded-xl p-4">
+                <div className="mt-6 bg-gray-50 rounded-xl p-4 w-full">
                   <h3 className="text-base font-semibold text-gray-900 mb-3">Order Summary</h3>
                   <div className="space-y-2">
                     {Object.entries(selectedTickets).map(([ticketId, count]) => {
@@ -274,7 +274,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
         {/* Footer - Fixed */}
         {currentStep === 'selection' && (
           <div className="border-t border-gray-200 p-4 flex-shrink-0 bg-white modal-footer">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full max-w-2xl mx-auto">
               <div className="text-sm text-gray-600">
                 {getTotalTickets()} ticket{getTotalTickets() !== 1 ? 's' : ''} selected
               </div>
