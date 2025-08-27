@@ -1,0 +1,406 @@
+{
+  "usedCount": 100,
+  "maxUsage": 100,
+  "usageHistory": [
+    {
+      "usedBy": "test1@example.com",
+      "usedAt": "2025-08-27T04:10:31.515Z"
+    },
+    {
+      "usedBy": "test2@example.com",
+      "usedAt": "2025-08-27T04:10:39.633Z"
+    },
+    {
+      "usedBy": "test3@example.com",
+      "usedAt": "2025-08-27T04:10:42.905Z"
+    },
+    {
+      "usedBy": "test4@example.com",
+      "usedAt": "2025-08-27T04:10:48.800Z"
+    },
+    {
+      "usedBy": "test5@example.com",
+      "usedAt": "2025-08-27T04:10:48.817Z"
+    },
+    {
+      "usedBy": "test6@example.com",
+      "usedAt": "2025-08-27T04:10:48.831Z"
+    },
+    {
+      "usedBy": "test7@example.com",
+      "usedAt": "2025-08-27T04:10:48.842Z"
+    },
+    {
+      "usedBy": "test8@example.com",
+      "usedAt": "2025-08-27T04:10:48.854Z"
+    },
+    {
+      "usedBy": "test9@example.com",
+      "usedAt": "2025-08-27T04:10:48.866Z"
+    },
+    {
+      "usedBy": "test10@example.com",
+      "usedAt": "2025-08-27T04:10:48.878Z"
+    },
+    {
+      "usedBy": "test11@example.com",
+      "usedAt": "2025-08-27T04:10:48.888Z"
+    },
+    {
+      "usedBy": "test12@example.com",
+      "usedAt": "2025-08-27T04:10:48.899Z"
+    },
+    {
+      "usedBy": "test13@example.com",
+      "usedAt": "2025-08-27T04:10:48.910Z"
+    },
+    {
+      "usedBy": "test14@example.com",
+      "usedAt": "2025-08-27T04:10:48.921Z"
+    },
+    {
+      "usedBy": "test15@example.com",
+      "usedAt": "2025-08-27T04:10:48.931Z"
+    },
+    {
+      "usedBy": "test16@example.com",
+      "usedAt": "2025-08-27T04:10:48.941Z"
+    },
+    {
+      "usedBy": "test17@example.com",
+      "usedAt": "2025-08-27T04:10:48.951Z"
+    },
+    {
+      "usedBy": "test18@example.com",
+      "usedAt": "2025-08-27T04:10:48.961Z"
+    },
+    {
+      "usedBy": "test19@example.com",
+      "usedAt": "2025-08-27T04:10:48.971Z"
+    },
+    {
+      "usedBy": "test20@example.com",
+      "usedAt": "2025-08-27T04:10:48.980Z"
+    },
+    {
+      "usedBy": "test21@example.com",
+      "usedAt": "2025-08-27T04:10:48.990Z"
+    },
+    {
+      "usedBy": "test22@example.com",
+      "usedAt": "2025-08-27T04:10:48.999Z"
+    },
+    {
+      "usedBy": "test23@example.com",
+      "usedAt": "2025-08-27T04:10:49.009Z"
+    },
+    {
+      "usedBy": "test24@example.com",
+      "usedAt": "2025-08-27T04:10:49.019Z"
+    },
+    {
+      "usedBy": "test25@example.com",
+      "usedAt": "2025-08-27T04:10:49.028Z"
+    },
+    {
+      "usedBy": "test26@example.com",
+      "usedAt": "2025-08-27T04:10:49.038Z"
+    },
+    {
+      "usedBy": "test27@example.com",
+      "usedAt": "2025-08-27T04:10:49.047Z"
+    },
+    {
+      "usedBy": "test28@example.com",
+      "usedAt": "2025-08-27T04:10:49.056Z"
+    },
+    {
+      "usedBy": "test29@example.com",
+      "usedAt": "2025-08-27T04:10:49.065Z"
+    },
+    {
+      "usedBy": "test30@example.com",
+      "usedAt": "2025-08-27T04:10:49.074Z"
+    },
+    {
+      "usedBy": "test31@example.com",
+      "usedAt": "2025-08-27T04:10:49.083Z"
+    },
+    {
+      "usedBy": "test32@example.com",
+      "usedAt": "2025-08-27T04:10:49.092Z"
+    },
+    {
+      "usedBy": "test33@example.com",
+      "usedAt": "2025-08-27T04:10:49.102Z"
+    },
+    {
+      "usedBy": "test34@example.com",
+      "usedAt": "2025-08-27T04:10:49.111Z"
+    },
+    {
+      "usedBy": "test35@example.com",
+      "usedAt": "2025-08-27T04:10:49.120Z"
+    },
+    {
+      "usedBy": "test36@example.com",
+      "usedAt": "2025-08-27T04:10:49.129Z"
+    },
+    {
+      "usedBy": "test37@example.com",
+      "usedAt": "2025-08-27T04:10:49.138Z"
+    },
+    {
+      "usedBy": "test38@example.com",
+      "usedAt": "2025-08-27T04:10:49.147Z"
+    },
+    {
+      "usedBy": "test39@example.com",
+      "usedAt": "2025-08-27T04:10:49.156Z"
+    },
+    {
+      "usedBy": "test40@example.com",
+      "usedAt": "2025-08-27T04:10:49.165Z"
+    },
+    {
+      "usedBy": "test41@example.com",
+      "usedAt": "2025-08-27T04:10:49.174Z"
+    },
+    {
+      "usedBy": "test42@example.com",
+      "usedAt": "2025-08-27T04:10:49.182Z"
+    },
+    {
+      "usedBy": "test43@example.com",
+      "usedAt": "2025-08-27T04:10:49.191Z"
+    },
+    {
+      "usedBy": "test44@example.com",
+      "usedAt": "2025-08-27T04:10:49.200Z"
+    },
+    {
+      "usedBy": "test45@example.com",
+      "usedAt": "2025-08-27T04:10:49.210Z"
+    },
+    {
+      "usedBy": "test46@example.com",
+      "usedAt": "2025-08-27T04:10:49.218Z"
+    },
+    {
+      "usedBy": "test47@example.com",
+      "usedAt": "2025-08-27T04:10:49.227Z"
+    },
+    {
+      "usedBy": "test48@example.com",
+      "usedAt": "2025-08-27T04:10:49.237Z"
+    },
+    {
+      "usedBy": "test49@example.com",
+      "usedAt": "2025-08-27T04:10:49.245Z"
+    },
+    {
+      "usedBy": "test50@example.com",
+      "usedAt": "2025-08-27T04:10:49.254Z"
+    },
+    {
+      "usedBy": "test51@example.com",
+      "usedAt": "2025-08-27T04:10:49.264Z"
+    },
+    {
+      "usedBy": "test52@example.com",
+      "usedAt": "2025-08-27T04:10:49.272Z"
+    },
+    {
+      "usedBy": "test53@example.com",
+      "usedAt": "2025-08-27T04:10:49.281Z"
+    },
+    {
+      "usedBy": "test54@example.com",
+      "usedAt": "2025-08-27T04:10:49.290Z"
+    },
+    {
+      "usedBy": "test55@example.com",
+      "usedAt": "2025-08-27T04:10:49.298Z"
+    },
+    {
+      "usedBy": "test56@example.com",
+      "usedAt": "2025-08-27T04:10:49.307Z"
+    },
+    {
+      "usedBy": "test57@example.com",
+      "usedAt": "2025-08-27T04:10:49.316Z"
+    },
+    {
+      "usedBy": "test58@example.com",
+      "usedAt": "2025-08-27T04:10:49.325Z"
+    },
+    {
+      "usedBy": "test59@example.com",
+      "usedAt": "2025-08-27T04:10:49.334Z"
+    },
+    {
+      "usedBy": "test60@example.com",
+      "usedAt": "2025-08-27T04:10:49.343Z"
+    },
+    {
+      "usedBy": "test61@example.com",
+      "usedAt": "2025-08-27T04:10:49.352Z"
+    },
+    {
+      "usedBy": "test62@example.com",
+      "usedAt": "2025-08-27T04:10:49.361Z"
+    },
+    {
+      "usedBy": "test63@example.com",
+      "usedAt": "2025-08-27T04:10:49.370Z"
+    },
+    {
+      "usedBy": "test64@example.com",
+      "usedAt": "2025-08-27T04:10:49.378Z"
+    },
+    {
+      "usedBy": "test65@example.com",
+      "usedAt": "2025-08-27T04:10:49.387Z"
+    },
+    {
+      "usedBy": "test66@example.com",
+      "usedAt": "2025-08-27T04:10:49.396Z"
+    },
+    {
+      "usedBy": "test67@example.com",
+      "usedAt": "2025-08-27T04:10:49.404Z"
+    },
+    {
+      "usedBy": "test68@example.com",
+      "usedAt": "2025-08-27T04:10:49.414Z"
+    },
+    {
+      "usedBy": "test69@example.com",
+      "usedAt": "2025-08-27T04:10:49.422Z"
+    },
+    {
+      "usedBy": "test70@example.com",
+      "usedAt": "2025-08-27T04:10:49.431Z"
+    },
+    {
+      "usedBy": "test71@example.com",
+      "usedAt": "2025-08-27T04:10:49.440Z"
+    },
+    {
+      "usedBy": "test72@example.com",
+      "usedAt": "2025-08-27T04:10:49.449Z"
+    },
+    {
+      "usedBy": "test73@example.com",
+      "usedAt": "2025-08-27T04:10:49.457Z"
+    },
+    {
+      "usedBy": "test74@example.com",
+      "usedAt": "2025-08-27T04:10:49.466Z"
+    },
+    {
+      "usedBy": "test75@example.com",
+      "usedAt": "2025-08-27T04:10:49.475Z"
+    },
+    {
+      "usedBy": "test76@example.com",
+      "usedAt": "2025-08-27T04:10:49.484Z"
+    },
+    {
+      "usedBy": "test77@example.com",
+      "usedAt": "2025-08-27T04:10:49.493Z"
+    },
+    {
+      "usedBy": "test78@example.com",
+      "usedAt": "2025-08-27T04:10:49.502Z"
+    },
+    {
+      "usedBy": "test79@example.com",
+      "usedAt": "2025-08-27T04:10:49.511Z"
+    },
+    {
+      "usedBy": "test80@example.com",
+      "usedAt": "2025-08-27T04:10:49.519Z"
+    },
+    {
+      "usedBy": "test81@example.com",
+      "usedAt": "2025-08-27T04:10:49.529Z"
+    },
+    {
+      "usedBy": "test82@example.com",
+      "usedAt": "2025-08-27T04:10:49.537Z"
+    },
+    {
+      "usedBy": "test83@example.com",
+      "usedAt": "2025-08-27T04:10:49.546Z"
+    },
+    {
+      "usedBy": "test84@example.com",
+      "usedAt": "2025-08-27T04:10:49.555Z"
+    },
+    {
+      "usedBy": "test85@example.com",
+      "usedAt": "2025-08-27T04:10:49.563Z"
+    },
+    {
+      "usedBy": "test86@example.com",
+      "usedAt": "2025-08-27T04:10:49.572Z"
+    },
+    {
+      "usedBy": "test87@example.com",
+      "usedAt": "2025-08-27T04:10:49.580Z"
+    },
+    {
+      "usedBy": "test88@example.com",
+      "usedAt": "2025-08-27T04:10:49.589Z"
+    },
+    {
+      "usedBy": "test89@example.com",
+      "usedAt": "2025-08-27T04:10:49.597Z"
+    },
+    {
+      "usedBy": "test90@example.com",
+      "usedAt": "2025-08-27T04:10:49.606Z"
+    },
+    {
+      "usedBy": "test91@example.com",
+      "usedAt": "2025-08-27T04:10:49.614Z"
+    },
+    {
+      "usedBy": "test92@example.com",
+      "usedAt": "2025-08-27T04:10:49.623Z"
+    },
+    {
+      "usedBy": "test93@example.com",
+      "usedAt": "2025-08-27T04:10:49.632Z"
+    },
+    {
+      "usedBy": "test94@example.com",
+      "usedAt": "2025-08-27T04:10:49.641Z"
+    },
+    {
+      "usedBy": "test95@example.com",
+      "usedAt": "2025-08-27T04:10:49.650Z"
+    },
+    {
+      "usedBy": "test96@example.com",
+      "usedAt": "2025-08-27T04:10:49.659Z"
+    },
+    {
+      "usedBy": "test97@example.com",
+      "usedAt": "2025-08-27T04:10:49.667Z"
+    },
+    {
+      "usedBy": "test98@example.com",
+      "usedAt": "2025-08-27T04:10:49.676Z"
+    },
+    {
+      "usedBy": "test99@example.com",
+      "usedAt": "2025-08-27T04:10:49.685Z"
+    },
+    {
+      "usedBy": "test100@example.com",
+      "usedAt": "2025-08-27T04:10:49.694Z"
+    }
+  ]
+}

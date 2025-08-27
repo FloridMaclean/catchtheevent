@@ -6,18 +6,10 @@ import Image from 'next/image'
 import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
-// Dynamic imports for better code splitting
-const TicketSelector = dynamic(() => import('../components/TicketSelector'), {
-  loading: () => (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg p-6">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
-        <p className="mt-2 text-gray-600">Loading ticket selector...</p>
-      </div>
-    </div>
-  ),
-  ssr: false
-})
+// Import TicketSelector directly to test
+import TicketSelector from '../components/TicketSelector'
+
+
 
 const Header = dynamic(() => import('../components/Header'), {
   ssr: false
@@ -30,6 +22,13 @@ const Footer = dynamic(() => import('../components/Footer'), {
 export default function Home() {
   const [showTicketSelector, setShowTicketSelector] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  
+  // Debug environment variables
+  useEffect(() => {
+    console.log('Environment check:')
+    console.log('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Set' : 'Not set')
+    console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? 'Set' : 'Not set')
+  }, [])
 
   // Ensure we're on the client side
   useEffect(() => {
@@ -38,6 +37,7 @@ export default function Home() {
 
   // Prevent body scrolling when modal is open
   useEffect(() => {
+    console.log('showTicketSelector changed to:', showTicketSelector)
     if (showTicketSelector) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -127,18 +127,32 @@ export default function Home() {
       {/* Hero Section with Cross-Device Compatibility */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 sm:pt-20 safe-area-top">
         <div className="absolute inset-0 z-0">
-          <Image
-            alt="Rangtaali Event Background"
-            src="/images/Rangtaali_bg.png"
-            fill
-            priority
-            className="object-cover image-optimized"
-            sizes="100vw"
-            quality={85}
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-          />
-          <div className="absolute inset-0 bg-black/90"></div>
+          {/* Dark Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
+          
+          {/* Subtle Color Accents */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-transparent to-pink-900/30"></div>
+          
+          {/* Additional Depth Layer */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+          
+          {/* Subtle Animated Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Floating Orbs */}
+            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-purple-600/15 to-pink-600/15 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-pink-600/15 to-purple-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-40 left-20 w-40 h-40 bg-gradient-to-r from-purple-600/10 to-pink-600/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '4s'}}></div>
+            <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-r from-pink-600/15 to-purple-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            
+            {/* Subtle Light Rays - Repositioned to avoid text overlap */}
+            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-purple-500/5 to-transparent animate-pulse"></div>
+            <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-pink-500/5 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500/5 to-transparent animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-pink-500/5 to-transparent animate-pulse" style={{animationDelay: '3s'}}></div>
+          </div>
+          
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
         
         <div id="main-content" className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl lg:max-w-5xl mx-auto spacing-safe">
@@ -178,7 +192,7 @@ export default function Home() {
               <div className="absolute -bottom-6 -left-4 w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-25 animate-pulse" style={{animationDelay: '2s'}}></div>
               <div className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full opacity-20 animate-pulse" style={{animationDelay: '0.5s'}}></div>
               <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-60"></div>
-              <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60"></div>
+              {/* <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60"></div> */}
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight relative z-10 text-responsive-xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)'}}>
                 RANGTAALI Hamilton 2025
@@ -198,7 +212,17 @@ export default function Home() {
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-2xl sm:max-w-3xl mx-auto font-semibold leading-relaxed px-4 text-responsive"
               style={{textShadow: '1px 1px 3px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.8)'}}
             >
-              By Aishwarya Majmudar | Experience an Unforgettable Night of Garba in Hamilton!
+              By Aishwarya Majmudar | Experience an Unforgettable Night of Garba in Hamilton, ON!
+            </motion.p>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="text-sm sm:text-base md:text-lg text-pink-300 font-medium max-w-2xl mx-auto leading-relaxed px-4 text-responsive"
+              style={{textShadow: '1px 1px 2px rgba(0,0,0,0.9)'}}
+            >
+              Exclusive Discount brought to you by Catch The Event
             </motion.p>
 
             {/* Event Details */}
@@ -229,7 +253,13 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 1.2 }}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowTicketSelector(true)}
+              onClick={() => {
+                console.log('Buy button clicked!')
+                console.log('Current showTicketSelector state:', showTicketSelector)
+                alert('Button clicked! Testing...')
+                setShowTicketSelector(true)
+                console.log('Setting showTicketSelector to true')
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault()
@@ -238,11 +268,11 @@ export default function Home() {
               }}
               aria-label="Purchase tickets for Rangtaali Hamilton 2025"
               aria-describedby="ticket-description"
-              className="btn-primary text-base sm:text-lg px-6 sm:px-8 lg:px-10 py-3 sm:py-4 flex items-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-pink-300 focus:ring-offset-2 touch-target"
+              className="bg-[rgb(175,254,0)] hover:bg-[rgb(155,234,0)] text-black text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl px-8 sm:px-12 md:px-16 lg:px-16 xl:px-20 py-4 sm:py-6 md:py-8 lg:py-8 xl:py-10 flex items-center justify-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-[rgb(175,254,0)] focus:ring-offset-2 touch-target rounded-full font-black transition-all duration-300 transform hover:scale-110 border-3 sm:border-4 md:border-6 border-black/20 min-h-[56px] sm:min-h-[64px] md:min-h-[72px] lg:min-h-[68px] xl:min-h-[75px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-auto text-center"
               tabIndex={0}
             >
               <Sparkles className="w-5 h-5 mr-3" aria-hidden="true" />
-              Buy Catch The Event Exclusive $20 Ticket
+              Buy for $20
               <ArrowRight className="w-5 h-5 ml-3" aria-hidden="true" />
             </motion.button>
             <div id="ticket-description" className="sr-only">Click to open ticket selection modal for Rangtaali Hamilton 2025 event</div>

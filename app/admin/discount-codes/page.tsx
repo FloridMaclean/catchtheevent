@@ -7,19 +7,29 @@ interface DiscountCode {
   used: boolean
   usedBy: string | null
   usedAt: string | null
-  usageLimit?: number | null
-  usageCount?: number | null
+  createdAt?: string
 }
 
-interface DiscountCodesData {
+interface Ambe100Usage {
+  usedCount: number
+  maxUsage: number
+  remainingUses: number
+  usageHistory: Array<{
+    usedBy: string
+    usedAt: string
+  }>
+}
+
+interface DiscountData {
   total: number
   unused: number
   used: number
+  ambe100: Ambe100Usage
   codes: DiscountCode[]
 }
 
 export default function DiscountCodesAdmin() {
-  const [data, setData] = useState<DiscountCodesData | null>(null)
+  const [data, setData] = useState<DiscountData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -77,120 +87,117 @@ export default function DiscountCodesAdmin() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading discount codes...</p>
-        </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">Loading discount codes...</div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={loadDiscountCodes}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-red-600 text-xl">{error}</div>
       </div>
     )
   }
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-gray-600">No data available</p>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">No data available</div>
       </div>
     )
   }
 
-  const unusedCodes = data.codes.filter(c => !c.used)
-  const usedCodes = data.codes.filter(c => c.used)
-
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Discount Codes Management</h1>
-          
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-blue-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold text-blue-900">Total Codes</h3>
-              <p className="text-3xl font-bold text-blue-600">{data.total}</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">Discount Codes Admin</h1>
+
+          {/* AMBE100 Special Code Section */}
+          <div className="mb-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white">
+            <h2 className="text-2xl font-bold mb-4">Special Code: AMBE100</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="bg-white bg-opacity-20 p-4 rounded-lg">
+                <div className="text-sm font-medium">Total Usage</div>
+                <div className="text-2xl font-bold">{data.ambe100.usedCount}</div>
+              </div>
+              <div className="bg-white bg-opacity-20 p-4 rounded-lg">
+                <div className="text-sm font-medium">Max Usage</div>
+                <div className="text-2xl font-bold">{data.ambe100.maxUsage}</div>
+              </div>
+              <div className="bg-white bg-opacity-20 p-4 rounded-lg">
+                <div className="text-sm font-medium">Remaining Uses</div>
+                <div className="text-2xl font-bold">{data.ambe100.remainingUses}</div>
+              </div>
+              <div className="bg-white bg-opacity-20 p-4 rounded-lg">
+                <div className="text-sm font-medium">Status</div>
+                <div className="text-2xl font-bold">
+                  {data.ambe100.remainingUses > 0 ? 'Active' : 'Exhausted'}
+                </div>
+              </div>
             </div>
-            <div className="bg-green-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-900">Available</h3>
-              <p className="text-3xl font-bold text-green-600">{data.unused}</p>
-            </div>
-            <div className="bg-red-50 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold text-red-900">Used</h3>
-              <p className="text-3xl font-bold text-red-600">{data.used}</p>
+            
+            {/* AMBE100 Usage History */}
+            {data.ambe100.usageHistory.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Usage History</h3>
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 max-h-40 overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-white border-opacity-30">
+                        <th className="text-left py-2">User Email</th>
+                        <th className="text-left py-2">Used At</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.ambe100.usageHistory.map((usage, index) => (
+                        <tr key={index} className="border-b border-white border-opacity-20">
+                          <td className="py-2">{usage.usedBy}</td>
+                          <td className="py-2">{new Date(usage.usedAt).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Regular Discount Codes Statistics */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Regular Discount Codes</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-100 p-4 rounded-lg">
+                <div className="text-sm font-medium text-blue-600">Total Codes</div>
+                <div className="text-2xl font-bold text-blue-900">{data.total}</div>
+              </div>
+              <div className="bg-green-100 p-4 rounded-lg">
+                <div className="text-sm font-medium text-green-600">Available</div>
+                <div className="text-2xl font-bold text-green-900">{data.unused}</div>
+              </div>
+              <div className="bg-red-100 p-4 rounded-lg">
+                <div className="text-sm font-medium text-red-600">Used</div>
+                <div className="text-2xl font-bold text-red-900">{data.used}</div>
+              </div>
             </div>
           </div>
 
           {/* Available Codes */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Available Codes ({unusedCodes.length})</h2>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                {unusedCodes.map((code) => (
-                  <div
-                    key={code.code}
-                    className="bg-white p-3 rounded border text-center font-mono text-sm"
-                  >
-                    <div>{code.code}</div>
-                    {code.usageLimit && (
-                      <div className="text-xs text-gray-500 mt-1">
-                        {code.usageCount || 0}/{code.usageLimit} used
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Used Codes */}
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Used Codes ({usedCodes.length})</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Code
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Used By
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Used At
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {usedCodes.map((code) => (
-                    <tr key={code.code}>
-                      <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-gray-900">
-                        {code.code}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {code.usedBy || 'Unknown'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {code.usedAt ? new Date(code.usedAt).toLocaleString() : 'Unknown'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Available Codes</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {data.codes.slice(0, 24).map((code, index) => (
+                <div key={index} className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
+                  <div className="font-mono text-sm font-bold text-green-800">{code.code}</div>
+                </div>
+              ))}
+              {data.codes.length > 24 && (
+                <div className="col-span-full text-center text-gray-500 mt-4">
+                  ... and {data.codes.length - 24} more codes
+                </div>
+              )}
             </div>
           </div>
 

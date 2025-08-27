@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 
-// File to store discount codes and their usage status
 const DISCOUNT_CODES_FILE = path.join(process.cwd(), 'data', 'discount-codes.json')
+const AMBE100_USAGE_FILE = path.join(process.cwd(), 'data', 'ambe100-usage.json')
 
 // Ensure data directory exists
 const ensureDataDirectory = () => {
@@ -35,22 +35,6 @@ const generateDiscountCodes = () => {
   }))
 }
 
-// Add special AMBE100 code with usage limit
-const addSpecialCodes = (codes: any[]) => {
-  // Add AMBE100 code with usage limit of 100
-  codes.push({
-    code: 'AMBE100',
-    used: false,
-    usedBy: null,
-    usedAt: null,
-    createdAt: new Date().toISOString(),
-    usageLimit: 100,
-    usageCount: 0
-  })
-  
-  return codes
-}
-
 // Load discount codes from file
 const loadDiscountCodes = () => {
   ensureDataDirectory()
@@ -58,24 +42,13 @@ const loadDiscountCodes = () => {
   if (!fs.existsSync(DISCOUNT_CODES_FILE)) {
     // Generate new codes if file doesn't exist
     const codes = generateDiscountCodes()
-    const codesWithSpecial = addSpecialCodes(codes)
-    fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codesWithSpecial, null, 2))
-    return codesWithSpecial
+    fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codes, null, 2))
+    return codes
   }
   
   try {
     const data = fs.readFileSync(DISCOUNT_CODES_FILE, 'utf8')
-    const codes = JSON.parse(data)
-    
-    // Check if AMBE100 exists, if not add it
-    const hasAmbe100 = codes.some((code: any) => code.code === 'AMBE100')
-    if (!hasAmbe100) {
-      const codesWithSpecial = addSpecialCodes(codes)
-      fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codesWithSpecial, null, 2))
-      return codesWithSpecial
-    }
-    
-    return codes
+    return JSON.parse(data)
   } catch (error) {
     console.error('Error loading discount codes:', error)
     return []
@@ -93,9 +66,8 @@ const regenerateDiscountCodes = () => {
   
   // Generate new codes
   const codes = generateDiscountCodes()
-  const codesWithSpecial = addSpecialCodes(codes)
-  fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codesWithSpecial, null, 2))
-  return codesWithSpecial
+  fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codes, null, 2))
+  return codes
 }
 
 // Save discount codes to file
@@ -104,59 +76,142 @@ const saveDiscountCodes = (codes: any[]) => {
   fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codes, null, 2))
 }
 
-// Validate discount code
-const validateDiscountCode = (code: string) => {
-  const codes = loadDiscountCodes()
-  const discountCode = codes.find(c => c.code === code.toUpperCase())
+// Load AMBE100 usage counter
+const loadAmbe100Usage = () => {
+  ensureDataDirectory()
   
-  if (!discountCode) {
-    return { valid: false, message: 'Invalid discount code' }
-  }
-  
-  // Special handling for AMBE100 with usage limit
-  if (code.toUpperCase() === 'AMBE100') {
-    if (discountCode.usageCount >= discountCode.usageLimit) {
-      return { valid: false, message: 'AMBE100 discount code has reached its usage limit of 100 tickets' }
+  if (!fs.existsSync(AMBE100_USAGE_FILE)) {
+    const usage = {
+      usedCount: 0,
+      maxUsage: 100,
+      usageHistory: []
     }
-    return { valid: true, discountCode }
+    fs.writeFileSync(AMBE100_USAGE_FILE, JSON.stringify(usage, null, 2))
+    return usage
   }
   
-  // Regular codes (one-time use)
-  if (discountCode.used) {
-    return { valid: false, message: 'Discount code has already been used' }
+  try {
+    const data = fs.readFileSync(AMBE100_USAGE_FILE, 'utf8')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('Error loading AMBE100 usage:', error)
+    return { usedCount: 0, maxUsage: 100, usageHistory: [] }
   }
-  
-  return { valid: true, discountCode }
 }
 
-// Mark discount code as used
-const markCodeAsUsed = (code: string, userEmail: string) => {
-  const codes = loadDiscountCodes()
-  const codeIndex = codes.findIndex(c => c.code === code.toUpperCase())
-  
-  if (codeIndex !== -1) {
-    // Special handling for AMBE100 with usage limit
-    if (code.toUpperCase() === 'AMBE100') {
-      codes[codeIndex].usageCount = (codes[codeIndex].usageCount || 0) + 1
-      codes[codeIndex].usedBy = userEmail
-      codes[codeIndex].usedAt = new Date().toISOString()
-      
-      // Mark as used only if usage limit is reached
-      if (codes[codeIndex].usageCount >= codes[codeIndex].usageLimit) {
-        codes[codeIndex].used = true
+// Save AMBE100 usage counter
+const saveAmbe100Usage = (usage: any) => {
+  ensureDataDirectory()
+  fs.writeFileSync(AMBE100_USAGE_FILE, JSON.stringify(usage, null, 2))
+}
+
+// Validate discount code
+const validateDiscountCode = (code: string) => {
+  // Special handling for AMBE100
+  if (code === 'AMBE100') {
+    const usage = loadAmbe100Usage()
+    if (usage.usedCount >= usage.maxUsage) {
+      return {
+        valid: false,
+        message: 'AMBE100 discount code has reached its maximum usage limit (100 tickets)'
       }
-    } else {
-      // Regular codes (one-time use)
-      codes[codeIndex].used = true
-      codes[codeIndex].usedBy = userEmail
-      codes[codeIndex].usedAt = new Date().toISOString()
+    }
+    return {
+      valid: true,
+      discountCode: {
+        code: 'AMBE100',
+        used: false,
+        usedBy: null,
+        usedAt: null,
+        remainingUses: usage.maxUsage - usage.usedCount,
+        maxUsage: usage.maxUsage
+      }
+    }
+  }
+  
+  // Regular discount codes
+  const codes = loadDiscountCodes()
+  const discountCode = codes.find(c => c.code === code)
+  
+  if (!discountCode) {
+    return {
+      valid: false,
+      message: 'Invalid discount code'
+    }
+  }
+  
+  if (discountCode.used) {
+    return {
+      valid: false,
+      message: 'Discount code has already been used'
+    }
+  }
+  
+  return {
+    valid: true,
+    discountCode
+  }
+}
+
+// Mark code as used
+const markCodeAsUsed = (code: string, userEmail: string) => {
+  // Special handling for AMBE100
+  if (code === 'AMBE100') {
+    const usage = loadAmbe100Usage()
+    if (usage.usedCount >= usage.maxUsage) {
+      return false
     }
     
-    saveDiscountCodes(codes)
+    usage.usedCount += 1
+    usage.usageHistory.push({
+      usedBy: userEmail,
+      usedAt: new Date().toISOString()
+    })
+    
+    saveAmbe100Usage(usage)
     return true
   }
   
-  return false
+  // Regular discount codes
+  const codes = loadDiscountCodes()
+  const discountCode = codes.find(c => c.code === code)
+  
+  if (!discountCode || discountCode.used) {
+    return false
+  }
+  
+  discountCode.used = true
+  discountCode.usedBy = userEmail
+  discountCode.usedAt = new Date().toISOString()
+  
+  saveDiscountCodes(codes)
+  return true
+}
+
+export async function GET() {
+  try {
+    const codes = loadDiscountCodes()
+    const ambe100Usage = loadAmbe100Usage()
+    
+    const usedCodes = codes.filter(c => c.used)
+    const unusedCodes = codes.filter(c => !c.used)
+    
+    return NextResponse.json({
+      total: codes.length,
+      unused: unusedCodes.length,
+      used: usedCodes.length,
+      ambe100: {
+        usedCount: ambe100Usage.usedCount,
+        maxUsage: ambe100Usage.maxUsage,
+        remainingUses: ambe100Usage.maxUsage - ambe100Usage.usedCount,
+        usageHistory: ambe100Usage.usageHistory
+      },
+      codes: unusedCodes
+    })
+  } catch (error) {
+    console.error('Error getting discount codes:', error)
+    return NextResponse.json({ error: 'Failed to load discount codes' }, { status: 500 })
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -203,30 +258,5 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Discount code API error:', error)
     return NextResponse.json({ valid: false, message: 'Server error' }, { status: 500 })
-  }
-}
-
-export async function GET() {
-  try {
-    const codes = loadDiscountCodes()
-    const unusedCodes = codes.filter(c => !c.used)
-    const usedCodes = codes.filter(c => c.used)
-    
-    return NextResponse.json({
-      total: codes.length,
-      unused: unusedCodes.length,
-      used: usedCodes.length,
-      codes: codes.map(c => ({
-        code: c.code,
-        used: c.used,
-        usedBy: c.used ? c.usedBy : null,
-        usedAt: c.used ? c.usedAt : null,
-        usageLimit: c.usageLimit || null,
-        usageCount: c.usageCount || null
-      }))
-    })
-  } catch (error) {
-    console.error('Error getting discount codes:', error)
-    return NextResponse.json({ error: 'Failed to load discount codes' }, { status: 500 })
   }
 }

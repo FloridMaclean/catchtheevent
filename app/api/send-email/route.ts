@@ -19,7 +19,9 @@ export async function POST(request: NextRequest) {
       eventDetails, 
       selectedTickets, 
       paymentIntentId, 
-      qrCodeDataUrl 
+      qrCodeDataUrl,
+      isFreeTicket = false,
+      freeTicketAmount = 0
     } = body
 
     // Check if email was already sent for this payment
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
     const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
     // Calculate proper pricing for email
     const getTicketPrice = (totalTickets: number) => {
-      return 20.00 // Fixed price for Exclusive Rangtaali Garba Pass
+      return isFreeTicket ? 0 : 20.00 // Free for discount codes, otherwise fixed price
     }
 
     const getSubtotal = (totalTickets: number) => {
@@ -44,21 +46,21 @@ export async function POST(request: NextRequest) {
     }
 
     const getConvenienceFee = (totalTickets: number) => {
-      return totalTickets * 1.00
+      return isFreeTicket ? 0 : totalTickets * 1.00
     }
 
     const getProcessingFee = (totalTickets: number) => {
-      return totalTickets * 1.10
+      return isFreeTicket ? 0 : totalTickets * 1.10
     }
 
     const getHST = (totalTickets: number) => {
       const subtotal = getSubtotal(totalTickets)
       const convenienceFee = getConvenienceFee(totalTickets)
       const processingFee = getProcessingFee(totalTickets)
-      return (subtotal + convenienceFee + processingFee) * 0.13
+      return isFreeTicket ? 0 : (subtotal + convenienceFee + processingFee) * 0.13
     }
 
-    const totalAmount = (getSubtotal(totalTickets) + getConvenienceFee(totalTickets) + getProcessingFee(totalTickets) + getHST(totalTickets)).toFixed(2)
+    const totalAmount = isFreeTicket ? '0.00' : (getSubtotal(totalTickets) + getConvenienceFee(totalTickets) + getProcessingFee(totalTickets) + getHST(totalTickets)).toFixed(2)
 
     // Create email HTML content
     const emailHtml = `
@@ -100,10 +102,11 @@ export async function POST(request: NextRequest) {
               <p><strong>Address:</strong> ${eventDetails.address}</p>
               <p><strong>Phone:</strong> ${customerInfo.phone}</p>
               <p><strong>Tickets:</strong> ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}</p>
+              ${isFreeTicket ? '<p><strong>Discount Applied:</strong> <span style="color: #28a745; font-weight: bold;">FREE TICKET</span></p>' : ''}
               <p><strong>Convenience Fee:</strong> $${getConvenienceFee(totalTickets).toFixed(2)}</p>
               <p><strong>Payment Processing:</strong> $${getProcessingFee(totalTickets).toFixed(2)}</p>
               <p><strong>HST (13%):</strong> $${getHST(totalTickets).toFixed(2)}</p>
-              <p><strong>Total:</strong> $${totalAmount}</p>
+              <p><strong>Total:</strong> <span style="color: #28a745; font-weight: bold;">$${totalAmount}</span></p>
             </div>
             
             <div class="qr-section">
@@ -156,6 +159,7 @@ export async function POST(request: NextRequest) {
       - Address: ${eventDetails.address}
       - Phone: ${customerInfo.phone}
       - Tickets: ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}
+      ${isFreeTicket ? '- Discount Applied: FREE TICKET' : ''}
       - Convenience Fee: $${getConvenienceFee(totalTickets).toFixed(2)}
       - Payment Processing: $${getProcessingFee(totalTickets).toFixed(2)}
       - HST (13%): $${getHST(totalTickets).toFixed(2)}
@@ -187,7 +191,7 @@ export async function POST(request: NextRequest) {
     const msg = {
       to: customerInfo.email,
       from: process.env.SENDGRID_FROM_EMAIL || 'noreply@catchtheevent.com',
-      subject: `🎫 Rangtaali Hamilton 2025 - Ticket Confirmation (${paymentIntentId})`,
+      subject: `🎫 Rangtaali Hamilton 2025 - ${isFreeTicket ? 'Free Ticket' : 'Ticket'} Confirmation (${paymentIntentId})`,
       text: emailText,
       html: emailHtml,
       attachments: [
