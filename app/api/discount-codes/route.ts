@@ -13,12 +13,12 @@ const ensureDataDirectory = () => {
   }
 }
 
-// Generate 100 unique 6-character alphanumeric discount codes
+// Generate 10 unique 6-character alphanumeric discount codes
 const generateDiscountCodes = () => {
   const codes = new Set<string>()
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
   
-  while (codes.size < 100) {
+  while (codes.size < 10) {
     let code = ''
     for (let i = 0; i < 6; i++) {
       code += characters.charAt(Math.floor(Math.random() * characters.length))
