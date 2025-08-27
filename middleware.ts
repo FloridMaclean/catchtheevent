@@ -1,97 +1,155 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-// Protected routes that require authentication
-const PROTECTED_ROUTES = [
-  '/admin',
-  '/api/send-email',
-  '/api/create-payment-intent'
-]
+// Admin credentials (in production, use environment variables)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin'
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
 
-// Admin-only API actions
-const ADMIN_API_ACTIONS = ['regenerate', 'get']
+// Rate limiting configuration
+const RATE_LIMIT_MAX = parseInt(process.env.RATE_LIMIT_MAX || '100')
+const RATE_LIMIT_WINDOW_MS = parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000') // 15 minutes
 
-// Public routes that should always be accessible
-const PUBLIC_ROUTES = [
-  '/',
-  '/about',
-  '/contact',
-  '/privacy',
-  '/terms',
-  '/accessibility',
-  '/community',
-  '/api/auth'
-]
+// In-memory rate limiting store (use Redis in production)
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
+
+// Rate limiting function
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const record = rateLimitStore.get(ip)
+  
+  if (!record || now > record.resetTime) {
+    rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS })
+    return true
+  }
+  
+  if (record.count >= RATE_LIMIT_MAX) {
+    return false
+  }
+  
+  record.count++
+  return true
+}
+
+// Basic authentication function
+function authenticateAdmin(request: NextRequest): boolean {
+  const authHeader = request.headers.get('authorization')
+  
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    return false
+  }
+  
+  const credentials = Buffer.from(authHeader.slice(6), 'base64').toString('utf-8')
+  const [username, password] = credentials.split(':')
+  
+  return username === ADMIN_USERNAME && password === ADMIN_PASSWORD
+}
+
+// Session-based authentication (simple implementation)
+function checkSessionAuth(request: NextRequest): boolean {
+  const sessionToken = request.cookies.get('admin-session')?.value
+  
+  if (!sessionToken) {
+    return false
+  }
+  
+  // In production, validate against a proper session store
+  // For now, we'll use a simple token validation
+  return sessionToken === 'valid-admin-session'
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
-
-  // Allow public routes
-  if (PUBLIC_ROUTES.some(route => pathname.startsWith(route))) {
-    return NextResponse.next()
-  }
-
-  // Check if it's a protected route
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route))
+  const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
   
-  if (isProtectedRoute) {
-    // For API routes, check for admin session
-    if (pathname.startsWith('/api/')) {
-      const adminSession = request.cookies.get('admin_session')
+  // Check rate limiting for all requests
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429 }
+    )
+  }
+  
+  // Protect admin routes
+  if (pathname.startsWith('/admin/')) {
+    // Check if user is authenticated
+    if (!checkSessionAuth(request)) {
+      // Redirect to admin login if not authenticated
+      if (pathname !== '/admin/login') {
+        return NextResponse.redirect(new URL('/admin/login', request.url))
+      }
+    } else {
+      // If authenticated and trying to access login page, redirect to admin dashboard
+      if (pathname === '/admin/login') {
+        return NextResponse.redirect(new URL('/admin/discount-codes', request.url))
+      }
+    }
+  }
+  
+  // Protect sensitive API endpoints
+  if (pathname.startsWith('/api/')) {
+    // Allow public access to these endpoints
+    const publicEndpoints = [
+      '/api/contact',
+      '/api/create-payment-intent',
+      '/api/send-email',
+      '/api/auth'
+    ]
+    
+    if (publicEndpoints.includes(pathname)) {
+      return NextResponse.next()
+    }
+    
+    // Protect discount-codes API
+    if (pathname === '/api/discount-codes') {
+      // Allow GET requests for validation (used by frontend)
+      if (request.method === 'GET') {
+        return NextResponse.next()
+      }
       
-      if (!adminSession?.value) {
-        return NextResponse.json(
-          { error: 'Unauthorized access' },
-          { status: 401 }
-        )
+      // For POST requests (admin actions), require authentication
+      if (request.method === 'POST') {
+        try {
+          const body = await request.clone().json()
+          const { action } = body
+          
+          // If it's an admin action, require authentication
+          if (action === 'regenerate') {
+            if (!checkSessionAuth(request)) {
+              return NextResponse.json(
+                { error: 'Unauthorized. Admin access required.' },
+                { status: 401 }
+              )
+            }
+          }
+          
+          // Allow public access for validation and use actions
+          return NextResponse.next()
+        } catch (error) {
+          // If we can't parse the body, require authentication
+          if (!checkSessionAuth(request)) {
+            return NextResponse.json(
+              { error: 'Unauthorized. Admin access required.' },
+              { status: 401 }
+            )
+          }
+        }
       }
     }
     
-    // For admin pages, redirect to login if not authenticated
-    if (pathname.startsWith('/admin')) {
-      const adminSession = request.cookies.get('admin_session')
-      
-      if (!adminSession?.value) {
-        return NextResponse.redirect(new URL('/admin/login', request.url))
-      }
+    // For all other API endpoints, require authentication
+    if (!checkSessionAuth(request)) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Admin access required.' },
+        { status: 401 }
+      )
     }
   }
-
-  // Special handling for discount-codes API - allow public access for validation/use
-  if (pathname === '/api/discount-codes' && request.method === 'POST') {
-    try {
-      const body = await request.clone().json()
-      const { action } = body
-      
-      // If it's an admin action, require authentication
-      if (ADMIN_API_ACTIONS.includes(action)) {
-        const adminSession = request.cookies.get('admin_session')
-        
-        if (!adminSession?.value) {
-          return NextResponse.json(
-            { error: 'Unauthorized access' },
-            { status: 401 }
-          )
-        }
-      }
-    } catch (error) {
-      // If we can't parse the body, allow the request to continue
-      // The API will handle the error appropriately
-    }
-  }
-
+  
   return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
-    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
-  ],
+    '/admin/:path*',
+    '/api/:path*'
+  ]
 }
