@@ -219,6 +219,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { code, action, userEmail } = body
     
+    // Public actions that don't require authentication
     if (action === 'validate') {
       const result = validateDiscountCode(code)
       return NextResponse.json(result)
@@ -245,7 +246,19 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // Admin actions that require authentication
     if (action === 'regenerate') {
+      // Check for admin session
+      const cookieStore = await import('next/headers').then(m => m.cookies())
+      const adminSession = cookieStore.get('admin_session')?.value
+      
+      if (!adminSession || adminSession.length !== 64) {
+        return NextResponse.json({ 
+          success: false, 
+          message: 'Unauthorized access' 
+        }, { status: 401 })
+      }
+      
       const codes = regenerateDiscountCodes()
       return NextResponse.json({ 
         success: true, 

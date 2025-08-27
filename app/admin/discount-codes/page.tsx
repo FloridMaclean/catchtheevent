@@ -81,6 +81,26 @@ export default function DiscountCodesAdmin() {
     }
   }
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'logout'
+        }),
+      })
+
+      if (response.ok) {
+        window.location.href = '/admin/login'
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+  }
+
   useEffect(() => {
     loadDiscountCodes()
   }, [])
@@ -214,6 +234,12 @@ export default function DiscountCodesAdmin() {
               className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Regenerate All Codes
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Logout
             </button>
           </div>
         </div>
