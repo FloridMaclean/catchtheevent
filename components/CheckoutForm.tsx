@@ -518,14 +518,13 @@ function PaymentForm({
       try {
         // Mark discount code as used if it was applied
         if (isDiscountApplied && discountCode) {
-          await fetch('/api/discount-codes', {
+          await fetch('/api/use-discount', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               code: discountCode,
-              action: 'use',
               userEmail: customerInfo.email
             }),
           })

@@ -91,47 +91,23 @@ export async function middleware(request: NextRequest) {
       '/api/contact',
       '/api/create-payment-intent',
       '/api/send-email',
-      '/api/auth'
+      '/api/auth',
+      '/api/validate-discount',
+      '/api/use-discount'
     ]
     
     if (publicEndpoints.includes(pathname)) {
       return NextResponse.next()
     }
     
-    // Protect discount-codes API
+    // Protect discount-codes API - ALL ACCESS REQUIRES AUTHENTICATION
     if (pathname === '/api/discount-codes') {
-      // Allow GET requests for validation (used by frontend)
-      if (request.method === 'GET') {
-        return NextResponse.next()
-      }
-      
-      // For POST requests (admin actions), require authentication
-      if (request.method === 'POST') {
-        try {
-          const body = await request.clone().json()
-          const { action } = body
-          
-          // If it's an admin action, require authentication
-          if (action === 'regenerate') {
-            if (!checkSessionAuth(request)) {
-              return NextResponse.json(
-                { error: 'Unauthorized. Admin access required.' },
-                { status: 401 }
-              )
-            }
-          }
-          
-          // Allow public access for validation and use actions
-          return NextResponse.next()
-        } catch (error) {
-          // If we can't parse the body, require authentication
-          if (!checkSessionAuth(request)) {
-            return NextResponse.json(
-              { error: 'Unauthorized. Admin access required.' },
-              { status: 401 }
-            )
-          }
-        }
+      // Require authentication for ALL requests to discount-codes API
+      if (!checkSessionAuth(request)) {
+        return NextResponse.json(
+          { error: 'Unauthorized. Admin access required.' },
+          { status: 401 }
+        )
       }
     }
     

@@ -102,14 +102,13 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
   const validateDiscountCode = async (code: string) => {
     try {
-      const response = await fetch('/api/discount-codes', {
+      const response = await fetch('/api/validate-discount', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code: code,
-          action: 'validate'
+          code: code
         }),
       })
 
