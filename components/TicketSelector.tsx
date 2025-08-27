@@ -23,6 +23,9 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   const [selectedTickets, setSelectedTickets] = useState<{ [key: string]: number }>({})
   const [currentStep, setCurrentStep] = useState<'selection' | 'checkout'>('selection')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [discountCode, setDiscountCode] = useState('')
+  const [isDiscountApplied, setIsDiscountApplied] = useState(false)
+  const [discountError, setDiscountError] = useState('')
 
   const ticketTypes: TicketType[] = [
     {
@@ -46,7 +49,8 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
   const getTicketPrice = (ticketId: string) => {
     const ticket = ticketTypes.find(t => t.id === ticketId)
-    return ticket ? ticket.price : 0
+    // Return 0 if discount is applied, otherwise return original price
+    return ticket && isDiscountApplied ? 0 : (ticket ? ticket.price : 0)
   }
 
   const getSubtotal = () => {
@@ -56,18 +60,21 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   }
 
   const getConvenienceFee = () => {
-    return getTotalTickets() * 1.00 // $1.00 per ticket
+    // No fees when discount is applied
+    return isDiscountApplied ? 0 : getTotalTickets() * 1.00 // $1.00 per ticket
   }
 
   const getProcessingFee = () => {
-    return getTotalTickets() * 1.10 // $1.10 per ticket
+    // No fees when discount is applied
+    return isDiscountApplied ? 0 : getTotalTickets() * 1.10 // $1.10 per ticket
   }
 
   const getHST = () => {
     const subtotal = getSubtotal()
     const convenienceFee = getConvenienceFee()
     const processingFee = getProcessingFee()
-    return (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
+    // No HST when discount is applied
+    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
   }
 
   const getTotalAmount = () => {
@@ -93,10 +100,41 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     }
   }
 
+  const validateDiscountCode = (code: string) => {
+    // Valid discount codes for free tickets
+    const validCodes = ['FREETICKET', 'RANGTAALI2025', 'CATCHTHEEVENT', 'AISHWARYA']
+    return validCodes.includes(code.toUpperCase())
+  }
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) {
+      setDiscountError('Please enter a discount code')
+      return
+    }
+
+    if (validateDiscountCode(discountCode)) {
+      setIsDiscountApplied(true)
+      setDiscountError('')
+      // Set ticket price to 0 when discount is applied
+      setSelectedTickets({ 'exclusive-pass': 1 })
+    } else {
+      setDiscountError('Invalid discount code')
+      setIsDiscountApplied(false)
+    }
+  }
+
+  const handleRemoveDiscount = () => {
+    setIsDiscountApplied(false)
+    setDiscountCode('')
+    setDiscountError('')
+    setSelectedTickets({})
+  }
+
   const handleProceedToCheckout = () => {
     console.log('Proceed to checkout clicked')
     console.log('Total tickets:', getTotalTickets())
     console.log('Selected tickets:', selectedTickets)
+    console.log('Discount applied:', isDiscountApplied)
     if (getTotalTickets() > 0) {
       console.log('Setting step to checkout')
       setCurrentStep('checkout')
@@ -158,6 +196,48 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                     <MapPin className="w-4 h-4 text-pink-500 mr-2" />
                     <span className="text-sm text-gray-700">{eventDetails.venue}</span>
                   </div>
+                </div>
+              </div>
+
+              {/* Discount Code Section */}
+              <div className="w-full mb-6">
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200">
+                  <h3 className="text-lg font-bold text-gray-900 mb-3 text-center">Have a Discount Code?</h3>
+                  <div className="flex flex-col sm:flex-row gap-3 items-center">
+                    <input
+                      type="text"
+                      value={discountCode}
+                      onChange={(e) => setDiscountCode(e.target.value)}
+                      placeholder="Enter discount code"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      disabled={isDiscountApplied}
+                    />
+                    {!isDiscountApplied ? (
+                      <button
+                        onClick={handleApplyDiscount}
+                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                      >
+                        Apply
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleRemoveDiscount}
+                        className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {discountError && (
+                    <p className="text-red-600 text-sm mt-2 text-center">{discountError}</p>
+                  )}
+                  {isDiscountApplied && (
+                    <div className="mt-3 p-3 bg-green-100 rounded-lg">
+                      <p className="text-green-800 text-sm text-center font-semibold">
+                        ✅ Discount applied! Your ticket is now FREE!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -228,6 +308,12 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                     
                     {/* Price Breakdown */}
                     <div className="border-t border-gray-200 pt-2 mt-3 space-y-1">
+                      {isDiscountApplied && (
+                        <div className="flex justify-between text-xs">
+                          <span className="text-green-600 font-semibold">Discount Applied:</span>
+                          <span className="text-green-600 font-semibold">-${(20.00).toFixed(2)}</span>
+                        </div>
+                      )}
                       <div className="flex justify-between text-xs">
                         <span className="text-gray-600">Subtotal:</span>
                         <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
@@ -267,6 +353,8 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                 onClose()
               }}
               onClose={onClose}
+              isDiscountApplied={isDiscountApplied}
+              discountCode={discountCode}
             />
           )}
         </div>
