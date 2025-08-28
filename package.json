@@ -13,6 +13,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@stripe/react-stripe-js": "^2.0.0",
     "@stripe/stripe-js": "^2.0.0",
+    "@supabase/supabase-js": "^2.56.0",
     "@types/qrcode": "^1.5.5",
     "autoprefixer": "^10.4.16",
     "date-fns": "^2.30.0",
