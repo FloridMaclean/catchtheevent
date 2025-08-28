@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const purchaseData = {
       user_id: userId,
       event_name: eventDetails.title || 'RANGTAALI Hamilton 2025',
-      ticket_type: Object.keys(selectedTickets).join(', '),
+      ticket_type: discountCode ? 'discounted_ticket' : Object.keys(selectedTickets).join(', '),
       quantity: totalTickets,
       total_amount: totalAmount,
       payment_status: paymentStatus,
