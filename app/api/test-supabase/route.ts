@@ -51,11 +51,18 @@ export async function GET() {
       }, { status: 500 })
     }
 
-    // Test 5: Check newsletter subscriptions
+    // Test 5: Check newsletter subscriptions with user details
     const { data: subscriptions, error: subscriptionError } = await supabase
       .from('newsletter_subscriptions')
-      .select('count')
-      .limit(1)
+      .select(`
+        *,
+        users (
+          email,
+          first_name,
+          last_name
+        )
+      `)
+      .limit(5)
     
     if (subscriptionError) {
       console.error('Newsletter subscriptions error:', subscriptionError)
@@ -66,6 +73,24 @@ export async function GET() {
       }, { status: 500 })
     }
 
+    // Test 6: Get user count
+    const { count: userCount, error: userCountError } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true })
+    
+    if (userCountError) {
+      console.error('User count error:', userCountError)
+    }
+
+    // Test 7: Get subscription count
+    const { count: subscriptionCount, error: subscriptionCountError } = await supabase
+      .from('newsletter_subscriptions')
+      .select('*', { count: 'exact', head: true })
+    
+    if (subscriptionCountError) {
+      console.error('Subscription count error:', subscriptionCountError)
+    }
+
     console.log('✅ All Supabase tests passed!')
 
     return NextResponse.json({
@@ -73,9 +98,12 @@ export async function GET() {
       message: 'Supabase connection successful!',
       data: {
         usersTable: '✅ Accessible',
+        userCount: userCount || 0,
         discountCodes: discountCodes?.length || 0,
-        ambe100Usage: ambe100Usage,
-        newsletterSubscriptions: '✅ Accessible'
+        ambe100Usage: ambe100Usage?.length || 0,
+        newsletterSubscriptions: '✅ Accessible',
+        subscriptionCount: subscriptionCount || 0,
+        recentSubscriptions: subscriptions?.slice(0, 3) || []
       }
     })
 
@@ -108,7 +136,14 @@ export async function POST(request: NextRequest) {
           .select()
           .single()
 
-        if (userError) throw userError
+        if (userError) {
+          console.error('User creation error:', userError)
+          return NextResponse.json({
+            success: false,
+            error: 'Failed to create user',
+            details: userError.message
+          }, { status: 500 })
+        }
 
         return NextResponse.json({
           success: true,
@@ -127,12 +162,93 @@ export async function POST(request: NextRequest) {
           .select()
           .single()
 
-        if (subError) throw subError
+        if (subError) {
+          console.error('Subscription creation error:', subError)
+          return NextResponse.json({
+            success: false,
+            error: 'Failed to create subscription',
+            details: subError.message
+          }, { status: 500 })
+        }
 
         return NextResponse.json({
           success: true,
           message: 'Newsletter subscription created successfully',
           data: newSubscription
+        })
+
+      case 'debug_newsletter':
+        // Debug newsletter subscription process
+        const email = data.email || 'debug@example.com'
+        
+        // Step 1: Check if user exists
+        const { data: existingUser, error: userCheckError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', email)
+          .single()
+        
+        if (userCheckError && userCheckError.code !== 'PGRST116') {
+          return NextResponse.json({
+            success: false,
+            error: 'User check failed',
+            details: userCheckError.message
+          }, { status: 500 })
+        }
+
+        let userId: string
+
+        if (existingUser) {
+          userId = existingUser.id
+        } else {
+          // Create new user
+          const { data: newUser, error: createUserError } = await supabase
+            .from('users')
+            .insert([{
+              first_name: email.split('@')[0],
+              last_name: '',
+              email: email,
+              user_type: 'subscriber'
+            }])
+            .select()
+            .single()
+
+          if (createUserError) {
+            return NextResponse.json({
+              success: false,
+              error: 'Failed to create user',
+              details: createUserError.message
+            }, { status: 500 })
+          }
+
+          userId = newUser.id
+        }
+
+        // Step 2: Create subscription
+        const { data: subscription, error: subCreateError } = await supabase
+          .from('newsletter_subscriptions')
+          .insert([{
+            user_id: userId,
+            status: 'active'
+          }])
+          .select()
+          .single()
+
+        if (subCreateError) {
+          return NextResponse.json({
+            success: false,
+            error: 'Failed to create subscription',
+            details: subCreateError.message
+          }, { status: 500 })
+        }
+
+        return NextResponse.json({
+          success: true,
+          message: 'Debug newsletter process completed',
+          data: {
+            user: existingUser || { id: userId, email },
+            subscription
+          }
         })
 
       default:

@@ -58,5 +58,10 @@
     "email": "test-supabase@example.com",
     "subscribedAt": "2025-08-28T03:47:24.564Z",
     "status": "active"
+  },
+  {
+    "email": "test-database@example.com",
+    "subscribedAt": "2025-08-28T03:54:20.674Z",
+    "status": "active"
   }
 ]

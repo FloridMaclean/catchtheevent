@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import sgMail from '@sendgrid/mail'
+import { supabase } from '../../../lib/supabase'
+import { createUser, createNewsletterSubscription, getUserByEmail } from '../../../lib/database'
 
 // Configure SendGrid
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || '')
@@ -203,6 +205,48 @@ export async function POST(request: NextRequest) {
 
     subscribers.push(newSubscriber)
     saveSubscribers(subscribers)
+
+    // Try to save to database as well (but don't fail if it doesn't work)
+    try {
+      const existingUser = await getUserByEmail(email.toLowerCase())
+      
+      if (existingUser) {
+        // Check if user already has an active newsletter subscription
+        const { data: existingSubscription } = await supabase
+          .from('newsletter_subscriptions')
+          .select('*')
+          .eq('user_id', existingUser.id)
+          .eq('status', 'active')
+          .single()
+        
+        if (!existingSubscription) {
+          // Create newsletter subscription in database
+          await createNewsletterSubscription({
+            user_id: existingUser.id,
+            status: 'active'
+          })
+        }
+      } else {
+        // Create new user
+        const newUser = await createUser({
+          first_name: email.split('@')[0], // Use email prefix as first name
+          last_name: '',
+          email: email.toLowerCase(),
+          user_type: 'subscriber'
+        })
+        
+        if (newUser) {
+          // Create newsletter subscription in database
+          await createNewsletterSubscription({
+            user_id: newUser.id,
+            status: 'active'
+          })
+        }
+      }
+    } catch (dbError) {
+      console.error('Database save failed (falling back to JSON only):', dbError)
+      // Continue with JSON-only approach
+    }
 
     // Send welcome email (don't block the response if it fails)
     sendWelcomeEmail(email).catch(error => {
