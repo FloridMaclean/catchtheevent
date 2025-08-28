@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sgMail from '@sendgrid/mail'
+import { getUserByEmail } from '../../../lib/database'
 
 // Initialize SendGrid with API key
 const sendgridApiKey = process.env.SENDGRID_API_KEY
@@ -32,6 +33,25 @@ export async function POST(request: NextRequest) {
         success: true, 
         message: 'Email already sent' 
       })
+    }
+
+    // Optionally fetch user data from database if customerInfo is incomplete
+    let enhancedCustomerInfo = { ...customerInfo }
+    try {
+      if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.phone) {
+        const dbUser = await getUserByEmail(customerInfo.email)
+        if (dbUser) {
+          enhancedCustomerInfo = {
+            firstName: customerInfo.firstName || dbUser.first_name,
+            lastName: customerInfo.lastName || dbUser.last_name,
+            email: customerInfo.email,
+            phone: customerInfo.phone || dbUser.phone_number || ''
+          }
+        }
+      }
+    } catch (dbError) {
+      console.error('Failed to fetch user data from database:', dbError)
+      // Continue with original customerInfo
     }
 
     const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
@@ -90,7 +110,7 @@ export async function POST(request: NextRequest) {
           </div>
           
           <div class="content">
-            <h2 style="margin-top: 0;">Hello ${customerInfo.firstName} ${customerInfo.lastName},</h2>
+            <h2 style="margin-top: 0;">Hello ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName},</h2>
             
             <p>Your tickets for <span class="highlight">Rangtaali Hamilton 2025</span> have been confirmed!</p>
             
@@ -100,7 +120,7 @@ export async function POST(request: NextRequest) {
               <p><strong>Date:</strong> ${eventDetails.date}</p>
               <p><strong>Venue:</strong> ${eventDetails.venue}</p>
               <p><strong>Address:</strong> ${eventDetails.address}</p>
-              <p><strong>Phone:</strong> ${customerInfo.phone}</p>
+              <p><strong>Phone:</strong> ${enhancedCustomerInfo.phone}</p>
               <p><strong>Tickets:</strong> ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}</p>
               ${isFreeTicket ? '<p><strong>Discount Applied:</strong> <span style="color: #28a745; font-weight: bold;">FREE TICKET</span></p>' : ''}
               <p><strong>Convenience Fee:</strong> $${getConvenienceFee(totalTickets).toFixed(2)}</p>
@@ -114,9 +134,9 @@ export async function POST(request: NextRequest) {
               <p><strong>Your QR code is attached to this email. Present it at the event entrance.</strong></p>
               <p style="margin-top: 10px; font-size: 13px; color: #666; background: #f0f8ff; padding: 10px; border-radius: 5px;">
                 <strong>QR Code contains:</strong><br>
-                • Your name: ${customerInfo.firstName} ${customerInfo.lastName}<br>
-                • Email: ${customerInfo.email}<br>
-                • Phone: ${customerInfo.phone}<br>
+                • Your name: ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName}<br>
+                • Email: ${enhancedCustomerInfo.email}<br>
+                • Phone: ${enhancedCustomerInfo.phone}<br>
                 • Ticket details and payment information
               </p>
               <p style="margin-top: 15px; font-size: 14px; color: #666;">
@@ -148,7 +168,7 @@ export async function POST(request: NextRequest) {
     const emailText = `
       Rangtaali Hamilton 2025 - Ticket Confirmation
 
-      Hello ${customerInfo.firstName} ${customerInfo.lastName},
+      Hello ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName},
 
       Your tickets for Rangtaali Hamilton 2025 have been confirmed!
 
@@ -157,7 +177,7 @@ export async function POST(request: NextRequest) {
       - Date: ${eventDetails.date}
       - Venue: ${eventDetails.venue}
       - Address: ${eventDetails.address}
-      - Phone: ${customerInfo.phone}
+      - Phone: ${enhancedCustomerInfo.phone}
       - Tickets: ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}
       ${isFreeTicket ? '- Discount Applied: FREE TICKET' : ''}
       - Convenience Fee: $${getConvenienceFee(totalTickets).toFixed(2)}
@@ -169,9 +189,9 @@ export async function POST(request: NextRequest) {
       Your QR code is attached to this email. Present it at the event entrance.
 
       QR Code contains:
-      - Your name: ${customerInfo.firstName} ${customerInfo.lastName}
-      - Email: ${customerInfo.email}
-      - Phone: ${customerInfo.phone}
+      - Your name: ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName}
+      - Email: ${enhancedCustomerInfo.email}
+      - Phone: ${enhancedCustomerInfo.phone}
       - Ticket details and payment information
 
       Payment ID: ${paymentIntentId}
