@@ -48,5 +48,10 @@
     "email": "test5@example.com",
     "subscribedAt": "2025-08-28T03:10:55.603Z",
     "status": "active"
+  },
+  {
+    "email": "tilmarekke@necub.com",
+    "subscribedAt": "2025-08-28T03:12:26.059Z",
+    "status": "active"
   }
 ]
