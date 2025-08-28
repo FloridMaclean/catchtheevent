@@ -16,6 +16,8 @@ interface PurchaseSummaryProps {
     phone: string
   }
   onClose: () => void
+  isDiscountApplied?: boolean
+  discountCode?: string
 }
 
 export default function PurchaseSummary({
@@ -23,7 +25,9 @@ export default function PurchaseSummary({
   selectedTickets,
   eventDetails,
   customerInfo,
-  onClose
+  onClose,
+  isDiscountApplied = false,
+  discountCode = ''
 }: PurchaseSummaryProps) {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
   const [isGenerating, setIsGenerating] = useState(true)
@@ -34,7 +38,7 @@ export default function PurchaseSummary({
   const totalTickets = Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
   
   const getTicketPrice = () => {
-    return 20.00 // Fixed price for Exclusive Rangtaali Garba Pass
+    return isDiscountApplied ? 0 : 20.00 // Free for discount codes, otherwise fixed price
   }
 
   const getSubtotal = () => {
@@ -43,18 +47,18 @@ export default function PurchaseSummary({
   }
 
   const getConvenienceFee = () => {
-    return totalTickets * 1.00 // $1.00 per ticket
+    return isDiscountApplied ? 0 : totalTickets * 1.00 // No fees for discount codes
   }
 
   const getProcessingFee = () => {
-    return totalTickets * 1.10 // $1.10 per ticket
+    return isDiscountApplied ? 0 : totalTickets * 1.10 // No fees for discount codes
   }
 
   const getHST = () => {
     const subtotal = getSubtotal()
     const convenienceFee = getConvenienceFee()
     const processingFee = getProcessingFee()
-    return (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
+    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * 0.13 // No HST for discount codes
   }
 
   const totalAmount = (getSubtotal() + getConvenienceFee() + getProcessingFee() + getHST()).toFixed(2)
@@ -93,6 +97,8 @@ export default function PurchaseSummary({
         processingFee: getProcessingFee(),
         hst: getHST(),
         totalAmount: totalAmount,
+        isDiscountApplied: isDiscountApplied,
+        discountCode: discountCode,
         
         // Payment Information
         paymentIntentId: paymentIntent.id,
@@ -331,6 +337,10 @@ export default function PurchaseSummary({
                 <span>Tickets</span>
                 <span>${totalTickets} × $${getTicketPrice().toFixed(2)}</span>
               </div>
+              ${isDiscountApplied ? `<div class="pricing-row" style="color: #28a745; font-weight: bold;">
+                <span>Discount Applied (${discountCode})</span>
+                <span>-$${(20.00 * totalTickets).toFixed(2)}</span>
+              </div>` : ''}
               <div class="pricing-row">
                 <span>Subtotal</span>
                 <span>$${getSubtotal().toFixed(2)}</span>
@@ -470,6 +480,12 @@ export default function PurchaseSummary({
                    <span className="text-gray-600">Tickets</span>
                    <span className="font-semibold">{totalTickets} × ${getTicketPrice().toFixed(2)}</span>
                  </div>
+                 {isDiscountApplied && (
+                   <div className="flex justify-between items-center text-sm text-green-600 font-semibold mb-2">
+                     <span>Discount Applied ({discountCode})</span>
+                     <span>-${(20.00 * totalTickets).toFixed(2)}</span>
+                   </div>
+                 )}
                  <div className="flex justify-between items-center text-sm">
                    <span className="text-gray-600">Subtotal</span>
                    <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
@@ -490,7 +506,12 @@ export default function PurchaseSummary({
                    <span>Total</span>
                    <span className="text-primary-600">${totalAmount}</span>
                  </div>
-                 {totalTickets >= 5 && (
+                 {isDiscountApplied && (
+                   <p className="text-center text-sm text-green-600 font-medium mt-2">
+                     🎉 Free ticket with discount code {discountCode}!
+                   </p>
+                 )}
+                 {!isDiscountApplied && totalTickets >= 5 && (
                    <p className="text-center text-sm text-green-600 font-medium mt-2">
                      🎉 Group discount applied!
                    </p>
@@ -541,6 +562,9 @@ export default function PurchaseSummary({
                     <p>• Email: {customerInfo.email}</p>
                     <p>• Phone: {customerInfo.phone}</p>
                     <p>• Tickets: {totalTickets} × ${getTicketPrice()}</p>
+                    {isDiscountApplied && (
+                      <p>• Discount: {discountCode} (Free Ticket)</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-3 justify-center">

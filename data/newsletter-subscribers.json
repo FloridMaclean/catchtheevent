@@ -68,5 +68,10 @@
     "email": "test-after-rls-fix@example.com",
     "subscribedAt": "2025-08-28T03:59:15.105Z",
     "status": "active"
+  },
+  {
+    "email": "mcleanflorid@gmail.com",
+    "subscribedAt": "2025-08-28T04:23:55.830Z",
+    "status": "active"
   }
 ]
