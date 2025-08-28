@@ -26,6 +26,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   const [discountCode, setDiscountCode] = useState('')
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
   const [discountError, setDiscountError] = useState('')
+  const [isSpecialDiscount, setIsSpecialDiscount] = useState(false)
 
   const ticketTypes: TicketType[] = [
     {
@@ -87,7 +88,18 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
   const handleTicketChange = (ticketId: string, change: number) => {
     const currentCount = selectedTickets[ticketId] || 0
-    const newCount = Math.max(0, currentCount + change) // No maximum limit
+    const newCount = Math.max(0, currentCount + change)
+    
+    // If discount is applied and this is a regular discount code (not special), limit to 1 ticket
+    if (isDiscountApplied && !isSpecialDiscount && newCount > 1) {
+      setDiscountError('Regular discount codes can only be used for 1 ticket. Please remove the discount code to buy multiple tickets.')
+      return
+    }
+    
+    // Clear any previous error when user reduces quantity
+    if (newCount <= 1) {
+      setDiscountError('')
+    }
     
     if (newCount === 0) {
       const { [ticketId]: removed, ...rest } = selectedTickets
@@ -141,6 +153,8 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     if (result.valid) {
       setIsDiscountApplied(true)
       setDiscountError('')
+      // Set special discount flag
+      setIsSpecialDiscount(discountCode === 'AMBE100')
       // For regular discount codes, ensure only 1 ticket is selected
       if (result.discountCode?.maxTickets === 1 && totalTickets > 1) {
         setSelectedTickets({ 'exclusive-pass': 1 })
@@ -148,6 +162,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     } else {
       setDiscountError(result.message || 'Invalid discount code')
       setIsDiscountApplied(false)
+      setIsSpecialDiscount(false)
     }
   }
 
@@ -155,6 +170,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     setIsDiscountApplied(false)
     setDiscountCode('')
     setDiscountError('')
+    setIsSpecialDiscount(false)
     setSelectedTickets({})
   }
 
@@ -163,6 +179,13 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     console.log('Total tickets:', getTotalTickets())
     console.log('Selected tickets:', selectedTickets)
     console.log('Discount applied:', isDiscountApplied)
+    
+    // Validate ticket quantity for regular discount codes
+    if (isDiscountApplied && !isSpecialDiscount && getTotalTickets() > 1) {
+      setDiscountError('Regular discount codes can only be used for 1 ticket. Please reduce the quantity or remove the discount code.')
+      return
+    }
+    
     if (getTotalTickets() > 0) {
       console.log('Setting step to checkout')
       setCurrentStep('checkout')
@@ -280,25 +303,33 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                         <div className="text-xl font-bold text-pink-600">${ticket.price.toFixed(2)}</div>
                       </div>
                       <div className="flex-shrink-0 self-center sm:self-start">
-                        <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
-                          <button
-                            onClick={() => handleTicketChange(ticket.id, -1)}
-                            disabled={(selectedTickets[ticket.id] || 0) === 0}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                            aria-label="Decrease ticket quantity"
-                          >
-                            <Minus className="w-4 h-4 text-gray-600" />
-                          </button>
-                          <span className="w-12 text-center font-bold text-lg text-gray-900 bg-gray-50 rounded px-2 py-1 min-w-0">
-                            {selectedTickets[ticket.id] || 0}
-                          </span>
-                          <button
-                            onClick={() => handleTicketChange(ticket.id, 1)}
-                            className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                            aria-label="Increase ticket quantity"
-                          >
-                            <Plus className="w-4 h-4 text-gray-600" />
-                          </button>
+                        <div className="flex flex-col items-center space-y-1">
+                          <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
+                            <button
+                              onClick={() => handleTicketChange(ticket.id, -1)}
+                              disabled={(selectedTickets[ticket.id] || 0) === 0}
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              aria-label="Decrease ticket quantity"
+                            >
+                              <Minus className="w-4 h-4 text-gray-600" />
+                            </button>
+                            <span className="w-12 text-center font-bold text-lg text-gray-900 bg-gray-50 rounded px-2 py-1 min-w-0">
+                              {selectedTickets[ticket.id] || 0}
+                            </span>
+                            <button
+                              onClick={() => handleTicketChange(ticket.id, 1)}
+                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                              aria-label="Increase ticket quantity"
+                            >
+                              <Plus className="w-4 h-4 text-gray-600" />
+                            </button>
+                          </div>
+                          {/* Show limit warning for regular discount codes */}
+                          {isDiscountApplied && !isSpecialDiscount && (
+                            <div className="text-xs text-orange-600 font-medium">
+                              Max 1 ticket with regular discount code
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
