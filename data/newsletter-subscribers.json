@@ -23,5 +23,15 @@
     "email": "test3@example.com",
     "subscribedAt": "2025-08-28T03:01:41.365Z",
     "status": "active"
+  },
+  {
+    "email": "loyates855@namestal.com",
+    "subscribedAt": "2025-08-28T03:06:15.975Z",
+    "status": "active"
+  },
+  {
+    "email": "test4@example.com",
+    "subscribedAt": "2025-08-28T03:07:19.872Z",
+    "status": "active"
   }
 ]
