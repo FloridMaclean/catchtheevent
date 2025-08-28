@@ -79,9 +79,9 @@ const sendWelcomeEmail = async (email: string) => {
           <div style="text-align: center; margin-bottom: 30px;">
             <!-- Catch The Event Logo -->
             <div style="margin-bottom: 20px;">
-              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px 25px; border-radius: 50px; border: 2px solid rgba(255, 255, 255, 0.3);">
-                <span style="font-size: 24px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                  🎭 Catch The Event
+              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 18px 32px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3); backdrop-filter: blur(10px);">
+                <span style="font-size: 26px; font-weight: 700; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.2); letter-spacing: 0.5px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  Catch The Event
                 </span>
               </div>
             </div>
@@ -109,9 +109,9 @@ const sendWelcomeEmail = async (email: string) => {
           <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
             <!-- Footer Logo -->
             <div style="margin-bottom: 15px;">
-              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 8px 16px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3);">
-                <span style="font-size: 14px; font-weight: bold; color: white;">
-                  🎭 Catch The Event
+              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 10px 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25); backdrop-filter: blur(8px);">
+                <span style="font-size: 16px; font-weight: 600; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.15); letter-spacing: 0.3px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  Catch The Event
                 </span>
               </div>
             </div>

@@ -33,5 +33,20 @@
     "email": "test4@example.com",
     "subscribedAt": "2025-08-28T03:07:19.872Z",
     "status": "active"
+  },
+  {
+    "email": "wijev58979@chaublog.com",
+    "subscribedAt": "2025-08-28T03:08:23.512Z",
+    "status": "active"
+  },
+  {
+    "email": "rortuligna@necub.com",
+    "subscribedAt": "2025-08-28T03:08:52.382Z",
+    "status": "active"
+  },
+  {
+    "email": "test5@example.com",
+    "subscribedAt": "2025-08-28T03:10:55.603Z",
+    "status": "active"
   }
 ]
