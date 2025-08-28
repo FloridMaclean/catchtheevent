@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import { supabase } from '../../../lib/supabase'
 
 const DISCOUNT_CODES_FILE = path.join(process.cwd(), 'data', 'discount-codes.json')
 const AMBE100_USAGE_FILE = path.join(process.cwd(), 'data', 'ambe100-usage.json')
@@ -59,7 +60,119 @@ const loadAmbe100Usage = () => {
 }
 
 // Validate discount code (public endpoint)
-const validateDiscountCode = (code: string) => {
+const validateDiscountCode = async (code: string) => {
+  try {
+    // Special handling for AMBE100
+    if (code === 'AMBE100') {
+      const { data: ambe100Usage, error: ambe100Error } = await supabase
+        .from('ambe100_usage')
+        .select('*')
+        .single()
+      
+      if (ambe100Error) {
+        console.error('AMBE100 usage error:', ambe100Error)
+        // Fallback to JSON file
+        const usage = loadAmbe100Usage()
+        if (usage.usedCount >= usage.maxUsage) {
+          return {
+            valid: false,
+            message: 'AMBE100 discount code has reached its maximum usage limit (100 tickets)'
+          }
+        }
+        return {
+          valid: true,
+          discountCode: {
+            code: 'AMBE100',
+            remainingUses: usage.maxUsage - usage.usedCount,
+            maxUsage: usage.maxUsage
+          }
+        }
+      }
+      
+      if (ambe100Usage.used_count >= ambe100Usage.max_usage) {
+        return {
+          valid: false,
+          message: 'AMBE100 discount code has reached its maximum usage limit (100 tickets)'
+        }
+      }
+      
+      return {
+        valid: true,
+        discountCode: {
+          code: 'AMBE100',
+          remainingUses: ambe100Usage.max_usage - ambe100Usage.used_count,
+          maxUsage: ambe100Usage.max_usage
+        }
+      }
+    }
+    
+    // Regular discount codes
+    const { data: discountCode, error: discountError } = await supabase
+      .from('discount_codes')
+      .select('*')
+      .eq('code', code)
+      .eq('is_special', false)
+      .single()
+    
+    if (discountError) {
+      console.error('Discount code lookup error:', discountError)
+      // Fallback to JSON file
+      const codes = loadDiscountCodes()
+      const fallbackCode = codes.find(c => c.code === code)
+      
+      if (!fallbackCode) {
+        return {
+          valid: false,
+          message: 'Invalid discount code'
+        }
+      }
+      
+      if (fallbackCode.used) {
+        return {
+          valid: false,
+          message: 'Discount code has already been used'
+        }
+      }
+      
+      return {
+        valid: true,
+        discountCode: {
+          code: fallbackCode.code,
+          valid: true
+        }
+      }
+    }
+    
+    if (!discountCode) {
+      return {
+        valid: false,
+        message: 'Invalid discount code'
+      }
+    }
+    
+    if (discountCode.used) {
+      return {
+        valid: false,
+        message: 'Discount code has already been used'
+      }
+    }
+    
+    return {
+      valid: true,
+      discountCode: {
+        code: discountCode.code,
+        valid: true
+      }
+    }
+  } catch (error) {
+    console.error('Database validation error, falling back to JSON:', error)
+    // Fallback to JSON file validation
+    return validateDiscountCodeFallback(code)
+  }
+}
+
+// Fallback validation using JSON files
+const validateDiscountCodeFallback = (code: string) => {
   // Special handling for AMBE100
   if (code === 'AMBE100') {
     const usage = loadAmbe100Usage()
@@ -129,7 +242,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = validateDiscountCode(code)
+    const result = await validateDiscountCode(code)
     return NextResponse.json(result)
   } catch (error) {
     console.error('Discount validation API error:', error)

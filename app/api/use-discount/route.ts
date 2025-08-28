@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import { supabase } from '../../../lib/supabase'
 
 const DISCOUNT_CODES_FILE = path.join(process.cwd(), 'data', 'discount-codes.json')
 const AMBE100_USAGE_FILE = path.join(process.cwd(), 'data', 'ambe100-usage.json')
@@ -85,7 +86,87 @@ const saveAmbe100Usage = (usage: any) => {
 }
 
 // Mark code as used
-const markCodeAsUsed = (code: string, userEmail: string) => {
+const markCodeAsUsed = async (code: string, userEmail: string) => {
+  try {
+    // Special handling for AMBE100
+    if (code === 'AMBE100') {
+      const { data: ambe100Usage, error: ambe100Error } = await supabase
+        .from('ambe100_usage')
+        .select('*')
+        .single()
+      
+      if (ambe100Error) {
+        console.error('AMBE100 usage error:', ambe100Error)
+        // Fallback to JSON file
+        return markCodeAsUsedFallback(code, userEmail)
+      }
+      
+      if (ambe100Usage.used_count >= ambe100Usage.max_usage) {
+        return false
+      }
+      
+      // Update AMBE100 usage in database
+      const { error: updateError } = await supabase
+        .from('ambe100_usage')
+        .update({
+          used_count: ambe100Usage.used_count + 1,
+          usage_history: [...(ambe100Usage.usage_history || []), {
+            usedBy: userEmail,
+            usedAt: new Date().toISOString()
+          }]
+        })
+        .eq('id', ambe100Usage.id)
+      
+      if (updateError) {
+        console.error('AMBE100 update error:', updateError)
+        return false
+      }
+      
+      return true
+    }
+    
+    // Regular discount codes
+    const { data: discountCode, error: discountError } = await supabase
+      .from('discount_codes')
+      .select('*')
+      .eq('code', code)
+      .eq('is_special', false)
+      .single()
+    
+    if (discountError) {
+      console.error('Discount code lookup error:', discountError)
+      // Fallback to JSON file
+      return markCodeAsUsedFallback(code, userEmail)
+    }
+    
+    if (!discountCode || discountCode.used) {
+      return false
+    }
+    
+    // Update discount code in database
+    const { error: updateError } = await supabase
+      .from('discount_codes')
+      .update({
+        used: true,
+        used_by: userEmail,
+        used_at: new Date().toISOString()
+      })
+      .eq('id', discountCode.id)
+    
+    if (updateError) {
+      console.error('Discount code update error:', updateError)
+      return false
+    }
+    
+    return true
+  } catch (error) {
+    console.error('Database mark code as used error, falling back to JSON:', error)
+    return markCodeAsUsedFallback(code, userEmail)
+  }
+}
+
+// Fallback function using JSON files
+const markCodeAsUsedFallback = (code: string, userEmail: string) => {
   // Special handling for AMBE100
   if (code === 'AMBE100') {
     const usage = loadAmbe100Usage()
@@ -142,7 +223,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const success = markCodeAsUsed(code, userEmail)
+    const success = await markCodeAsUsed(code, userEmail)
     if (success) {
       return NextResponse.json({ 
         success: true, 

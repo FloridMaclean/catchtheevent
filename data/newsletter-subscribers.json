@@ -63,5 +63,10 @@
     "email": "test-database@example.com",
     "subscribedAt": "2025-08-28T03:54:20.674Z",
     "status": "active"
+  },
+  {
+    "email": "test-after-rls-fix@example.com",
+    "subscribedAt": "2025-08-28T03:59:15.105Z",
+    "status": "active"
   }
 ]
