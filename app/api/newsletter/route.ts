@@ -77,7 +77,15 @@ const sendWelcomeEmail = async (email: string) => {
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px;">
           <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="margin: 0; font-size: 28px; color: white;">🎉 Welcome to Catch The Event!</h1>
+            <!-- Catch The Event Logo -->
+            <div style="margin-bottom: 20px;">
+              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px 25px; border-radius: 50px; border: 2px solid rgba(255, 255, 255, 0.3);">
+                <span style="font-size: 24px; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                  🎭 Catch The Event
+                </span>
+              </div>
+            </div>
+            <h1 style="margin: 0; font-size: 28px; color: white;">🎉 Welcome to Our Community!</h1>
             <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">You're now part of our exclusive community!</p>
           </div>
           
@@ -99,6 +107,13 @@ const sendWelcomeEmail = async (email: string) => {
           </div>
           
           <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+            <div style="margin-bottom: 15px;">
+              <div style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 8px 16px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3);">
+                <span style="font-size: 14px; font-weight: bold; color: white;">
+                  🎭 Catch The Event
+                </span>
+              </div>
+            </div>
             <p style="margin: 0; font-size: 12px; opacity: 0.7;">
               Catch The Event Team<br>
               <a href="mailto:info@catchtheevent.com" style="color: white;">info@catchtheevent.com</a>

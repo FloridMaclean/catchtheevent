@@ -3,5 +3,15 @@
     "email": "test@example.com",
     "subscribedAt": "2025-08-28T02:50:47.189Z",
     "status": "active"
+  },
+  {
+    "email": "floridmaclean@gmail.com",
+    "subscribedAt": "2025-08-28T02:51:31.590Z",
+    "status": "active"
+  },
+  {
+    "email": "test2@example.com",
+    "subscribedAt": "2025-08-28T02:54:36.098Z",
+    "status": "active"
   }
 ]
