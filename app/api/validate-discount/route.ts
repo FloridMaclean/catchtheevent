@@ -60,7 +60,7 @@ const loadAmbe100Usage = () => {
 }
 
 // Validate discount code (public endpoint)
-const validateDiscountCode = async (code: string) => {
+const validateDiscountCode = async (code: string, ticketQuantity: number = 1) => {
   try {
     // Special handling for AMBE100
     if (code === 'AMBE100') {
@@ -134,11 +134,20 @@ const validateDiscountCode = async (code: string) => {
         }
       }
       
+      // For regular discount codes, only allow 1 ticket per code
+      if (ticketQuantity > 1) {
+        return {
+          valid: false,
+          message: 'Regular discount codes can only be used for 1 ticket per code. Please reduce the quantity or use AMBE100 for multiple tickets.'
+        }
+      }
+      
       return {
         valid: true,
         discountCode: {
           code: fallbackCode.code,
-          valid: true
+          valid: true,
+          maxTickets: 1
         }
       }
     }
@@ -157,22 +166,31 @@ const validateDiscountCode = async (code: string) => {
       }
     }
     
+    // For regular discount codes, only allow 1 ticket per code
+    if (ticketQuantity > 1) {
+      return {
+        valid: false,
+        message: 'Regular discount codes can only be used for 1 ticket per code. Please reduce the quantity or use AMBE100 for multiple tickets.'
+      }
+    }
+    
     return {
       valid: true,
       discountCode: {
         code: discountCode.code,
-        valid: true
+        valid: true,
+        maxTickets: 1
       }
     }
   } catch (error) {
     console.error('Database validation error, falling back to JSON:', error)
     // Fallback to JSON file validation
-    return validateDiscountCodeFallback(code)
+    return validateDiscountCodeFallback(code, ticketQuantity)
   }
 }
 
 // Fallback validation using JSON files
-const validateDiscountCodeFallback = (code: string) => {
+const validateDiscountCodeFallback = (code: string, ticketQuantity: number = 1) => {
   // Special handling for AMBE100
   if (code === 'AMBE100') {
     const usage = loadAmbe100Usage()
@@ -210,11 +228,20 @@ const validateDiscountCodeFallback = (code: string) => {
     }
   }
   
+  // For regular discount codes, only allow 1 ticket per code
+  if (ticketQuantity > 1) {
+    return {
+      valid: false,
+      message: 'Regular discount codes can only be used for 1 ticket per code. Please reduce the quantity or use AMBE100 for multiple tickets.'
+    }
+  }
+  
   return {
     valid: true,
     discountCode: {
       code: discountCode.code,
-      valid: true
+      valid: true,
+      maxTickets: 1
     }
   }
 }
@@ -233,7 +260,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { code } = body
+    const { code, ticketQuantity = 1 } = body
     
     if (!code) {
       return NextResponse.json(
@@ -242,7 +269,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await validateDiscountCode(code)
+    const result = await validateDiscountCode(code, ticketQuantity)
     return NextResponse.json(result)
   } catch (error) {
     console.error('Discount validation API error:', error)

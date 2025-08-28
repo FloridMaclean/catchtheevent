@@ -100,7 +100,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     }
   }
 
-  const validateDiscountCode = async (code: string) => {
+  const validateDiscountCode = async (code: string, ticketQuantity: number = 1) => {
     try {
       const response = await fetch('/api/validate-discount', {
         method: 'POST',
@@ -108,7 +108,8 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          code: code
+          code: code,
+          ticketQuantity: ticketQuantity
         }),
       })
 
@@ -132,13 +133,18 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
     setDiscountError('')
     
-    const result = await validateDiscountCode(discountCode)
+    // Get current total tickets for validation
+    const totalTickets = getTotalTickets()
+    
+    const result = await validateDiscountCode(discountCode, totalTickets)
     
     if (result.valid) {
       setIsDiscountApplied(true)
       setDiscountError('')
-      // Set ticket price to 0 when discount is applied
-      setSelectedTickets({ 'exclusive-pass': 1 })
+      // For regular discount codes, ensure only 1 ticket is selected
+      if (result.discountCode?.maxTickets === 1 && totalTickets > 1) {
+        setSelectedTickets({ 'exclusive-pass': 1 })
+      }
     } else {
       setDiscountError(result.message || 'Invalid discount code')
       setIsDiscountApplied(false)
