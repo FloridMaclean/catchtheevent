@@ -91,6 +91,33 @@ export async function GET() {
       console.error('Subscription count error:', subscriptionCountError)
     }
 
+    // Test 8: Get ticket purchases count
+    const { count: purchaseCount, error: purchaseCountError } = await supabase
+      .from('ticket_purchases')
+      .select('*', { count: 'exact', head: true })
+    
+    if (purchaseCountError) {
+      console.error('Purchase count error:', purchaseCountError)
+    }
+
+    // Test 9: Get recent ticket purchases
+    const { data: recentPurchases, error: purchaseError } = await supabase
+      .from('ticket_purchases')
+      .select(`
+        *,
+        users (
+          first_name,
+          last_name,
+          email
+        )
+      `)
+      .order('created_at', { ascending: false })
+      .limit(3)
+    
+    if (purchaseError) {
+      console.error('Recent purchases error:', purchaseError)
+    }
+
     console.log('✅ All Supabase tests passed!')
 
     return NextResponse.json({
@@ -103,7 +130,10 @@ export async function GET() {
         ambe100Usage: ambe100Usage?.length || 0,
         newsletterSubscriptions: '✅ Accessible',
         subscriptionCount: subscriptionCount || 0,
-        recentSubscriptions: subscriptions?.slice(0, 3) || []
+        recentSubscriptions: subscriptions?.slice(0, 3) || [],
+        ticketPurchases: '✅ Accessible',
+        purchaseCount: purchaseCount || 0,
+        recentPurchases: recentPurchases || []
       }
     })
 

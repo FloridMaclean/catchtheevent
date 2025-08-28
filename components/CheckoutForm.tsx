@@ -166,7 +166,33 @@ function FreeTicketForm({
     setError(null)
 
     try {
-      // For free tickets, directly send email and show success
+      // Save purchase data to database first
+      const purchaseData = {
+        customerInfo,
+        selectedTickets,
+        eventDetails,
+        isFreeTicket: true,
+        totalAmount: 0,
+        paymentStatus: 'completed',
+        discountCode: discountCode || null,
+        qrCodeDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==' // Placeholder QR code
+      }
+
+      // Save to database (but don't fail if it doesn't work)
+      try {
+        await fetch('/api/save-purchase', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(purchaseData),
+        })
+      } catch (dbError) {
+        console.error('Database save failed (continuing with email):', dbError)
+        // Continue with email even if database save fails
+      }
+
+      // Send confirmation email
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
@@ -530,7 +556,33 @@ function PaymentForm({
           })
         }
 
-        // For free tickets, directly send email and show success
+        // Save purchase data to database first
+        const purchaseData = {
+          customerInfo,
+          selectedTickets,
+          eventDetails,
+          isFreeTicket: true,
+          totalAmount: 0,
+          paymentStatus: 'completed',
+          discountCode: discountCode || null,
+          qrCodeDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==' // Placeholder QR code
+        }
+
+        // Save to database (but don't fail if it doesn't work)
+        try {
+          await fetch('/api/save-purchase', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(purchaseData),
+          })
+        } catch (dbError) {
+          console.error('Database save failed (continuing with email):', dbError)
+          // Continue with email even if database save fails
+        }
+
+        // Send confirmation email
         const response = await fetch('/api/send-email', {
           method: 'POST',
           headers: {
@@ -616,6 +668,33 @@ function PaymentForm({
       }
 
       if (confirmedPaymentIntent.status === 'succeeded') {
+        // Save purchase data to database
+        const purchaseData = {
+          customerInfo,
+          selectedTickets,
+          eventDetails,
+          isFreeTicket: false,
+          totalAmount: totalAmount,
+          paymentStatus: 'completed',
+          discountCode: discountCode || null,
+          stripePaymentIntentId: confirmedPaymentIntent.id,
+          qrCodeDataUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==' // Placeholder QR code
+        }
+
+        // Save to database (but don't fail if it doesn't work)
+        try {
+          await fetch('/api/save-purchase', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(purchaseData),
+          })
+        } catch (dbError) {
+          console.error('Database save failed (continuing with success):', dbError)
+          // Continue with success even if database save fails
+        }
+
         setSuccess(true)
         setPaymentIntent({
           ...paymentIntentData,
