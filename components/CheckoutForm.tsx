@@ -238,6 +238,8 @@ function FreeTicketForm({
         eventDetails={eventDetails}
         customerInfo={customerInfo}
         onClose={onSuccess}
+        isDiscountApplied={isDiscountApplied}
+        discountCode={discountCode}
       />
     )
   }
@@ -719,6 +721,8 @@ function PaymentForm({
         eventDetails={eventDetails}
         customerInfo={customerInfo}
         onClose={onSuccess}
+        isDiscountApplied={isDiscountApplied}
+        discountCode={discountCode}
       />
     )
   }
