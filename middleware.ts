@@ -94,7 +94,8 @@ export async function middleware(request: NextRequest) {
       '/api/auth',
       '/api/validate-discount',
       '/api/use-discount',
-      '/api/newsletter'
+      '/api/newsletter',
+      '/api/test-supabase'
     ]
     
     if (publicEndpoints.includes(pathname)) {
