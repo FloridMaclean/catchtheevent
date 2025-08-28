@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import { supabase } from '../../../lib/supabase'
 
 const DISCOUNT_CODES_FILE = path.join(process.cwd(), 'data', 'discount-codes.json')
 const AMBE100_USAGE_FILE = path.join(process.cwd(), 'data', 'ambe100-usage.json')
@@ -190,23 +191,69 @@ const markCodeAsUsed = (code: string, userEmail: string) => {
 
 export async function GET() {
   try {
-    const codes = loadDiscountCodes()
-    const ambe100Usage = loadAmbe100Usage()
+    // Try to get data from Supabase first
+    const [discountCodesResult, ambe100UsageResult] = await Promise.all([
+      supabase
+        .from('discount_codes')
+        .select('*')
+        .eq('is_special', false),
+      supabase
+        .from('ambe100_usage')
+        .select('*')
+        .single()
+    ])
+
+    if (discountCodesResult.error || ambe100UsageResult.error) {
+      console.error('Supabase error, falling back to JSON:', { 
+        discountCodesError: discountCodesResult.error, 
+        ambe100Error: ambe100UsageResult.error 
+      })
+      
+      // Fallback to JSON files
+      const codes = loadDiscountCodes()
+      const ambe100Usage = loadAmbe100Usage()
+      
+      const usedCodes = codes.filter((c: any) => c.used)
+      const unusedCodes = codes.filter((c: any) => !c.used)
+      
+      return NextResponse.json({
+        total: codes.length,
+        unused: unusedCodes.length,
+        used: usedCodes.length,
+        ambe100: {
+          usedCount: ambe100Usage.usedCount,
+          maxUsage: ambe100Usage.maxUsage,
+          remainingUses: ambe100Usage.maxUsage - ambe100Usage.usedCount,
+          usageHistory: ambe100Usage.usageHistory
+        },
+        codes: unusedCodes
+      })
+    }
+
+    // Transform Supabase data to match expected format
+    const codes = discountCodesResult.data || []
+    const ambe100Usage = ambe100UsageResult.data
     
-    const usedCodes = codes.filter(c => c.used)
-    const unusedCodes = codes.filter(c => !c.used)
+    const usedCodes = codes.filter((c: any) => c.used)
+    const unusedCodes = codes.filter((c: any) => !c.used)
     
     return NextResponse.json({
       total: codes.length,
       unused: unusedCodes.length,
       used: usedCodes.length,
       ambe100: {
-        usedCount: ambe100Usage.usedCount,
-        maxUsage: ambe100Usage.maxUsage,
-        remainingUses: ambe100Usage.maxUsage - ambe100Usage.usedCount,
-        usageHistory: ambe100Usage.usageHistory
+        usedCount: ambe100Usage.used_count,
+        maxUsage: ambe100Usage.max_usage,
+        remainingUses: ambe100Usage.max_usage - ambe100Usage.used_count,
+        usageHistory: ambe100Usage.usage_history || []
       },
-      codes: unusedCodes
+      codes: unusedCodes.map((c: any) => ({
+        code: c.code,
+        used: c.used,
+        usedBy: c.used_by,
+        usedAt: c.used_at,
+        createdAt: c.created_at
+      }))
     })
   } catch (error) {
     console.error('Error getting discount codes:', error)
@@ -246,12 +293,66 @@ export async function POST(request: NextRequest) {
     }
     
     if (action === 'regenerate') {
-      const codes = regenerateDiscountCodes()
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Discount codes regenerated successfully',
-        total: codes.length
-      })
+      try {
+        // Delete all existing regular discount codes from database
+        const { error: deleteError } = await supabase
+          .from('discount_codes')
+          .delete()
+          .eq('is_special', false)
+        
+        if (deleteError) {
+          console.error('Error deleting existing codes:', deleteError)
+          // Fallback to JSON regeneration
+          const codes = regenerateDiscountCodes()
+          return NextResponse.json({ 
+            success: true, 
+            message: 'Discount codes regenerated successfully (JSON fallback)',
+            total: codes.length
+          })
+        }
+        
+        // Generate new codes and insert into database
+        const newCodes = generateDiscountCodes()
+        const codesToInsert = newCodes.map(code => ({
+          code: code.code,
+          used: false,
+          used_by: null,
+          used_at: null,
+          is_special: false,
+          max_usage: 1,
+          current_usage: 0
+        }))
+        
+        const { error: insertError } = await supabase
+          .from('discount_codes')
+          .insert(codesToInsert)
+        
+        if (insertError) {
+          console.error('Error inserting new codes:', insertError)
+          // Fallback to JSON regeneration
+          const codes = regenerateDiscountCodes()
+          return NextResponse.json({ 
+            success: true, 
+            message: 'Discount codes regenerated successfully (JSON fallback)',
+            total: codes.length
+          })
+        }
+        
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Discount codes regenerated successfully',
+          total: newCodes.length
+        })
+      } catch (error) {
+        console.error('Database regeneration error, falling back to JSON:', error)
+        // Fallback to JSON regeneration
+        const codes = regenerateDiscountCodes()
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Discount codes regenerated successfully (JSON fallback)',
+          total: codes.length
+        })
+      }
     }
     
     return NextResponse.json({ valid: false, message: 'Invalid action' })
