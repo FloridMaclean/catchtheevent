@@ -93,7 +93,8 @@ export async function middleware(request: NextRequest) {
       '/api/send-email',
       '/api/auth',
       '/api/validate-discount',
-      '/api/use-discount'
+      '/api/use-discount',
+      '/api/newsletter'
     ]
     
     if (publicEndpoints.includes(pathname)) {

@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic'
 
 // Import TicketSelector directly to test
 import TicketSelector from '../components/TicketSelector'
+import Newsletter from '../components/Newsletter'
 
 
 
@@ -591,6 +592,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <Newsletter />
 
       <Footer />
 
