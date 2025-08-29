@@ -222,6 +222,12 @@ export default function DiscountCodesAdmin() {
             >
               Regenerate All Codes
             </button>
+            <a
+              href="/admin/ticket-sales"
+              className="inline-block px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              View Ticket Sales
+            </a>
             <button
               onClick={handleLogout}
               className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"

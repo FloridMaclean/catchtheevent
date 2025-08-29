@@ -103,9 +103,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
     
-    // Protect discount-codes API - ALL ACCESS REQUIRES AUTHENTICATION
-    if (pathname === '/api/discount-codes') {
-      // Require authentication for ALL requests to discount-codes API
+    // Protect admin-only API endpoints - ALL ACCESS REQUIRES AUTHENTICATION
+    if (pathname === '/api/discount-codes' || pathname === '/api/ticket-sales') {
+      // Require authentication for ALL requests to admin APIs
       if (!checkSessionAuth(request)) {
         return NextResponse.json(
           { error: 'Unauthorized. Admin access required.' },
