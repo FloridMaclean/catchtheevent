@@ -175,10 +175,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   }
 
   const handleProceedToCheckout = () => {
-    console.log('Proceed to checkout clicked')
-    console.log('Total tickets:', getTotalTickets())
-    console.log('Selected tickets:', selectedTickets)
-    console.log('Discount applied:', isDiscountApplied)
+    // Proceed to checkout validation
     
     // Validate ticket quantity for regular discount codes
     if (isDiscountApplied && !isSpecialDiscount && getTotalTickets() > 1) {
@@ -187,10 +184,9 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     }
     
     if (getTotalTickets() > 0) {
-      console.log('Setting step to checkout')
       setCurrentStep('checkout')
     } else {
-      console.log('No tickets selected')
+      // No tickets selected
     }
   }
 

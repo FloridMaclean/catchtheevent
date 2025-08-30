@@ -30,7 +30,7 @@ const loadStripeSafely = async () => {
       })
     }
     
-    console.log('Loading Stripe with key:', publishableKey.substring(0, 20) + '...')
+    // Stripe key loaded for payment processing
     
     // Load Stripe with explicit options
     return await loadStripe(publishableKey, {
@@ -45,9 +45,7 @@ const loadStripeSafely = async () => {
 // Create a more robust Stripe promise
 const stripePromise = (async () => {
   try {
-    console.log('CheckoutForm: Starting Stripe load...')
     const result = await loadStripeSafely()
-    console.log('CheckoutForm: Stripe load result -', !!result)
     return result
   } catch (error) {
     console.error('CheckoutForm: Stripe load error -', error)
@@ -443,11 +441,11 @@ function PaymentForm({
   
   // Add timeout for Stripe loading with debugging
   React.useEffect(() => {
-    console.log('PaymentForm: Stripe loading status -', { stripe: !!stripe, elements: !!elements })
+    // Stripe loading status check
     
     const timer = setTimeout(() => {
       if (!stripe || !elements) {
-        console.log('PaymentForm: Stripe loading timeout reached')
+        // Stripe loading timeout reached
         setLoadingTimeout(true)
         setStripeError('Stripe is taking too long to load. Please refresh the page.')
       }
@@ -458,7 +456,7 @@ function PaymentForm({
   
   // Show loading state while Stripe is initializing
   if (!stripe || !elements) {
-    console.log('PaymentForm: Showing loading state -', { stripe: !!stripe, elements: !!elements })
+            // Showing loading state
     
     // If we've been loading for too long, show a fallback option
     if (loadingTimeout) {

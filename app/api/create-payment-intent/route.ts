@@ -2,12 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 
 // Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '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', {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
   apiVersion: '2023-10-16',
 })
 
 export async function POST(request: NextRequest) {
   try {
+    // Validate Stripe configuration
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('STRIPE_SECRET_KEY is not configured')
+      return NextResponse.json(
+        { error: 'Payment service is not configured' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { amount, customerInfo, selectedTickets, eventDetails } = body
 

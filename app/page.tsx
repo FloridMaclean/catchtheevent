@@ -24,11 +24,11 @@ export default function Home() {
   const [showTicketSelector, setShowTicketSelector] = useState(false)
   const [isClient, setIsClient] = useState(false)
   
-  // Debug environment variables
+  // Environment check for production readiness
   useEffect(() => {
-    console.log('Environment check:')
-    console.log('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:', process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'Set' : 'Not set')
-    console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? 'Set' : 'Not set')
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Development mode - environment variables loaded')
+    }
   }, [])
 
   // Ensure we're on the client side
@@ -38,7 +38,6 @@ export default function Home() {
 
   // Prevent body scrolling when modal is open
   useEffect(() => {
-    console.log('showTicketSelector changed to:', showTicketSelector)
     if (showTicketSelector) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -255,10 +254,7 @@ export default function Home() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                console.log('Buy button clicked!')
-                console.log('Current showTicketSelector state:', showTicketSelector)
                 setShowTicketSelector(true)
-                console.log('Setting showTicketSelector to true')
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -272,7 +268,7 @@ export default function Home() {
               tabIndex={0}
             >
               <Sparkles className="w-5 h-5 mr-3" aria-hidden="true" />
-              Buy for $20
+              Buy for $20 only
               <ArrowRight className="w-5 h-5 ml-3" aria-hidden="true" />
             </motion.button>
             <div id="ticket-description" className="sr-only">Click to open ticket selection modal for Rangtaali Hamilton 2025 event</div>
