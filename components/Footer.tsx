@@ -16,8 +16,8 @@ export default function Footer() {
     return (
       <footer className="glass-effect border-t border-white/30">
         <div className="container-max px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
-            <div className="sm:col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+            <div className="md:col-span-2">
               <div className="flex items-center mb-6">
                 <div className="h-14 w-32 bg-gray-200 rounded animate-pulse"></div>
               </div>
@@ -60,9 +60,9 @@ export default function Footer() {
   return (
     <footer className="glass-effect border-t border-white/30" suppressHydrationWarning>
       <div className="container-max px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
           {/* Company Info */}
-          <div className="sm:col-span-2">
+          <div className="md:col-span-2">
             <div className="flex items-center mb-6">
               <a href="/" className="hover:opacity-80 transition-all duration-300 hover:scale-105">
                 <img 
@@ -124,17 +124,17 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-semibold mb-6 text-slate-800">Contact</h4>
             <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
+              <div className="flex items-start">
+                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                   <Mail className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-slate-600 font-medium">info@catchtheevent.com</span>
+                <span className="text-slate-600 font-medium text-sm sm:text-base break-all min-w-0">info@catchtheevent.com</span>
               </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-4">
+              <div className="flex items-start">
+                <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-slate-600 font-medium">Toronto, ON</span>
+                <span className="text-slate-600 font-medium text-sm sm:text-base">Toronto, ON</span>
               </div>
             </div>
           </div>
