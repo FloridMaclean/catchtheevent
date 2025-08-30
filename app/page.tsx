@@ -257,7 +257,6 @@ export default function Home() {
               onClick={() => {
                 console.log('Buy button clicked!')
                 console.log('Current showTicketSelector state:', showTicketSelector)
-                alert('Button clicked! Testing...')
                 setShowTicketSelector(true)
                 console.log('Setting showTicketSelector to true')
               }}

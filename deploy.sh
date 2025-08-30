@@ -1,103 +1,111 @@
 #!/bin/bash
 
-# Catch The Event - Deployment Script
-# This script deploys the application to the VPS
+# 🚀 Catch The Event - Automated Deployment Script
+# This script automates the deployment process for the VPS
 
-set -e
-
-echo "🚀 Starting deployment for Catch The Event..."
-
-# Configuration
-REPO_URL="https://github.com/FloridMaclean/catchtheevent.git"
-DEPLOY_PATH="/var/www/catchtheevent"
-BACKUP_PATH="/var/www/backups/catchtheevent"
-LOG_PATH="/var/log/catchtheevent"
+set -e  # Exit on any error
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Function to print colored output
-print_status() {
-    echo -e "${GREEN}[INFO]${NC} $1"
+# Configuration
+APP_NAME="catchtheevent"
+APP_DIR="/var/www/catchtheevent"
+LOG_DIR="/var/log/pm2"
+BACKUP_DIR="/var/backups/catchtheevent"
+
+echo -e "${BLUE}🚀 Starting Catch The Event Deployment...${NC}"
+
+# Function to log messages
+log_message() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
 }
 
-print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+log_error() {
+    echo -e "${RED}[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $1${NC}"
 }
 
-print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+log_warning() {
+    echo -e "${YELLOW}[$(date +'%Y-%m-%d %H:%M:%S')] WARNING: $1${NC}"
 }
 
-# Create necessary directories
-print_status "Creating necessary directories..."
-sudo mkdir -p $DEPLOY_PATH
-sudo mkdir -p $BACKUP_PATH
-sudo mkdir -p $LOG_PATH
-
-# Set proper permissions
-print_status "Setting permissions..."
-sudo chown -R $USER:$USER $DEPLOY_PATH
-sudo chown -R $USER:$USER $LOG_PATH
-
-# Backup current deployment if it exists
-if [ -d "$DEPLOY_PATH/.git" ]; then
-    print_status "Creating backup of current deployment..."
-    BACKUP_NAME="backup-$(date +%Y%m%d-%H%M%S)"
-    sudo cp -r $DEPLOY_PATH $BACKUP_PATH/$BACKUP_NAME
-    print_status "Backup created: $BACKUP_PATH/$BACKUP_NAME"
+# Check if running as root
+if [[ $EUID -eq 0 ]]; then
+   log_error "This script should not be run as root"
+   exit 1
 fi
 
-# Clone or pull the repository
-if [ -d "$DEPLOY_PATH/.git" ]; then
-    print_status "Pulling latest changes..."
-    cd $DEPLOY_PATH
-    git fetch origin
-    git reset --hard origin/main
-else
-    print_status "Cloning repository..."
-    cd /var/www
-    sudo rm -rf catchtheevent
-    git clone $REPO_URL catchtheevent
-    cd catchtheevent
-fi
-
-# Install dependencies
-print_status "Installing dependencies..."
-npm ci --production
-
-# Build the application
-print_status "Building the application..."
-npm run build
-
-# Set proper permissions
-print_status "Setting final permissions..."
-sudo chown -R www-data:www-data $DEPLOY_PATH
-sudo chmod -R 755 $DEPLOY_PATH
-
-# Restart PM2 process
-print_status "Restarting PM2 process..."
-pm2 restart catchtheevent || pm2 start ecosystem.config.js --env production
-
-# Save PM2 configuration
-pm2 save
-
-# Test the application
-print_status "Testing application..."
-sleep 5
-if curl -f http://localhost:3000/health > /dev/null 2>&1; then
-    print_status "Application is running successfully!"
-else
-    print_error "Application failed to start properly"
+# Check if application directory exists
+if [ ! -d "$APP_DIR" ]; then
+    log_error "Application directory $APP_DIR does not exist"
     exit 1
 fi
 
-# Reload Nginx configuration
-print_status "Reloading Nginx configuration..."
-sudo nginx -t && sudo systemctl reload nginx
+# Navigate to application directory
+cd "$APP_DIR"
 
-print_status "Deployment completed successfully! 🎉"
-print_status "Your application is now live at: https://catchtheevent.com"
+# Create backup directory if it doesn't exist
+mkdir -p "$BACKUP_DIR"
+
+# Create timestamp for backup
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+
+log_message "📦 Creating backup of current version..."
+if [ -d ".next" ]; then
+    tar -czf "$BACKUP_DIR/backup_$TIMESTAMP.tar.gz" .next package-lock.json
+    log_message "✅ Backup created: backup_$TIMESTAMP.tar.gz"
+fi
+
+log_message "📥 Pulling latest changes from Git..."
+git fetch origin
+git reset --hard origin/main
+
+log_message "📦 Installing dependencies..."
+npm ci --production
+
+log_message "🔨 Building application..."
+npm run build
+
+log_message "🔄 Restarting PM2 process..."
+pm2 restart "$APP_NAME"
+
+# Wait a moment for the application to start
+sleep 5
+
+log_message "✅ Checking application status..."
+if pm2 list | grep -q "$APP_NAME.*online"; then
+    log_message "✅ Application is running successfully!"
+else
+    log_error "❌ Application failed to start"
+    pm2 logs "$APP_NAME" --lines 20
+    exit 1
+fi
+
+log_message "🧹 Cleaning up old backups (keeping last 5)..."
+cd "$BACKUP_DIR"
+ls -t *.tar.gz | tail -n +6 | xargs -r rm
+
+log_message "📊 Deployment Summary:"
+echo "----------------------------------------"
+echo "Application: $APP_NAME"
+echo "Directory: $APP_DIR"
+echo "Backup: backup_$TIMESTAMP.tar.gz"
+echo "Status: $(pm2 list | grep $APP_NAME | awk '{print $10}')"
+echo "Memory Usage: $(pm2 list | grep $APP_NAME | awk '{print $11}')"
+echo "----------------------------------------"
+
+log_message "🎉 Deployment completed successfully!"
+
+# Optional: Test the application
+log_message "🧪 Testing application..."
+if curl -s -o /dev/null -w "%{http_code}" https://rangtaali.catchtheevent.com | grep -q "200"; then
+    log_message "✅ Application is responding correctly"
+else
+    log_warning "⚠️  Application might not be responding correctly"
+fi
+
+log_message "📈 Deployment completed at $(date)"

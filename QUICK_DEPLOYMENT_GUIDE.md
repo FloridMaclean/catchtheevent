@@ -1,90 +1,178 @@
-# 🚀 Quick Deployment Guide - Rangtaali Event Website
+# 🚀 **QUICK DEPLOYMENT GUIDE - HOSTINGER VPS**
 
-## 📦 What You Have
+## ⚡ **FAST DEPLOYMENT STEPS**
 
-✅ **Deployment Package**: `rangtaali-deployment.tar.gz` (ready to upload)
-✅ **Production Build**: Optimized and tested
-✅ **SSL-Ready**: Nginx configuration with HTTPS support
-✅ **Process Manager**: PM2 for reliable app management
-
-## 🎯 Immediate Next Steps
-
-### 1. Prepare Your VPS Server
+### **1. VPS Setup (5 minutes)**
 ```bash
-# SSH into your VPS
-ssh user@your-server-ip
+# Connect to your VPS
+ssh root@your-vps-ip
 
 # Update system
-sudo apt update && sudo apt upgrade -y
+apt update && apt upgrade -y
+
+# Install required packages
+apt install -y curl wget git unzip nginx certbot python3-certbot-nginx
+
+# Install Node.js 18
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+apt-get install -y nodejs
+
+# Install PM2
+npm install -g pm2
 ```
 
-### 2. Upload and Deploy
+### **2. Application Deployment (10 minutes)**
 ```bash
-# Upload the deployment package (from your local machine)
-scp rangtaali-deployment.tar.gz user@your-server-ip:/home/user/
+# Create application directory
+mkdir -p /var/www/catchtheevent
+cd /var/www/catchtheevent
 
-# On your VPS server
-cd /home/user
-tar -xzf rangtaali-deployment.tar.gz
-chmod +x deploy.sh
-./deploy.sh
+# Clone repository
+git clone https://github.com/your-username/catchtheevent.git .
+
+# Install dependencies
+npm install
+
+# Build application
+npm run build
 ```
 
-### 3. Configure Environment Variables
+### **3. Environment Setup (5 minutes)**
 ```bash
-# Copy and edit environment file
-cp env.production.template .env.local
-nano .env.local
-
-# Add your actual values:
-# - Stripe live keys
-# - SendGrid API key
-# - Email configuration
+# Create production environment file
+nano .env.production
 ```
 
-### 4. Set Up SSL Certificate
-```bash
-# Install SSL certificate
-sudo certbot --nginx -d catchtheevent.com -d www.catchtheevent.com
+**Add these variables:**
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+SENDGRID_API_KEY=your_sendgrid_api_key
+ADMIN_USERNAME=admin@panghatentertainment.com
+ADMIN_PASSWORD=Ambe100
+NODE_ENV=production
+NEXT_PUBLIC_BASE_URL=https://rangtaali.catchtheevent.com
 ```
 
-### 5. Test Everything
-- [ ] Visit https://catchtheevent.com
-- [ ] Test ticket selection
-- [ ] Test payment with Stripe test card
-- [ ] Verify email delivery
-- [ ] Check mobile responsiveness
-
-## 🔧 Essential Commands
-
+### **4. PM2 Setup (2 minutes)**
 ```bash
-# Check app status
+# Start application with PM2
+pm2 start ecosystem.config.js --env production
+
+# Save PM2 configuration
+pm2 save
+
+# Setup PM2 startup
+pm2 startup
+```
+
+### **5. Nginx Configuration (5 minutes)**
+```bash
+# Copy Nginx configuration
+cp nginx.conf /etc/nginx/sites-available/catchtheevent
+
+# Enable site
+ln -s /etc/nginx/sites-available/catchtheevent /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+# Test and reload
+nginx -t
+systemctl reload nginx
+```
+
+### **6. SSL Certificate (5 minutes)**
+```bash
+# Stop Nginx temporarily
+systemctl stop nginx
+
+# Obtain SSL certificate
+certbot certonly --standalone -d rangtaali.catchtheevent.com -d www.rangtaali.catchtheevent.com
+
+# Start Nginx
+systemctl start nginx
+
+# Test auto-renewal
+certbot renew --dry-run
+```
+
+### **7. Final Test (3 minutes)**
+```bash
+# Check application status
 pm2 status
-pm2 logs rangtaali-event
 
-# Restart app
-pm2 restart rangtaali-event
+# Test website
+curl -I https://rangtaali.catchtheevent.com
 
-# Monitor resources
-pm2 monit
-
-# Check Nginx
-sudo systemctl status nginx
-sudo nginx -t
+# Check logs
+pm2 logs catchtheevent
 ```
-
-## 🆘 Need Help?
-
-1. **Check logs**: `pm2 logs rangtaali-event`
-2. **Restart everything**: `pm2 restart all && sudo systemctl restart nginx`
-3. **Check SSL**: `sudo certbot certificates`
-4. **Monitor resources**: `htop`
-
-## 🎉 Success!
-
-Once deployed, your website will be live at:
-**https://catchtheevent.com**
 
 ---
 
-**📋 Full deployment checklist is in**: `deployment/DEPLOYMENT_CHECKLIST.md` 
+## 🎯 **DEPLOYMENT CHECKLIST**
+
+### **✅ Pre-Deployment**
+- [ ] VPS purchased and running
+- [ ] Domain DNS configured
+- [ ] GitHub repository ready
+- [ ] Environment variables prepared
+- [ ] Database configured
+
+### **✅ Post-Deployment**
+- [ ] Website loads correctly
+- [ ] SSL certificate working
+- [ ] Admin login accessible
+- [ ] Payment processing works
+- [ ] Email sending functional
+- [ ] Database connections working
+
+---
+
+## 🚨 **TROUBLESHOOTING**
+
+### **Common Issues:**
+
+**1. Application not starting:**
+```bash
+pm2 logs catchtheevent
+pm2 restart catchtheevent
+```
+
+**2. Nginx errors:**
+```bash
+nginx -t
+systemctl status nginx
+```
+
+**3. SSL certificate issues:**
+```bash
+certbot certificates
+certbot renew
+```
+
+**4. Permission issues:**
+```bash
+chown -R $USER:$USER /var/www/catchtheevent
+chmod -R 755 /var/www/catchtheevent
+```
+
+---
+
+## 📞 **SUPPORT**
+
+If you encounter issues:
+1. Check PM2 logs: `pm2 logs catchtheevent`
+2. Check Nginx logs: `tail -f /var/log/nginx/error.log`
+3. Verify configuration: `nginx -t`
+4. Test connectivity: `curl -I https://rangtaali.catchtheevent.com`
+
+---
+
+## 🎉 **SUCCESS!**
+
+Your Catch The Event website is now live at:
+**https://rangtaali.catchtheevent.com**
+
+**Total deployment time: ~30 minutes** 
