@@ -140,7 +140,7 @@ ADMIN_PASSWORD=Ambe100
 
 # Application
 NODE_ENV=production
-NEXT_PUBLIC_BASE_URL=https://rangtaali.catchtheevent.com
+NEXT_PUBLIC_BASE_URL=https://catchtheevent.com
 ```
 
 ### **4. PM2 Configuration**

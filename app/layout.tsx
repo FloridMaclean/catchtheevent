@@ -14,7 +14,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://rangtaali.catchtheevent.com'),
+  metadataBase: new URL('https://catchtheevent.com'),
   title: {
     default: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar | $20 Garba Pass | Catch The Event',
     template: '%s | Rangtaali Hamilton 2025 | Catch The Event'
@@ -84,19 +84,19 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_CA',
-    url: 'https://rangtaali.catchtheevent.com',
+    url: 'https://catchtheevent.com',
     siteName: 'Catch The Event',
     title: 'Rangtaali Hamilton 2025 - By Aishwarya Majmudar | $20 Garba Pass',
     description: 'Experience an Unforgettable Night of Garba in Hamilton! Live Navratri celebration featuring Aishwarya Majmudar. Exclusive $20 Garba Pass available now!',
     images: [
       {
-        url: 'https://rangtaali.catchtheevent.com/images/Rangtaali_bg.png',
+        url: 'https://catchtheevent.com/images/Rangtaali_bg.png',
         width: 1200,
         height: 630,
         alt: 'Rangtaali Hamilton 2025 - Live Garba Event with Aishwarya Majmudar',
       },
       {
-        url: 'https://rangtaali.catchtheevent.com/images/logo-no-background.png',
+        url: 'https://catchtheevent.com/images/logo-no-background.png',
         width: 512,
         height: 512,
         alt: 'Catch The Event Logo',

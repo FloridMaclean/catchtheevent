@@ -42,7 +42,7 @@ SENDGRID_API_KEY=your_sendgrid_api_key
 ADMIN_USERNAME=admin@panghatentertainment.com
 ADMIN_PASSWORD=Ambe100
 NODE_ENV=production
-NEXT_PUBLIC_BASE_URL=https://rangtaali.catchtheevent.com
+NEXT_PUBLIC_BASE_URL=https://catchtheevent.com
 ```
 
 ### **🚀 Start Application (2 minutes)**
