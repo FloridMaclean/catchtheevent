@@ -130,7 +130,7 @@ const validateDiscountCode = async (code: string, ticketQuantity: number = 1) =>
       if (fallbackCode.used) {
         return {
           valid: false,
-          message: 'Discount code has already been used'
+          message: 'This discount code has already been used and is no longer valid. Each regular discount code can only be used once.'
         }
       }
       
@@ -162,7 +162,7 @@ const validateDiscountCode = async (code: string, ticketQuantity: number = 1) =>
     if (discountCode.used) {
       return {
         valid: false,
-        message: 'Discount code has already been used'
+        message: 'This discount code has already been used and is no longer valid. Each regular discount code can only be used once.'
       }
     }
     
@@ -224,7 +224,7 @@ const validateDiscountCodeFallback = (code: string, ticketQuantity: number = 1) 
   if (discountCode.used) {
     return {
       valid: false,
-      message: 'Discount code has already been used'
+      message: 'This discount code has already been used and is no longer valid. Each regular discount code can only be used once.'
     }
   }
   

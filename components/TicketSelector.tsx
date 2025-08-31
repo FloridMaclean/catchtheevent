@@ -276,7 +276,12 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                     )}
                   </div>
                   {discountError && (
-                    <p className="text-red-600 text-sm mt-2 text-center">{discountError}</p>
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-700 text-sm text-center font-medium flex items-center justify-center">
+                        <AlertCircle className="w-4 h-4 mr-2" />
+                        {discountError}
+                      </p>
+                    </div>
                   )}
                   {isDiscountApplied && (
                     <div className="mt-3 p-3 bg-green-100 rounded-lg">
