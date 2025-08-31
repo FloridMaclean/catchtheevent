@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate total tickets
-    const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: number) => sum + count, 0)
+    const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
 
     // Create ticket purchase record
     const purchaseData = {
@@ -61,7 +61,8 @@ export async function POST(request: NextRequest) {
       payment_status: paymentStatus,
       discount_code: discountCode,
       qr_code_url: qrCodeDataUrl,
-      stripe_payment_intent_id: stripePaymentIntentId || null
+      stripe_payment_intent_id: stripePaymentIntentId || null,
+      purchase_date: new Date().toISOString()
     }
 
     const purchase = await createTicketPurchase(purchaseData)

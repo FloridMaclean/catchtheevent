@@ -125,13 +125,25 @@ export const getDiscountCode = async (code: string) => {
 }
 
 export const updateDiscountCodeUsage = async (code: string, usedBy: string) => {
+  // First get the current usage
+  const { data: currentData, error: fetchError } = await supabase
+    .from('discount_codes')
+    .select('current_usage')
+    .eq('code', code)
+    .single()
+
+  if (fetchError) throw fetchError
+
+  const currentUsage = currentData?.current_usage || 0
+
+  // Then update with incremented usage
   const { data, error } = await supabase
     .from('discount_codes')
     .update({
       used: true,
       used_by: usedBy,
       used_at: new Date().toISOString(),
-      current_usage: supabase.sql`current_usage + 1`
+      current_usage: currentUsage + 1
     })
     .eq('code', code)
     .select()
@@ -153,11 +165,26 @@ export const getAmbe100Usage = async () => {
 }
 
 export const updateAmbe100Usage = async (usedBy: string) => {
+  // First get the current usage
+  const { data: currentData, error: fetchError } = await supabase
+    .from('ambe100_usage')
+    .select('used_count, usage_history')
+    .single()
+
+  if (fetchError) throw fetchError
+
+  const currentUsage = currentData?.used_count || 0
+  const currentHistory = currentData?.usage_history || []
+
+  // Then update with incremented usage
   const { data, error } = await supabase
     .from('ambe100_usage')
     .update({
-      used_count: supabase.sql`used_count + 1`,
-      usage_history: supabase.sql`usage_history || jsonb_build_array(jsonb_build_object('used_by', ${usedBy}, 'used_at', ${new Date().toISOString()}))`,
+      used_count: currentUsage + 1,
+      usage_history: [...currentHistory, {
+        used_by: usedBy,
+        used_at: new Date().toISOString()
+      }],
       updated_at: new Date().toISOString()
     })
     .select()

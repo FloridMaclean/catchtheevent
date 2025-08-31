@@ -223,7 +223,8 @@ export async function POST(request: NextRequest) {
           // Create newsletter subscription in database
           await createNewsletterSubscription({
             user_id: existingUser.id,
-            status: 'active'
+            status: 'active',
+            subscribed_at: new Date().toISOString()
           })
         }
       } else {
@@ -239,7 +240,8 @@ export async function POST(request: NextRequest) {
           // Create newsletter subscription in database
           await createNewsletterSubscription({
             user_id: newUser.id,
-            status: 'active'
+            status: 'active',
+            subscribed_at: new Date().toISOString()
           })
         }
       }

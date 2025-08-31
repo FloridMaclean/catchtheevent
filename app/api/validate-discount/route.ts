@@ -118,7 +118,7 @@ const validateDiscountCode = async (code: string, ticketQuantity: number = 1) =>
       console.error('Discount code lookup error:', discountError)
       // Fallback to JSON file
       const codes = loadDiscountCodes()
-      const fallbackCode = codes.find(c => c.code === code)
+      const fallbackCode = codes.find((c: any) => c.code === code)
       
       if (!fallbackCode) {
         return {
