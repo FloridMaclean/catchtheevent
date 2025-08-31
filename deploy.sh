@@ -39,7 +39,10 @@ echo -e "${GREEN}✅ Code updated${NC}"
 
 # Step 4: Install dependencies
 echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-npm ci --omit=dev
+# Remove old lock file and node_modules to ensure clean install
+rm -f package-lock.json
+rm -rf node_modules
+npm install --omit=dev
 echo -e "${GREEN}✅ Dependencies installed${NC}"
 
 # Step 5: Build application

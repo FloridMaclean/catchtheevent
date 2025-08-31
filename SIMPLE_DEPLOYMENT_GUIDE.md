@@ -53,8 +53,10 @@ echo "✅ Latest code downloaded"
 ## 📦 **STEP 5: INSTALL DEPENDENCIES**
 
 ```bash
-# Install production dependencies
-npm ci --omit=dev
+# Clean install dependencies
+rm -f package-lock.json
+rm -rf node_modules
+npm install --omit=dev
 
 echo "✅ Dependencies installed"
 ```
@@ -227,7 +229,9 @@ cp .env.backup* .env
 cd /catchtheevent
 pm2 stop catchtheevent
 git pull origin main
-npm ci --omit=dev
+rm -f package-lock.json
+rm -rf node_modules
+npm install --omit=dev
 npm run build
 pm2 start ecosystem.config.js
 pm2 save
