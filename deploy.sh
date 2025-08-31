@@ -42,7 +42,7 @@ echo -e "${YELLOW}📦 Installing dependencies...${NC}"
 # Remove old lock file and node_modules to ensure clean install
 rm -f package-lock.json
 rm -rf node_modules
-npm install --omit=dev
+npm install --omit=dev --legacy-peer-deps
 echo -e "${GREEN}✅ Dependencies installed${NC}"
 
 # Step 5: Build application

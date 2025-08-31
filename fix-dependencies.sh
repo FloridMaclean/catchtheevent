@@ -27,7 +27,7 @@ rm -rf node_modules
 
 echo -e "${YELLOW}📦 Installing dependencies...${NC}"
 # Install dependencies
-npm install --omit=dev
+npm install --omit=dev --legacy-peer-deps
 
 echo -e "${GREEN}✅ Dependencies fixed successfully!${NC}"
 echo ""

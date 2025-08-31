@@ -56,7 +56,7 @@ echo "✅ Latest code downloaded"
 # Clean install dependencies
 rm -f package-lock.json
 rm -rf node_modules
-npm install --omit=dev
+npm install --omit=dev --legacy-peer-deps
 
 echo "✅ Dependencies installed"
 ```
@@ -231,7 +231,7 @@ pm2 stop catchtheevent
 git pull origin main
 rm -f package-lock.json
 rm -rf node_modules
-npm install --omit=dev
+npm install --omit=dev --legacy-peer-deps
 npm run build
 pm2 start ecosystem.config.js
 pm2 save
