@@ -32,6 +32,7 @@ export default function DiscountCodesAdmin() {
   const [data, setData] = useState<DiscountData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const loadDiscountCodes = async () => {
     try {
@@ -42,6 +43,7 @@ export default function DiscountCodesAdmin() {
       }
       const result = await response.json()
       setData(result)
+      setLastUpdated(new Date())
     } catch (err) {
       setError('Failed to load discount codes')
       console.error('Error loading discount codes:', err)
@@ -81,6 +83,10 @@ export default function DiscountCodesAdmin() {
     }
   }
 
+  const handleRefresh = () => {
+    loadDiscountCodes()
+  }
+
   const handleLogout = () => {
     // Clear session cookie
     document.cookie = 'admin-session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
@@ -90,6 +96,14 @@ export default function DiscountCodesAdmin() {
 
   useEffect(() => {
     loadDiscountCodes()
+    
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      loadDiscountCodes()
+    }, 30000) // 30 seconds
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) {
@@ -120,7 +134,43 @@ export default function DiscountCodesAdmin() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Discount Codes Admin</h1>
+          {/* Header with Refresh and Logout */}
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900">Discount Codes Admin</h1>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={handleRefresh}
+                disabled={loading}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Last Updated Indicator */}
+          {lastUpdated && (
+            <div className="mb-6 flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                Last updated: {lastUpdated.toLocaleTimeString()}
+              </p>
+              <p className="text-xs text-gray-500">
+                Auto-refreshes every 30 seconds
+              </p>
+            </div>
+          )}
 
           {/* AMBE100 Special Code Section */}
           <div className="mb-8 p-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white">

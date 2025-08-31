@@ -58,9 +58,18 @@ export default function TicketSalesPage() {
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'discounted' | 'regular'>('all')
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   useEffect(() => {
     fetchTicketSales()
+    
+    // Set up auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchTicketSales()
+    }, 30000) // 30 seconds
+    
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval)
   }, [])
 
   const fetchTicketSales = async () => {
@@ -89,12 +98,17 @@ export default function TicketSalesPage() {
         discountedTickets: 0,
         regularTickets: 0
       })
+      setLastUpdated(new Date())
     } catch (error) {
       console.error('Error fetching ticket sales:', error)
       setError('Failed to load ticket sales data')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleRefresh = () => {
+    fetchTicketSales()
   }
 
   const handleLogout = () => {
@@ -220,11 +234,12 @@ export default function TicketSalesPage() {
                 <span>Discount Codes</span>
               </a>
               <button
-                onClick={fetchTicketSales}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={handleRefresh}
+                disabled={loading}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RefreshCw className="w-4 h-4" />
-                <span>Refresh</span>
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
               </button>
               <button
                 onClick={exportToCSV}
@@ -249,6 +264,18 @@ export default function TicketSalesPage() {
         {error && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-red-600">{error}</p>
+          </div>
+        )}
+
+        {/* Last Updated Indicator */}
+        {lastUpdated && (
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-gray-600">
+              Last updated: {lastUpdated.toLocaleTimeString()}
+            </p>
+            <p className="text-xs text-gray-500">
+              Auto-refreshes every 30 seconds
+            </p>
           </div>
         )}
 
