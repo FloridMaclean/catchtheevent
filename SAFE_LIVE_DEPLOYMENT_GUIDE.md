@@ -39,7 +39,6 @@ cd /var/www/catchtheevent
 BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
 tar -czf "/var/backups/catchtheevent_backup_$BACKUP_DATE.tar.gz" .
 
-# Backup database (if applicable)
 # Backup environment variables
 cp .env .env.backup_$BACKUP_DATE
 ```
@@ -89,8 +88,8 @@ npm ci --production
 # Build the application
 npm run build
 
-# Test the build locally on staging
-NODE_ENV=production npm start
+# Test the build locally on staging (different port)
+PORT=3001 NODE_ENV=production npm start
 ```
 
 #### **2.2 Test Staging Environment**
