@@ -76,7 +76,7 @@ log_message "📥 Cloning latest code from GitHub..."
 git clone https://github.com/FloridMaclean/catchtheevent.git .
 
 log_message "📦 Installing dependencies..."
-npm ci --production
+npm ci --omit=dev
 
 log_message "🔨 Building application..."
 npm run build
