@@ -17,6 +17,18 @@ export async function POST(request: NextRequest) {
       qrCodeDataUrl
     } = body
 
+    console.log('Save purchase request:', {
+      customerInfo: {
+        firstName: customerInfo?.firstName,
+        lastName: customerInfo?.lastName,
+        email: customerInfo?.email,
+        phone: customerInfo?.phone
+      },
+      isFreeTicket,
+      discountCode,
+      totalAmount
+    })
+
     // Validate required fields
     if (!customerInfo || !selectedTickets || !eventDetails) {
       return NextResponse.json({
@@ -31,8 +43,32 @@ export async function POST(request: NextRequest) {
     
     if (existingUser) {
       userId = existingUser.id
+      console.log('Existing user found:', {
+        id: existingUser.id,
+        firstName: existingUser.first_name,
+        lastName: existingUser.last_name,
+        phone: existingUser.phone_number
+      })
+      
+      // Update user information if it's missing or different
+      const updateData: any = {}
+      if (!existingUser.first_name && customerInfo.firstName) updateData.first_name = customerInfo.firstName
+      if (!existingUser.last_name && customerInfo.lastName) updateData.last_name = customerInfo.lastName
+      if (!existingUser.phone_number && customerInfo.phone) updateData.phone_number = customerInfo.phone
+      
+      if (Object.keys(updateData).length > 0) {
+        console.log('Updating user with:', updateData)
+        await updateUser(existingUser.id, updateData)
+      }
     } else {
       // Create new user
+      console.log('Creating new user with:', {
+        firstName: customerInfo.firstName,
+        lastName: customerInfo.lastName,
+        email: customerInfo.email,
+        phone: customerInfo.phone
+      })
+      
       const newUser = await createUser({
         first_name: customerInfo.firstName,
         last_name: customerInfo.lastName,
@@ -46,6 +82,7 @@ export async function POST(request: NextRequest) {
       }
       
       userId = newUser.id
+      console.log('New user created with ID:', userId)
     }
 
     // Calculate total tickets
@@ -65,11 +102,15 @@ export async function POST(request: NextRequest) {
       purchase_date: new Date().toISOString()
     }
 
+    console.log('Creating ticket purchase with data:', purchaseData)
+    
     const purchase = await createTicketPurchase(purchaseData)
 
     if (!purchase) {
       throw new Error('Failed to create ticket purchase record')
     }
+    
+    console.log('Ticket purchase created successfully:', purchase.id)
 
     return NextResponse.json({
       success: true,
