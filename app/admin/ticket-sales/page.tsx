@@ -128,10 +128,32 @@ export default function TicketSalesPage() {
     console.log(autoRefreshEnabled ? '⏸️ Auto-refresh disabled' : '▶️ Auto-refresh enabled')
   }
 
-  const handleLogout = () => {
-    // Clear admin session
-    document.cookie = 'admin-session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    window.location.href = '/admin/login'
+  const handleLogout = async () => {
+    try {
+      console.log('🔄 Logging out...')
+      
+      // Call logout API to clear the httpOnly cookie
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (response.ok) {
+        console.log('✅ Logout successful')
+        // Redirect to login page
+        window.location.href = '/admin/login'
+      } else {
+        console.error('❌ Logout failed')
+        // Still redirect to login page even if logout API fails
+        window.location.href = '/admin/login'
+      }
+    } catch (error) {
+      console.error('❌ Logout error:', error)
+      // Still redirect to login page even if logout API fails
+      window.location.href = '/admin/login'
+    }
   }
 
   const formatCurrency = (amount: number) => {

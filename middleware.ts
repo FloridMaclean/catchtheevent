@@ -92,6 +92,7 @@ export async function middleware(request: NextRequest) {
       '/api/create-payment-intent',
       '/api/send-email',
       '/api/auth',
+      '/api/logout',
       '/api/validate-discount',
       '/api/use-discount',
       '/api/newsletter',
