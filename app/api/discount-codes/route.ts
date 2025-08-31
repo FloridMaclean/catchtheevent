@@ -36,8 +36,17 @@ const generateDiscountCodes = () => {
   }))
 }
 
+// Define discount code type
+interface DiscountCode {
+  code: string
+  used: boolean
+  usedBy: string | null
+  usedAt: string | null
+  createdAt: string
+}
+
 // Load discount codes from file
-const loadDiscountCodes = () => {
+const loadDiscountCodes = (): DiscountCode[] => {
   ensureDataDirectory()
   
   if (!fs.existsSync(DISCOUNT_CODES_FILE)) {
@@ -72,7 +81,7 @@ const regenerateDiscountCodes = () => {
 }
 
 // Save discount codes to file
-const saveDiscountCodes = (codes: any[]) => {
+const saveDiscountCodes = (codes: DiscountCode[]) => {
   ensureDataDirectory()
   fs.writeFileSync(DISCOUNT_CODES_FILE, JSON.stringify(codes, null, 2))
 }
@@ -132,7 +141,7 @@ const validateDiscountCode = (code: string) => {
   
   // Regular discount codes
   const codes = loadDiscountCodes()
-  const discountCode = codes.find(c => c.code === code)
+  const discountCode = codes.find((c: DiscountCode) => c.code === code)
   
   if (!discountCode) {
     return {
@@ -175,7 +184,7 @@ const markCodeAsUsed = (code: string, userEmail: string) => {
   
   // Regular discount codes
   const codes = loadDiscountCodes()
-  const discountCode = codes.find(c => c.code === code)
+  const discountCode = codes.find((c: DiscountCode) => c.code === code)
   
   if (!discountCode || discountCode.used) {
     return false
@@ -213,8 +222,8 @@ export async function GET() {
       const codes = loadDiscountCodes()
       const ambe100Usage = loadAmbe100Usage()
       
-      const usedCodes = codes.filter((c: any) => c.used)
-      const unusedCodes = codes.filter((c: any) => !c.used)
+      const usedCodes = codes.filter((c: DiscountCode) => c.used)
+      const unusedCodes = codes.filter((c: DiscountCode) => !c.used)
       
       return NextResponse.json({
         total: codes.length,

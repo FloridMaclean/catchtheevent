@@ -186,7 +186,7 @@ const markCodeAsUsedFallback = (code: string, userEmail: string) => {
   
   // Regular discount codes
   const codes = loadDiscountCodes()
-  const discountCode = codes.find(c => c.code === code)
+  const discountCode = codes.find((c: any) => c.code === code)
   
   if (!discountCode || discountCode.used) {
     return false

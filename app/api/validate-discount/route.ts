@@ -212,7 +212,7 @@ const validateDiscountCodeFallback = (code: string, ticketQuantity: number = 1) 
   
   // Regular discount codes
   const codes = loadDiscountCodes()
-  const discountCode = codes.find(c => c.code === code)
+  const discountCode = codes.find((c: any) => c.code === code)
   
   if (!discountCode) {
     return {
