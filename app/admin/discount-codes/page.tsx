@@ -31,12 +31,16 @@ interface DiscountData {
 export default function DiscountCodesAdmin() {
   const [data, setData] = useState<DiscountData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true)
 
-  const loadDiscountCodes = async () => {
+  const loadDiscountCodes = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) {
+        setRefreshing(true)
+      }
       const response = await fetch('/api/discount-codes')
       if (!response.ok) {
         throw new Error('Failed to load discount codes')
@@ -44,10 +48,14 @@ export default function DiscountCodesAdmin() {
       const result = await response.json()
       setData(result)
       setLastUpdated(new Date())
+      console.log('✅ Discount codes data updated at:', new Date().toLocaleTimeString())
     } catch (err) {
       setError('Failed to load discount codes')
       console.error('Error loading discount codes:', err)
     } finally {
+      if (!silent) {
+        setRefreshing(false)
+      }
       setLoading(false)
     }
   }
@@ -84,7 +92,13 @@ export default function DiscountCodesAdmin() {
   }
 
   const handleRefresh = () => {
-    loadDiscountCodes()
+    console.log('🔄 Manual refresh triggered')
+    loadDiscountCodes(false) // false = show loading state
+  }
+
+  const toggleAutoRefresh = () => {
+    setAutoRefreshEnabled(!autoRefreshEnabled)
+    console.log(autoRefreshEnabled ? '⏸️ Auto-refresh disabled' : '▶️ Auto-refresh enabled')
   }
 
   const handleLogout = () => {
@@ -99,12 +113,15 @@ export default function DiscountCodesAdmin() {
     
     // Set up auto-refresh every 30 seconds
     const interval = setInterval(() => {
-      loadDiscountCodes()
+      if (autoRefreshEnabled) {
+        console.log('🔄 Auto-refreshing discount codes data...')
+        loadDiscountCodes(true) // true = silent refresh
+      }
     }, 30000) // 30 seconds
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval)
-  }, [])
+  }, [autoRefreshEnabled])
 
   if (loading) {
     return (
@@ -138,16 +155,16 @@ export default function DiscountCodesAdmin() {
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Discount Codes Admin</h1>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={handleRefresh}
-                disabled={loading}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
-              </button>
+                             <button
+                 onClick={handleRefresh}
+                 disabled={refreshing}
+                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                 <svg className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                 </svg>
+                 <span>{refreshing ? 'Refreshing...' : 'Refresh Now'}</span>
+               </button>
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -162,13 +179,34 @@ export default function DiscountCodesAdmin() {
 
           {/* Last Updated Indicator */}
           {lastUpdated && (
-            <div className="mb-6 flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">
-                Last updated: {lastUpdated.toLocaleTimeString()}
-              </p>
-              <p className="text-xs text-gray-500">
-                Auto-refreshes every 30 seconds
-              </p>
+            <div className="mb-6 flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Last updated:</span> {lastUpdated.toLocaleTimeString()}
+                </p>
+                {refreshing && (
+                  <div className="flex items-center space-x-2 text-blue-600">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm">Refreshing...</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleAutoRefresh}
+                  className={`flex items-center space-x-2 px-3 py-1 rounded-md text-sm transition-colors ${
+                    autoRefreshEnabled 
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${autoRefreshEnabled ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                  <span>{autoRefreshEnabled ? 'Auto-refresh ON' : 'Auto-refresh OFF'}</span>
+                </button>
+                <p className="text-xs text-gray-500">
+                  Auto-refreshes every 30 seconds
+                </p>
+              </div>
             </div>
           )}
 
@@ -261,10 +299,11 @@ export default function DiscountCodesAdmin() {
           {/* Action Buttons */}
           <div className="mt-8 text-center space-x-4">
             <button
-              onClick={loadDiscountCodes}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Refresh Data
+              {refreshing ? 'Refreshing...' : 'Refresh Data'}
             </button>
             <button
               onClick={regenerateCodes}

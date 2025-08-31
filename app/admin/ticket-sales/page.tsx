@@ -55,26 +55,33 @@ export default function TicketSalesPage() {
     regularTickets: 0
   })
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'discounted' | 'regular'>('all')
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(true)
 
   useEffect(() => {
     fetchTicketSales()
     
     // Set up auto-refresh every 30 seconds
     const interval = setInterval(() => {
-      fetchTicketSales()
+      if (autoRefreshEnabled) {
+        console.log('🔄 Auto-refreshing ticket sales data...')
+        fetchTicketSales(true) // true = silent refresh
+      }
     }, 30000) // 30 seconds
     
     // Cleanup interval on component unmount
     return () => clearInterval(interval)
-  }, [])
+  }, [autoRefreshEnabled])
 
-  const fetchTicketSales = async () => {
+  const fetchTicketSales = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) {
+        setRefreshing(true)
+      }
       setError('')
       
       const response = await fetch('/api/ticket-sales', {
@@ -99,16 +106,26 @@ export default function TicketSalesPage() {
         regularTickets: 0
       })
       setLastUpdated(new Date())
+      console.log('✅ Ticket sales data updated at:', new Date().toLocaleTimeString())
     } catch (error) {
       console.error('Error fetching ticket sales:', error)
       setError('Failed to load ticket sales data')
     } finally {
+      if (!silent) {
+        setRefreshing(false)
+      }
       setLoading(false)
     }
   }
 
   const handleRefresh = () => {
-    fetchTicketSales()
+    console.log('🔄 Manual refresh triggered')
+    fetchTicketSales(false) // false = show loading state
+  }
+
+  const toggleAutoRefresh = () => {
+    setAutoRefreshEnabled(!autoRefreshEnabled)
+    console.log(autoRefreshEnabled ? '⏸️ Auto-refresh disabled' : '▶️ Auto-refresh enabled')
   }
 
   const handleLogout = () => {
@@ -235,11 +252,11 @@ export default function TicketSalesPage() {
               </a>
               <button
                 onClick={handleRefresh}
-                disabled={loading}
+                disabled={refreshing}
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                <span>{refreshing ? 'Refreshing...' : 'Refresh Now'}</span>
               </button>
               <button
                 onClick={exportToCSV}
@@ -267,17 +284,38 @@ export default function TicketSalesPage() {
           </div>
         )}
 
-        {/* Last Updated Indicator */}
-        {lastUpdated && (
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-gray-600">
-              Last updated: {lastUpdated.toLocaleTimeString()}
-            </p>
-            <p className="text-xs text-gray-500">
-              Auto-refreshes every 30 seconds
-            </p>
-          </div>
-        )}
+                  {/* Last Updated Indicator */}
+          {lastUpdated && (
+            <div className="mb-4 flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center space-x-4">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Last updated:</span> {lastUpdated.toLocaleTimeString()}
+                </p>
+                {refreshing && (
+                  <div className="flex items-center space-x-2 text-blue-600">
+                    <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-sm">Refreshing...</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleAutoRefresh}
+                  className={`flex items-center space-x-2 px-3 py-1 rounded-md text-sm transition-colors ${
+                    autoRefreshEnabled 
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${autoRefreshEnabled ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                  <span>{autoRefreshEnabled ? 'Auto-refresh ON' : 'Auto-refresh OFF'}</span>
+                </button>
+                <p className="text-xs text-gray-500">
+                  Auto-refreshes every 30 seconds
+                </p>
+              </div>
+            </div>
+          )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
