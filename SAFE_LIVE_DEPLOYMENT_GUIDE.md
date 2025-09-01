@@ -76,8 +76,8 @@ tail -f /var/log/nginx/error.log
 #### **2.1 Create Staging Environment**
 ```bash
 # Create staging directory
-mkdir -p /var/www/catchtheevent-staging
-cd /var/www/catchtheevent-staging
+mkdir -p /catchtheevent-staging
+cd /catchtheevent-staging
 
 # Clone the latest code
 git clone https://github.com/FloridMaclean/catchtheevent.git .
@@ -113,8 +113,8 @@ pm2 stop catchtheevent
 mv /var/www/catchtheevent /var/www/catchtheevent-old
 
 # Deploy new version
-mv /var/www/catchtheevent-staging /var/www/catchtheevent
-cd /var/www/catchtheevent
+mv /catchtheevent-staging /catchtheevent
+cd /catchtheevent
 
 # Update environment variables
 cp .env.backup_* .env

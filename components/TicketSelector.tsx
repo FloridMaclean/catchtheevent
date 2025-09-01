@@ -16,10 +16,23 @@ interface TicketType {
 
 interface TicketSelectorProps {
   onClose: () => void
-  eventDetails: any
+  eventDetails?: any
+  eventName?: string
+  basePrice?: number
+  convenienceFee?: number
+  processingFee?: number
+  taxRate?: number
 }
 
-export default function TicketSelector({ onClose, eventDetails }: TicketSelectorProps) {
+export default function TicketSelector({ 
+  onClose, 
+  eventDetails, 
+  eventName = "Rangtaali Hamilton 2025",
+  basePrice = 20.00,
+  convenienceFee = 1.00,
+  processingFee = 1.10,
+  taxRate = 0.13
+}: TicketSelectorProps) {
   const [selectedTickets, setSelectedTickets] = useState<{ [key: string]: number }>({})
   const [currentStep, setCurrentStep] = useState<'selection' | 'checkout'>('selection')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -31,16 +44,27 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
   const ticketTypes: TicketType[] = [
     {
       id: 'exclusive-pass',
-      name: 'Catch The Event Exclusive Rangtaali Garba Pass',
-      price: 20.00,
-      description: 'Exclusive admission to the Garba event with special benefits',
+      name: eventName === "Meet & Greet with Aishwarya Majmudar" 
+        ? 'Meet & Greet Ticket' 
+        : 'Catch The Event Exclusive Rangtaali Garba Pass',
+      price: basePrice,
+      description: eventName === "Meet & Greet with Aishwarya Majmudar"
+        ? 'Exclusive meet & greet with Aishwarya Majmudar including photo opportunity and autograph session'
+        : 'Exclusive admission to the Garba event with special benefits',
       available: 1000,
-      benefits: [
-        'Exclusive event access',
-        'Special Garba experience',
-        'Priority entry',
-        'Event memorabilia'
-      ]
+      benefits: eventName === "Meet & Greet with Aishwarya Majmudar" 
+        ? [
+            'Meet & Greet with Aishwarya Majmudar',
+            'Photo Opportunity',
+            'Autograph Session',
+            'Limited Spots Available'
+          ]
+        : [
+            'Exclusive event access',
+            'Special Garba experience',
+            'Priority entry',
+            'Event memorabilia'
+          ]
     }
   ]
 
@@ -62,12 +86,12 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
 
   const getConvenienceFee = () => {
     // No fees when discount is applied
-    return isDiscountApplied ? 0 : getTotalTickets() * 1.00 // $1.00 per ticket
+    return isDiscountApplied ? 0 : getTotalTickets() * convenienceFee
   }
 
   const getProcessingFee = () => {
     // No fees when discount is applied
-    return isDiscountApplied ? 0 : getTotalTickets() * 1.10 // $1.10 per ticket
+    return isDiscountApplied ? 0 : getTotalTickets() * processingFee
   }
 
   const getHST = () => {
@@ -75,7 +99,7 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
     const convenienceFee = getConvenienceFee()
     const processingFee = getProcessingFee()
     // No HST when discount is applied
-    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * 0.13 // 13% HST
+    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * taxRate
   }
 
   const getTotalAmount = () => {
@@ -233,15 +257,15 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 text-pink-500 mr-2" />
-                    <span className="text-sm text-gray-700">{eventDetails.date}</span>
+                    <span className="text-sm text-gray-700">{eventDetails?.date || 'Date TBA'}</span>
                   </div>
                   <div className="flex items-center">
                     <Clock className="w-4 h-4 text-pink-500 mr-2" />
-                    <span className="text-sm text-gray-700">{eventDetails.time}</span>
+                    <span className="text-sm text-gray-700">{eventDetails?.time || 'Time TBA'}</span>
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 text-pink-500 mr-2" />
-                    <span className="text-sm text-gray-700">{eventDetails.venue}</span>
+                    <span className="text-sm text-gray-700">{eventDetails?.venue || 'Venue TBA'}</span>
                   </div>
                 </div>
               </div>
@@ -408,6 +432,11 @@ export default function TicketSelector({ onClose, eventDetails }: TicketSelector
               ticketTypes={ticketTypes}
               totalPrice={getTotalAmount()}
               eventDetails={eventDetails}
+              eventName={eventName}
+              basePrice={basePrice}
+              convenienceFee={convenienceFee}
+              processingFee={processingFee}
+              taxRate={taxRate}
               onBack={handleBackToSelection}
               onSuccess={() => {
                 onClose()

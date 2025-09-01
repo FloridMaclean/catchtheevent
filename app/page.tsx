@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users } from 'lucide-react'
-import dynamic from 'next/dynamic'
 
 // Import TicketSelector directly to test
 import TicketSelector from '../components/TicketSelector'
@@ -12,13 +11,8 @@ import Newsletter from '../components/Newsletter'
 
 
 
-const Header = dynamic(() => import('../components/Header'), {
-  ssr: false
-})
-
-const Footer = dynamic(() => import('../components/Footer'), {
-  ssr: false
-})
+import Header from '../components/Header'
+import Footer from '../components/Footer'
 
 export default function Home() {
   const [showTicketSelector, setShowTicketSelector] = useState(false)

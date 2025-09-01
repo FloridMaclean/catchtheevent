@@ -9,6 +9,11 @@ interface PurchaseSummaryProps {
   paymentIntent: any
   selectedTickets: { [key: string]: number }
   eventDetails: any
+  eventName?: string
+  basePrice?: number
+  convenienceFee?: number
+  processingFee?: number
+  taxRate?: number
   customerInfo: {
     firstName: string
     lastName: string
@@ -24,6 +29,11 @@ export default function PurchaseSummary({
   paymentIntent,
   selectedTickets,
   eventDetails,
+  eventName,
+  basePrice = 20.00,
+  convenienceFee = 1.00,
+  processingFee = 1.10,
+  taxRate = 0.13,
   customerInfo,
   onClose,
   isDiscountApplied = false,
@@ -38,7 +48,7 @@ export default function PurchaseSummary({
   const totalTickets = Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
   
   const getTicketPrice = () => {
-    return isDiscountApplied ? 0 : 20.00 // Free for discount codes, otherwise fixed price
+    return isDiscountApplied ? 0 : basePrice // Free for discount codes, otherwise use base price
   }
 
   const getSubtotal = () => {
@@ -47,18 +57,18 @@ export default function PurchaseSummary({
   }
 
   const getConvenienceFee = () => {
-    return isDiscountApplied ? 0 : totalTickets * 1.00 // No fees for discount codes
+    return isDiscountApplied ? 0 : totalTickets * convenienceFee // No fees for discount codes
   }
 
   const getProcessingFee = () => {
-    return isDiscountApplied ? 0 : totalTickets * 1.10 // No fees for discount codes
+    return isDiscountApplied ? 0 : totalTickets * processingFee // No fees for discount codes
   }
 
   const getHST = () => {
     const subtotal = getSubtotal()
     const convenienceFee = getConvenienceFee()
     const processingFee = getProcessingFee()
-    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * 0.13 // No HST for discount codes
+    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * taxRate // No HST for discount codes
   }
 
   const totalAmount = (getSubtotal() + getConvenienceFee() + getProcessingFee() + getHST()).toFixed(2)
@@ -77,10 +87,10 @@ export default function PurchaseSummary({
       // Create purchase summary data with detailed user information
       const purchaseData = {
         // Event Information
-        eventTitle: eventDetails.title,
-        eventDate: eventDetails.date,
-        eventVenue: eventDetails.venue,
-        eventAddress: eventDetails.address,
+        eventTitle: eventName || eventDetails?.title || 'Event',
+        eventDate: eventDetails?.date || 'Date TBA',
+        eventVenue: eventDetails?.venue || 'Venue TBA',
+        eventAddress: eventDetails?.address || 'Address TBA',
         
         // Customer Information
         customerFirstName: customerInfo.firstName,
@@ -150,6 +160,11 @@ export default function PurchaseSummary({
           customerInfo,
           eventDetails,
           selectedTickets,
+          eventName,
+          basePrice,
+          convenienceFee,
+          processingFee,
+          taxRate,
           paymentIntentId: paymentIntent.id,
           qrCodeDataUrl: qrCodeUrl
         }),
@@ -186,7 +201,7 @@ export default function PurchaseSummary({
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Purchase Summary - ${eventDetails.title}</title>
+          <title>Purchase Summary - ${eventName || eventDetails?.title || 'Event'}</title>
           <style>
             @media print {
               @page {
@@ -316,15 +331,15 @@ export default function PurchaseSummary({
             <div class="info-grid">
               <div class="info-item">
                 <div class="info-label">Event</div>
-                <div class="info-value">${eventDetails.title}</div>
+                <div class="info-value">${eventName || eventDetails?.title || 'Event'}</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Date</div>
-                <div class="info-value">${formatDate(eventDetails.date)}</div>
+                <div class="info-value">${formatDate(eventDetails?.date || 'Date TBA')}</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Venue</div>
-                <div class="info-value">${eventDetails.venue}</div>
+                <div class="info-value">${eventDetails?.venue || 'Venue TBA'}</div>
               </div>
               <div class="info-item">
                 <div class="info-label">Customer</div>
@@ -453,20 +468,20 @@ export default function PurchaseSummary({
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Event</p>
-                  <p className="font-semibold text-gray-900">{eventDetails.title}</p>
+                  <p className="font-semibold text-gray-900">{eventName || eventDetails?.title || 'Event'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Date</p>
                   <p className="font-semibold text-gray-900 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    {formatDate(eventDetails.date)}
+                    {formatDate(eventDetails?.date || 'Date TBA')}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Venue</p>
                   <p className="font-semibold text-gray-900 flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
-                    {eventDetails.venue}
+                    {eventDetails?.venue || 'Venue TBA'}
                   </p>
                 </div>
                 <div>

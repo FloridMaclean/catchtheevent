@@ -644,9 +644,9 @@ free -h
 ### **Common Issues & Solutions**
 
 #### **1. Application Not Starting**
-```bash
+   ```bash
 # Check PM2 logs
-pm2 logs catchtheevent
+   pm2 logs catchtheevent
 
 # Check application status
 pm2 status
@@ -656,7 +656,7 @@ pm2 restart catchtheevent
 ```
 
 #### **2. Nginx Issues**
-```bash
+   ```bash
 # Test Nginx configuration
 nginx -t
 
@@ -668,7 +668,7 @@ systemctl restart nginx
 ```
 
 #### **3. SSL Certificate Issues**
-```bash
+   ```bash
 # Check certificate status
 certbot certificates
 
@@ -680,7 +680,7 @@ openssl x509 -in /etc/letsencrypt/live/rangtaali.catchtheevent.com/cert.pem -tex
 ```
 
 #### **4. Database Connection Issues**
-```bash
+   ```bash
 # Check environment variables
 cat /var/www/catchtheevent/.env.production
 

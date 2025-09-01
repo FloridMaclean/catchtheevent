@@ -22,7 +22,12 @@ export async function POST(request: NextRequest) {
       paymentIntentId, 
       qrCodeDataUrl,
       isFreeTicket = false,
-      freeTicketAmount = 0
+      freeTicketAmount = 0,
+      eventName,
+      basePrice = 20.00,
+      convenienceFee = 1.00,
+      processingFee = 1.10,
+      taxRate = 0.13
     } = body
 
     // Check if email was already sent for this payment
@@ -57,7 +62,7 @@ export async function POST(request: NextRequest) {
     const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
     // Calculate proper pricing for email
     const getTicketPrice = (totalTickets: number) => {
-      return isFreeTicket ? 0 : 20.00 // Free for discount codes, otherwise fixed price
+      return isFreeTicket ? 0 : basePrice // Free for discount codes, otherwise use base price
     }
 
     const getSubtotal = (totalTickets: number) => {
@@ -66,21 +71,49 @@ export async function POST(request: NextRequest) {
     }
 
     const getConvenienceFee = (totalTickets: number) => {
-      return isFreeTicket ? 0 : totalTickets * 1.00
+      return isFreeTicket ? 0 : totalTickets * convenienceFee
     }
 
     const getProcessingFee = (totalTickets: number) => {
-      return isFreeTicket ? 0 : totalTickets * 1.10
+      return isFreeTicket ? 0 : totalTickets * processingFee
     }
 
     const getHST = (totalTickets: number) => {
       const subtotal = getSubtotal(totalTickets)
-      const convenienceFee = getConvenienceFee(totalTickets)
-      const processingFee = getProcessingFee(totalTickets)
-      return isFreeTicket ? 0 : (subtotal + convenienceFee + processingFee) * 0.13
+      const convenienceFeeAmount = getConvenienceFee(totalTickets)
+      const processingFeeAmount = getProcessingFee(totalTickets)
+      return isFreeTicket ? 0 : (subtotal + convenienceFeeAmount + processingFeeAmount) * taxRate
     }
 
     const totalAmount = isFreeTicket ? '0.00' : (getSubtotal(totalTickets) + getConvenienceFee(totalTickets) + getProcessingFee(totalTickets) + getHST(totalTickets)).toFixed(2)
+
+    // Determine event-specific styling and content
+    const isMeetGreet = eventName && eventName.includes('Meet & Greet')
+    
+    // Event-specific colors and styling
+    const headerGradient = isMeetGreet 
+      ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' 
+      : 'linear-gradient(135deg, #ed7519, #0ea5e9)'
+    const highlightColor = isMeetGreet ? '#8b5cf6' : '#ed7519'
+    const borderColor = isMeetGreet ? '#8b5cf6' : '#ed7519'
+    
+    // Event-specific title and emoji
+    const eventTitle = eventName || 'Rangtaali Hamilton 2025'
+    const eventEmoji = isMeetGreet ? '🤝' : '🎫'
+    
+    // Event-specific important notes
+    const importantNotes = isMeetGreet 
+      ? [
+          'Indoor venue - dress appropriately for the occasion',
+          'Bring QR code (digital or printed) for entry',
+          'Limited spots - arrive on time',
+          'Meet & Greet session will be strictly timed'
+        ]
+      : [
+          'Open Ground venue - wear proper footwear',
+          'Bring QR code (digital or printed) for entry',
+          'Event may change due to weather conditions'
+        ]
 
     // Create email HTML content
     const emailHtml = `
@@ -89,30 +122,30 @@ export async function POST(request: NextRequest) {
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Rangtaali Hamilton 2025 - Ticket Confirmation</title>
+        <title>${eventTitle} - Ticket Confirmation</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
           .container { max-width: 500px; margin: 0 auto; background: #ffffff; }
-          .header { background: linear-gradient(135deg, #ed7519, #0ea5e9); color: white; padding: 25px; text-align: center; }
+          .header { background: ${headerGradient}; color: white; padding: 25px; text-align: center; }
           .content { padding: 25px; }
-          .event-details { background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #ed7519; }
+          .event-details { background: #f8f9fa; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid ${borderColor}; }
           .qr-section { text-align: center; margin: 30px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; }
           .important { background: #fff3cd; padding: 15px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #ffc107; }
           .footer { text-align: center; padding: 20px; background: #f8f9fa; color: #666; font-size: 12px; }
-          .highlight { color: #ed7519; font-weight: bold; }
+          .highlight { color: ${highlightColor}; font-weight: bold; }
         </style>
       </head>
       <body>
         <div class="container">
           <div class="header">
-            <h1 style="margin: 0; font-size: 24px;">🎫 Rangtaali Hamilton 2025</h1>
+            <h1 style="margin: 0; font-size: 24px;">${eventEmoji} ${eventTitle}</h1>
             <p style="margin: 10px 0 0 0;">Ticket Confirmation</p>
           </div>
           
           <div class="content">
             <h2 style="margin-top: 0;">Hello ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName},</h2>
             
-            <p>Your tickets for <span class="highlight">Rangtaali Hamilton 2025</span> have been confirmed!</p>
+            <p>Your tickets for <span class="highlight">${eventTitle}</span> have been confirmed!</p>
             
             <div class="event-details">
               <h3 style="margin-top: 0;">📅 Event Details</h3>
@@ -148,9 +181,7 @@ export async function POST(request: NextRequest) {
             <div class="important">
               <h4 style="margin-top: 0;">📍 Important</h4>
               <ul style="margin: 10px 0; padding-left: 20px;">
-                <li>Open Ground venue - wear proper footwear</li>
-                <li>Bring QR code (digital or printed) for entry</li>
-                <li>Event may change due to weather conditions</li>
+                ${importantNotes.map(note => `<li>${note}</li>`).join('')}
               </ul>
             </div>
             
@@ -166,11 +197,11 @@ export async function POST(request: NextRequest) {
 
     // Create email text content (fallback)
     const emailText = `
-      Rangtaali Hamilton 2025 - Ticket Confirmation
+      ${eventTitle} - Ticket Confirmation
 
       Hello ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName},
 
-      Your tickets for Rangtaali Hamilton 2025 have been confirmed!
+      Your tickets for ${eventTitle} have been confirmed!
 
       Event Details:
       - Event: ${eventDetails.title}
@@ -198,9 +229,7 @@ export async function POST(request: NextRequest) {
       Purchase Date: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
 
       Important:
-      - Open Ground venue - wear proper footwear
-      - Bring QR code (digital or printed) for entry
-      - Event may change due to weather conditions
+      ${importantNotes.map(note => `- ${note}`).join('\n      ')}
 
       Contact: info@catchtheevent.com
 
@@ -211,7 +240,7 @@ export async function POST(request: NextRequest) {
     const msg = {
       to: customerInfo.email,
       from: process.env.SENDGRID_FROM_EMAIL || 'noreply@catchtheevent.com',
-      subject: `🎫 Rangtaali Hamilton 2025 - ${isFreeTicket ? 'Free Ticket' : 'Ticket'} Confirmation (${paymentIntentId})`,
+      subject: `${eventEmoji} ${eventTitle} - ${isFreeTicket ? 'Free Ticket' : 'Ticket'} Confirmation (${paymentIntentId})`,
       text: emailText,
       html: emailHtml,
       attachments: [

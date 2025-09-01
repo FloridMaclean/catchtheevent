@@ -58,6 +58,11 @@ interface CheckoutFormProps {
   ticketTypes: any[]
   totalPrice: number
   eventDetails: any
+  eventName?: string
+  basePrice?: number
+  convenienceFee?: number
+  processingFee?: number
+  taxRate?: number
   onBack: () => void
   onSuccess: () => void
   onClose: () => void
@@ -69,39 +74,39 @@ const getTotalTickets = (selectedTickets: { [key: string]: number }) => {
   return Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
 }
 
-const getTicketPrice = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false) => {
-  return isDiscountApplied ? 0 : 20.00 // Free for discount codes, otherwise fixed price
+const getTicketPrice = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false, basePrice: number = 20.00) => {
+  return isDiscountApplied ? 0 : basePrice // Free for discount codes, otherwise use base price
 }
 
-const getSubtotal = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false) => {
+const getSubtotal = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false, basePrice: number = 20.00) => {
   const totalTickets = getTotalTickets(selectedTickets)
-  const pricePerTicket = getTicketPrice(selectedTickets, isDiscountApplied)
+  const pricePerTicket = getTicketPrice(selectedTickets, isDiscountApplied, basePrice)
   return totalTickets * pricePerTicket
 }
 
-const getConvenienceFee = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false) => {
+const getConvenienceFee = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false, convenienceFee: number = 1.00) => {
   const totalTickets = getTotalTickets(selectedTickets)
-  return isDiscountApplied ? 0 : totalTickets * 1.00 // No fees for discount codes
+  return isDiscountApplied ? 0 : totalTickets * convenienceFee // No fees for discount codes
 }
 
-const getProcessingFee = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false) => {
+const getProcessingFee = (selectedTickets: { [key: string]: number }, isDiscountApplied: boolean = false, processingFee: number = 1.10) => {
   const totalTickets = getTotalTickets(selectedTickets)
-  return isDiscountApplied ? 0 : totalTickets * 1.10 // No fees for discount codes
+  return isDiscountApplied ? 0 : totalTickets * processingFee // No fees for discount codes
 }
 
-const getHST = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false) => {
-  const subtotal = getSubtotal(selectedTickets, ticketTypes, isDiscountApplied)
-  const convenienceFee = getConvenienceFee(selectedTickets, isDiscountApplied)
-  const processingFee = getProcessingFee(selectedTickets, isDiscountApplied)
-  return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * 0.13 // No HST for discount codes
+const getHST = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false, basePrice: number = 20.00, convenienceFee: number = 1.00, processingFee: number = 1.10, taxRate: number = 0.13) => {
+  const subtotal = getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice)
+  const convenienceFeeAmount = getConvenienceFee(selectedTickets, isDiscountApplied, convenienceFee)
+  const processingFeeAmount = getProcessingFee(selectedTickets, isDiscountApplied, processingFee)
+  return isDiscountApplied ? 0 : (subtotal + convenienceFeeAmount + processingFeeAmount) * taxRate // No HST for discount codes
 }
 
-const getTotalAmount = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false) => {
-  const subtotal = getSubtotal(selectedTickets, ticketTypes, isDiscountApplied)
-  const convenienceFee = getConvenienceFee(selectedTickets, isDiscountApplied)
-  const processingFee = getProcessingFee(selectedTickets, isDiscountApplied)
-  const hst = getHST(selectedTickets, ticketTypes, isDiscountApplied)
-  return subtotal + convenienceFee + processingFee + hst
+const getTotalAmount = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false, basePrice: number = 20.00, convenienceFee: number = 1.00, processingFee: number = 1.10, taxRate: number = 0.13) => {
+  const subtotal = getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice)
+  const convenienceFeeAmount = getConvenienceFee(selectedTickets, isDiscountApplied, convenienceFee)
+  const processingFeeAmount = getProcessingFee(selectedTickets, isDiscountApplied, processingFee)
+  const hst = getHST(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate)
+  return subtotal + convenienceFeeAmount + processingFeeAmount + hst
 }
 
 // Stripe Card Element styling
@@ -127,6 +132,11 @@ function FreeTicketForm({
   ticketTypes,
   totalPrice,
   eventDetails,
+  eventName,
+  basePrice = 20.00,
+  convenienceFee = 1.00,
+  processingFee = 1.10,
+  taxRate = 0.13,
   onBack,
   onSuccess,
   onClose,
@@ -200,6 +210,11 @@ function FreeTicketForm({
           customerInfo,
           selectedTickets,
           eventDetails,
+          eventName,
+          basePrice,
+          convenienceFee,
+          processingFee,
+          taxRate,
           isFreeTicket: true,
           freeTicketAmount: 0,
           paymentIntentId: 'free-ticket-' + Date.now(),
@@ -234,6 +249,11 @@ function FreeTicketForm({
         paymentIntent={paymentIntent}
         selectedTickets={selectedTickets}
         eventDetails={eventDetails}
+        eventName={eventName}
+        basePrice={basePrice}
+        convenienceFee={convenienceFee}
+        processingFee={processingFee}
+        taxRate={taxRate}
         customerInfo={customerInfo}
         onClose={onSuccess}
         isDiscountApplied={isDiscountApplied}
@@ -263,9 +283,9 @@ function FreeTicketForm({
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium text-gray-900">Event Tickets</p>
-                <p className="text-sm text-gray-600">Qty: {getTotalTickets(selectedTickets)} × ${getTicketPrice(selectedTickets, isDiscountApplied)} each</p>
+                <p className="text-sm text-gray-600">Qty: {getTotalTickets(selectedTickets)} × ${getTicketPrice(selectedTickets, isDiscountApplied, basePrice)} each</p>
               </div>
-              <p className="font-semibold text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</p>
+              <p className="font-semibold text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice).toFixed(2)}</p>
             </div>
             
             {/* Price Breakdown */}
@@ -273,24 +293,24 @@ function FreeTicketForm({
               {isDiscountApplied && (
                 <div className="flex justify-between">
                   <span className="text-green-600 font-semibold">Discount Applied:</span>
-                  <span className="text-green-600 font-semibold">-${(20.00).toFixed(2)}</span>
+                  <span className="text-green-600 font-semibold">-${(basePrice).toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal:</span>
-                <span className="text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Convenience Fee:</span>
-                <span className="text-gray-900">${getConvenienceFee(selectedTickets, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getConvenienceFee(selectedTickets, isDiscountApplied, convenienceFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Payment Processing:</span>
-                <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied, processingFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">HST (13%):</span>
-                <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</span>
               </div>
             </div>
             
@@ -298,7 +318,7 @@ function FreeTicketForm({
             <div className="border-t pt-3">
               <div className="flex justify-between items-center">
                 <p className="text-lg font-bold text-gray-900">Total</p>
-                <p className="text-2xl font-bold text-primary-600">${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary-600">${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -416,6 +436,11 @@ function PaymentForm({
   ticketTypes,
   totalPrice,
   eventDetails,
+  eventName,
+  basePrice = 20.00,
+  convenienceFee = 1.00,
+  processingFee = 1.10,
+  taxRate = 0.13,
   onBack,
   onSuccess,
   onClose,
@@ -537,7 +562,7 @@ function PaymentForm({
     setIsProcessing(true)
     setError(null)
 
-    const totalAmount = getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied)
+    const totalAmount = getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate)
 
     // Handle free tickets (discount applied)
     if (totalAmount === 0) {
@@ -592,6 +617,11 @@ function PaymentForm({
             customerInfo,
             selectedTickets,
             eventDetails,
+            eventName,
+            basePrice,
+            convenienceFee,
+            processingFee,
+            taxRate,
             isFreeTicket: true,
             freeTicketAmount: 0,
             paymentIntentId: 'free-ticket-' + Date.now(),
@@ -717,6 +747,11 @@ function PaymentForm({
         paymentIntent={paymentIntent}
         selectedTickets={selectedTickets}
         eventDetails={eventDetails}
+        eventName={eventName}
+        basePrice={basePrice}
+        convenienceFee={convenienceFee}
+        processingFee={processingFee}
+        taxRate={taxRate}
         customerInfo={customerInfo}
         onClose={onSuccess}
         isDiscountApplied={isDiscountApplied}
@@ -746,9 +781,9 @@ function PaymentForm({
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium text-gray-900">Event Tickets</p>
-                <p className="text-sm text-gray-600">Qty: {getTotalTickets(selectedTickets)} × ${getTicketPrice(selectedTickets, isDiscountApplied)} each</p>
+                <p className="text-sm text-gray-600">Qty: {getTotalTickets(selectedTickets)} × ${getTicketPrice(selectedTickets, isDiscountApplied, basePrice)} each</p>
               </div>
-              <p className="font-semibold text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</p>
+              <p className="font-semibold text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice).toFixed(2)}</p>
             </div>
             
             {/* Price Breakdown */}
@@ -756,24 +791,24 @@ function PaymentForm({
               {isDiscountApplied && (
                 <div className="flex justify-between">
                   <span className="text-green-600 font-semibold">Discount Applied:</span>
-                  <span className="text-green-600 font-semibold">-${(20.00).toFixed(2)}</span>
+                  <span className="text-green-600 font-semibold">-${(basePrice).toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal:</span>
-                <span className="text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Convenience Fee:</span>
-                <span className="text-gray-900">${getConvenienceFee(selectedTickets, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getConvenienceFee(selectedTickets, isDiscountApplied, convenienceFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Payment Processing:</span>
-                <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied, processingFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">HST (13%):</span>
-                <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</span>
+                <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</span>
               </div>
             </div>
             
@@ -781,7 +816,7 @@ function PaymentForm({
             <div className="border-t pt-3">
               <div className="flex justify-between items-center">
                 <p className="text-lg font-bold text-gray-900">Total</p>
-                <p className="text-2xl font-bold text-primary-600">${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}</p>
+                <p className="text-2xl font-bold text-primary-600">${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -850,7 +885,7 @@ function PaymentForm({
         </div>
 
         {/* Payment Information - Only show for paid tickets */}
-        {getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied) > 0 && (
+        {getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate) > 0 && (
           <div className="card">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
               <CreditCard className="w-5 h-5 mr-2" />
@@ -899,7 +934,7 @@ function PaymentForm({
               Processing Payment...
             </div>
           ) : (
-            `Pay $${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied).toFixed(2)}`
+            `Pay $${getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}`
           )}
         </button>
       </form>
@@ -912,6 +947,11 @@ export default function CheckoutForm({
   ticketTypes,
   totalPrice,
   eventDetails,
+  eventName,
+  basePrice = 20.00,
+  convenienceFee = 1.00,
+  processingFee = 1.10,
+  taxRate = 0.13,
   onBack,
   onSuccess,
   onClose,
@@ -919,7 +959,7 @@ export default function CheckoutForm({
   discountCode = ''
 }: CheckoutFormProps) {
   // Check if this is a free ticket (total amount is 0 or discount applied)
-  const isFreeTicket = isDiscountApplied || getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied) === 0
+  const isFreeTicket = isDiscountApplied || getTotalAmount(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate) === 0
 
   // For free tickets, render FreeTicketForm (no Stripe dependencies)
   if (isFreeTicket) {
@@ -929,6 +969,11 @@ export default function CheckoutForm({
         ticketTypes={ticketTypes}
         totalPrice={totalPrice}
         eventDetails={eventDetails}
+        eventName={eventName}
+        basePrice={basePrice}
+        convenienceFee={convenienceFee}
+        processingFee={processingFee}
+        taxRate={taxRate}
         onBack={onBack}
         onSuccess={onSuccess}
         onClose={onClose}
@@ -946,6 +991,11 @@ export default function CheckoutForm({
         ticketTypes={ticketTypes}
         totalPrice={totalPrice}
         eventDetails={eventDetails}
+        eventName={eventName}
+        basePrice={basePrice}
+        convenienceFee={convenienceFee}
+        processingFee={processingFee}
+        taxRate={taxRate}
         onBack={onBack}
         onSuccess={onSuccess}
         onClose={onClose}
