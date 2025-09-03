@@ -7,9 +7,9 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: [
           '/',
+          '/spice-of-india-2025-hamilton-reserve-parking-spots',
           '/parking-reservation',
           '/food-voucher',
-          '/spice-of-india-2025',
           '/event-details',
           '/event-information',
           '/faq',

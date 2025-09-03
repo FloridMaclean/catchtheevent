@@ -15,6 +15,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     
     // Event & Booking Pages
     {
+      url: `${baseUrl}/spice-of-india-2025-hamilton-reserve-parking-spots`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/parking-reservation`,
       lastModified: currentDate,
       changeFrequency: 'daily',
@@ -22,12 +28,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${baseUrl}/food-voucher`,
-      lastModified: currentDate,
-      changeFrequency: 'daily',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/spice-of-india-2025`,
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.9,
