@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users } from 'lucide-react'
+import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users, Car, Utensils } from 'lucide-react'
 
 import TicketSelector from '../components/TicketSelector'
 import Newsletter from '../components/Newsletter'
@@ -40,29 +40,33 @@ export default function Home() {
   }, [showTicketSelector])
 
   const eventDetails = {
-    title: "NEW EVENT",
-    subtitle: "Event Subtitle - Experience Something Amazing!",
-    date: "Date TBA",
-    time: "Time TBA",
-    venue: "Venue TBA",
-    address: "Address TBA",
-    description: "This is a placeholder description for your new event. Please update with your actual event details.",
-    seoDescription: "Experience an amazing new event! Book your tickets now for an unforgettable experience.",
+    title: "SPICE OF INDIA 2025",
+    subtitle: "Free Cultural & Food Festival | Live Music, Dance, DJs & Open-Air Garba",
+    date: "September 13-14, 2025",
+    time: "All Day (Garba after 6:00 PM)",
+    venue: "Bayfront Park",
+    address: "Bayfront Park, Hamilton, ON, Canada",
+    description: "Spice of India 2025 is a free, open-air cultural and food festival featuring live music, dance performances, DJs, food vendors, and an open-air Garba event. Experience the vibrant flavors and culture of India with all-day entertainment, shopping opportunities, and delicious food from selected vendors.",
+    seoDescription: "Experience Spice of India 2025 - Free cultural and food festival in Hamilton! Live music, dance, DJs, open-air Garba, and food vendors at Bayfront Park on September 13-14, 2025.",
     features: [
-      "Feature 1 - Update with your event features",
-      "Feature 2 - Update with your event features",
-      "Feature 3 - Update with your event features",
-      "Feature 4 - Update with your event features",
-      "Feature 5 - Update with your event features",
-      "Feature 6 - Update with your event features"
+      "Free entry for the public",
+      "All-day live music, DJs, and dance performances",
+      "Open-air Garba event after 6:00 PM",
+      "Array of food and non-food vendors",
+      "Shopping opportunities",
+      "Cultural celebration and community gathering"
     ],
     seoKeywords: [
-      "new event",
-      "event tickets",
-      "event booking",
-      "event venue",
-      "event date",
-      "event time"
+      "spice of india 2025",
+      "hamilton cultural festival",
+      "free indian festival",
+      "bayfront park hamilton",
+      "open air garba",
+      "indian food festival",
+      "cultural celebration hamilton",
+      "live music hamilton",
+      "dance performance hamilton",
+      "food vendors hamilton"
     ],
     image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
   }
@@ -74,7 +78,7 @@ export default function Home() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Event</h2>
+            <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Spice of India 2025</h2>
             <p className="text-slate-500">Preparing your amazing experience...</p>
           </div>
         </div>
@@ -89,14 +93,14 @@ export default function Home() {
         Skip to main content
       </a>
       <a href="#ticket-section" className="sr-only focus:not-sr-only focus:absolute focus:top-16 focus:left-4 bg-primary-600 text-white px-4 py-2 rounded-lg z-50">
-        Skip to ticket section
+        Skip to parking reservation section
       </a>
       
       <Header />
       
       {/* Live Region for Screen Readers */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
-        <div id="page-status">Event page loaded successfully</div>
+        <div id="page-status">Spice of India 2025 event page loaded successfully</div>
       </div>
       
       {/* Hero Section with Cross-Device Compatibility */}
@@ -106,7 +110,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
           
           {/* Subtle Color Accents */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-green-900/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-900/30 via-transparent to-red-900/30"></div>
           
           {/* Additional Depth Layer */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -114,16 +118,16 @@ export default function Home() {
           {/* Subtle Animated Elements */}
           <div className="absolute inset-0 overflow-hidden">
             {/* Floating Orbs */}
-            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-600/15 to-green-600/15 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-green-600/15 to-blue-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-            <div className="absolute bottom-40 left-20 w-40 h-40 bg-gradient-to-r from-blue-600/10 to-green-600/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '4s'}}></div>
-            <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-r from-green-600/15 to-blue-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-orange-600/15 to-red-600/15 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-red-600/15 to-orange-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-40 left-20 w-40 h-40 bg-gradient-to-r from-orange-600/10 to-red-600/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '4s'}}></div>
+            <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-r from-red-600/15 to-orange-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
             
             {/* Subtle Light Rays - Repositioned to avoid text overlap */}
-            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-pulse"></div>
-            <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/5 to-transparent animate-pulse" style={{animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent animate-pulse" style={{animationDelay: '3s'}}></div>
+            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-orange-500/5 to-transparent animate-pulse"></div>
+            <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-red-500/5 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-orange-500/5 to-transparent animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-red-500/5 to-transparent animate-pulse" style={{animationDelay: '3s'}}></div>
           </div>
           
           {/* Dark overlay for better text readability */}
@@ -132,12 +136,12 @@ export default function Home() {
         
         <div id="main-content" className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl lg:max-w-5xl mx-auto spacing-safe">
           {/* Animated background elements */}
-          <div className="absolute top-20 left-10 w-4 h-4 bg-blue-400 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.2s'}}></div>
-          <div className="absolute top-32 right-16 w-3 h-3 bg-green-400 rounded-full opacity-50 animate-bounce" style={{animationDelay: '0.8s'}}></div>
-          <div className="absolute bottom-32 left-20 w-5 h-5 bg-blue-300 rounded-full opacity-40 animate-bounce" style={{animationDelay: '1.4s'}}></div>
-          <div className="absolute bottom-20 right-10 w-3 h-3 bg-green-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.6s'}}></div>
-          <div className="absolute top-40 left-0 w-20 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-40 transform rotate-45"></div>
-          <div className="absolute bottom-40 right-0 w-16 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-40 transform -rotate-45"></div>
+          <div className="absolute top-20 left-10 w-4 h-4 bg-orange-400 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          <div className="absolute top-32 right-16 w-3 h-3 bg-red-400 rounded-full opacity-50 animate-bounce" style={{animationDelay: '0.8s'}}></div>
+          <div className="absolute bottom-32 left-20 w-5 h-5 bg-orange-300 rounded-full opacity-40 animate-bounce" style={{animationDelay: '1.4s'}}></div>
+          <div className="absolute bottom-20 right-10 w-3 h-3 bg-red-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.6s'}}></div>
+          <div className="absolute top-40 left-0 w-20 h-0.5 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-40 transform rotate-45"></div>
+          <div className="absolute bottom-40 right-0 w-16 h-0.5 bg-gradient-to-r from-transparent via-red-400 to-transparent opacity-40 transform -rotate-45"></div>
           
           <div className="space-y-8 gpu-accelerated">
             {/* Organizer Badge */}
@@ -145,12 +149,12 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="relative inline-flex items-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500/20 to-green-600/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-white/30 shadow-lg"
+              className="relative inline-flex items-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-orange-500/20 to-red-600/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-white/30 shadow-lg"
             >
-              <div className="absolute -top-1 -left-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-orange-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
               <span className="mr-2 sm:mr-3 text-base sm:text-lg">✨</span>
               <span className="text-white font-semibold text-xs sm:text-sm lg:text-base">Organized by Catch The Event</span>
             </motion.div>
@@ -162,11 +166,11 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full opacity-20 animate-pulse"></div>
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -bottom-6 -left-4 w-10 h-10 bg-gradient-to-r from-blue-400 to-green-500 rounded-full opacity-25 animate-pulse" style={{animationDelay: '2s'}}></div>
-              <div className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60"></div>
+              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-red-500 to-orange-600 rounded-full opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute -bottom-6 -left-4 w-10 h-10 bg-gradient-to-r from-orange-400 to-red-500 rounded-full opacity-25 animate-pulse" style={{animationDelay: '2s'}}></div>
+              <div className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-r from-red-400 to-orange-500 rounded-full opacity-20 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-60"></div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight relative z-10 text-responsive-xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)'}}>
                 {eventDetails.title}
@@ -193,10 +197,10 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-sm sm:text-base md:text-lg text-blue-300 font-medium max-w-2xl mx-auto leading-relaxed px-4 text-responsive"
+              className="text-sm sm:text-base md:text-lg text-orange-300 font-medium max-w-2xl mx-auto leading-relaxed px-4 text-responsive"
               style={{textShadow: '1px 1px 2px rgba(0,0,0,0.9)'}}
             >
-              Exclusive Event brought to you by Catch The Event
+              FREE Entry + $5 Food Voucher with Parking Reservation
             </motion.p>
 
             {/* Event Details */}
@@ -236,16 +240,16 @@ export default function Home() {
                   setShowTicketSelector(true)
                 }
               }}
-              aria-label="Purchase tickets for the event"
+              aria-label="Reserve parking spot for Spice of India 2025"
               aria-describedby="ticket-description"
-              className="bg-[rgb(59,130,246)] hover:bg-[rgb(37,99,235)] text-white text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl px-8 sm:px-12 md:px-16 lg:px-16 xl:px-20 py-4 sm:py-6 md:py-8 lg:py-8 xl:py-10 flex items-center justify-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-[rgb(59,130,246)] focus:ring-offset-2 touch-target rounded-full font-black transition-all duration-300 transform hover:scale-110 border-3 sm:border-4 md:border-6 border-black/20 min-h-[56px] sm:min-h-[64px] md:min-h-[72px] lg:min-h-[68px] xl:min-h-[75px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-auto text-center"
+              className="bg-[rgb(245,101,101)] hover:bg-[rgb(220,38,38)] text-white text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl px-8 sm:px-12 md:px-16 lg:px-16 xl:px-20 py-4 sm:py-6 md:py-8 lg:py-8 xl:py-10 flex items-center justify-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-[rgb(245,101,101)] focus:ring-offset-2 touch-target rounded-full font-black transition-all duration-300 transform hover:scale-110 border-3 sm:border-4 md:border-6 border-black/20 min-h-[56px] sm:min-h-[64px] md:min-h-[72px] lg:min-h-[68px] xl:min-h-[75px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-auto text-center"
               tabIndex={0}
             >
-              <Sparkles className="w-5 h-5 mr-3" aria-hidden="true" />
-              Get Tickets
+              <Car className="w-5 h-5 mr-3" aria-hidden="true" />
+              Reserve Parking Spot
               <ArrowRight className="w-5 h-5 ml-3" aria-hidden="true" />
             </motion.button>
-            <div id="ticket-description" className="sr-only">Click to open ticket selection modal for the event</div>
+            <div id="ticket-description" className="sr-only">Click to open parking reservation modal for Spice of India 2025 event</div>
           </div>
         </div>
       </section>
@@ -289,7 +293,7 @@ export default function Home() {
                   className="card card-hover"
                 >
                   <div className="flex items-start">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                    <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                       <Star className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-lg text-slate-700 font-medium">{feature}</span>
@@ -318,7 +322,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mb-6">
                   <MapPin className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Location</h4>
@@ -332,12 +336,12 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mb-6">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Timing</h4>
                 <p className="text-slate-600 font-medium">{eventDetails.time}</p>
-                <p className="text-slate-500 text-sm mt-1">Event details TBA</p>
+                <p className="text-slate-500 text-sm mt-1">Open-air festival</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -346,14 +350,141 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mb-6">
                   <Users className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Event Type</h4>
-                <p className="text-slate-600 font-medium">Details TBA</p>
-                <p className="text-slate-500 text-sm mt-1">More information coming soon</p>
+                <p className="text-slate-600 font-medium">Free Festival</p>
+                <p className="text-slate-500 text-sm mt-1">Cultural celebration</p>
               </motion.div>
             </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Parking & Food Voucher Section */}
+      <section className="py-16 px-4 bg-gradient-to-r from-orange-50 to-red-50">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+              Premium Parking & Food Vouchers
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Reserve your parking spot right beside the event venue and get a $5 food voucher to redeem with selected vendors!
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Parking Information */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="card"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Car className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold mb-6 text-gray-900">Parking Reservation</h3>
+                <div className="space-y-4 text-left">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">Parking Spot:</span>
+                    <span className="text-green-600 font-bold">$10.00</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">Convenience Fee:</span>
+                    <span className="text-orange-600 font-bold">$1.10</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">Processing Fee:</span>
+                    <span className="text-orange-600 font-bold">$1.50</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="font-medium">Tax (13%):</span>
+                    <span className="text-red-600 font-bold">$1.30</span>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg text-white">
+                    <span className="font-bold text-lg">Total:</span>
+                    <span className="font-bold text-xl">$13.90</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600 mt-4">
+                  Limited to 150 parking spots available for both days
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Food Voucher Information */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="card"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Utensils className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold mb-6 text-gray-900">$5 Food Voucher</h3>
+                <div className="space-y-4 text-left">
+                  <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
+                    <h4 className="font-semibold text-green-800 mb-2">What's Included:</h4>
+                    <ul className="space-y-2 text-green-700">
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        $5 credit towards food purchases
+                      </li>
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        Redeemable with selected vendors
+                      </li>
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        Valid for both event days
+                      </li>
+                      <li className="flex items-center">
+                        <span className="text-green-500 mr-2">✓</span>
+                        No expiration during event
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                    <h4 className="font-semibold text-blue-800 mb-2">Vendor Selection:</h4>
+                    <p className="text-blue-700">
+                      Choose from our curated selection of food vendors offering authentic Indian cuisine, snacks, and beverages.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* CTA Button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <button
+              onClick={() => setShowTicketSelector(true)}
+              className="bg-gradient-to-r from-orange-500 to-red-600 text-white text-xl font-bold py-4 px-8 rounded-full hover:from-orange-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              Reserve Your Parking Spot Now
+            </button>
+            <p className="text-gray-600 mt-4">
+              Limited availability - Only 150 spots for 2 days!
+            </p>
           </motion.div>
         </div>
       </section>
@@ -387,24 +518,32 @@ export default function Home() {
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Event Details</h4>
-                  <p className="text-gray-600">Event details and information will be updated soon. Please check back for more information.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Free Event Entry</h4>
+                  <p className="text-gray-600">Spice of India 2025 is completely free to attend. No tickets required for entry to the festival.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Ticket Information</h4>
-                  <p className="text-gray-600">Ticket pricing and availability will be announced soon. Stay tuned for updates.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Parking Reservation</h4>
+                  <p className="text-gray-600">Parking spots are limited to 150 vehicles for both days. Reservations are first-come, first-served.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Venue & Timing</h4>
-                  <p className="text-gray-600">Venue and timing details will be confirmed and announced shortly.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Food Voucher</h4>
+                  <p className="text-gray-600">$5 food voucher is included with parking reservation and can be redeemed with selected food vendors at the venue.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Weather Policy</h4>
+                  <p className="text-gray-600">This is an open-air event. In case of severe weather, updates will be provided on our website and social media.</p>
                 </div>
               </div>
               
@@ -412,7 +551,7 @@ export default function Home() {
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Refund Policy</h4>
-                  <p className="text-gray-600">Refund policy and terms will be clearly communicated when tickets become available.</p>
+                  <p className="text-gray-600">Parking reservations are non-refundable. Food vouchers are valid for the duration of the event.</p>
                 </div>
               </div>
             </div>
@@ -430,10 +569,10 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Don't Miss This Amazing Event!
+              Don't Miss Hamilton's Most Vibrant Cultural Festival!
             </h2>
             <p className="text-xl mb-8 text-primary-100">
-              Join us for an unforgettable experience
+              Join us for two days of amazing food, music, dance, and cultural celebration
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -441,7 +580,7 @@ export default function Home() {
               onClick={() => setShowTicketSelector(true)}
               className="bg-white text-primary-600 font-semibold py-4 px-8 rounded-lg text-lg hover:bg-gray-100 transition-all duration-200"
             >
-              Book Your Tickets Now
+              Reserve Your Parking Spot Now
             </motion.button>
           </motion.div>
         </div>
@@ -458,10 +597,11 @@ export default function Home() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-              New Event - Coming Soon
+              Spice of India 2025 - Hamilton's Premier Cultural Festival
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-              We're preparing something amazing for you. Stay tuned for updates about this exciting new event!
+              Experience the rich culture and flavors of India at Bayfront Park, Hamilton. 
+              Enjoy live performances, delicious food, and community celebration in a beautiful open-air setting.
             </p>
           </motion.div>
 
@@ -473,27 +613,27 @@ export default function Home() {
             className="grid md:grid-cols-2 gap-8 mb-12"
           >
             <div className="card">
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Why Choose This Event?</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900">Why Choose Spice of India 2025?</h3>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Amazing experience - Details coming soon</span>
+                  <span>Completely free entry for everyone</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Great venue and atmosphere</span>
+                  <span>Live music, dance, and DJ performances</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Professional organization</span>
+                  <span>Open-air Garba event after 6:00 PM</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Family-friendly event</span>
+                  <span>Diverse food and shopping vendors</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Exclusive benefits for attendees</span>
+                  <span>Family-friendly cultural celebration</span>
                 </li>
               </ul>
             </div>
@@ -503,23 +643,23 @@ export default function Home() {
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🎭</span>
-                  <span>Amazing performances - Details TBA</span>
+                  <span>Live cultural performances</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🎵</span>
-                  <span>Great entertainment - Coming soon</span>
+                  <span>Music and DJ entertainment</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🌟</span>
-                  <span>Community gathering and celebration</span>
+                  <span>Open-air Garba celebration</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-primary-500 mr-2">🎁</span>
-                  <span>Special event memorabilia</span>
+                  <span className="text-primary-500 mr-2">🍽️</span>
+                  <span>Authentic Indian cuisine</span>
                 </li>
                 <li className="flex items-start">
-                  <span className="text-primary-500 mr-2">⚡</span>
-                  <span>Priority entry for attendees</span>
+                  <span className="text-primary-500 mr-2">🛍️</span>
+                  <span>Shopping opportunities</span>
                 </li>
               </ul>
             </div>
@@ -533,18 +673,18 @@ export default function Home() {
             className="card text-center"
           >
             <h3 className="text-2xl font-bold mb-6 text-gray-900">
-              Book Your Tickets When Available
+              Reserve Your Parking Spot Today
             </h3>
             <p className="text-lg text-gray-600 mb-6">
-              We're working hard to bring you an amazing event experience. 
-              Ticket information and booking details will be available soon!
+              Don't miss out on convenient parking right beside the event venue! 
+              Reserve your spot now and get your $5 food voucher included.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => setShowTicketSelector(true)}
                 className="btn-primary text-lg px-8 py-4"
               >
-                Get Notified
+                Reserve Parking + Get Food Voucher
               </button>
             </div>
           </motion.div>

@@ -15,13 +15,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     
     // Event & Booking Pages
     {
-      url: `${baseUrl}/tickets`,
+      url: `${baseUrl}/parking-reservation`,
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/book-tickets`,
+      url: `${baseUrl}/food-voucher`,
+      lastModified: currentDate,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/spice-of-india-2025`,
       lastModified: currentDate,
       changeFrequency: 'daily',
       priority: 0.9,

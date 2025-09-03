@@ -16,22 +16,26 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://catchtheevent.com'),
   title: {
-    default: 'New Event - Catch The Event | Book Your Tickets Now',
-    template: '%s | New Event | Catch The Event'
+    default: 'Spice of India 2025 - Free Cultural & Food Festival | Hamilton | Catch The Event',
+    template: '%s | Spice of India 2025 | Catch The Event'
   },
-  description: 'Experience an amazing new event! Book your tickets now for an unforgettable experience with Catch The Event.',
+  description: 'Experience Spice of India 2025 - Free cultural and food festival in Hamilton! Live music, dance, DJs, open-air Garba, and food vendors at Bayfront Park on September 13-14, 2025.',
   authors: [{ name: 'Catch The Event', url: 'https://catchtheevent.com' }],
   keywords: [
-    'new event',
-    'event tickets',
-    'event booking',
-    'event venue',
-    'event date',
-    'event time',
-    'catch the event',
-    'event organization',
-    'ticket booking',
-    'event management'
+    'spice of india 2025',
+    'hamilton cultural festival',
+    'free indian festival',
+    'bayfront park hamilton',
+    'open air garba',
+    'indian food festival',
+    'cultural celebration hamilton',
+    'live music hamilton',
+    'dance performance hamilton',
+    'food vendors hamilton',
+    'parking reservation hamilton',
+    'food voucher hamilton',
+    'september 13-14 2025',
+    'hamilton ontario events'
   ],
   creator: 'Catch The Event',
   publisher: 'Catch The Event',
@@ -47,7 +51,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: 'New Event',
+    title: 'Spice of India 2025',
     statusBarStyle: 'default',
   },
   robots: {
@@ -66,8 +70,8 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     url: 'https://catchtheevent.com',
     siteName: 'Catch The Event',
-    title: 'New Event - Book Your Tickets Now',
-    description: 'Experience an amazing new event! Book your tickets now for an unforgettable experience.',
+    title: 'Spice of India 2025 - Free Cultural & Food Festival',
+    description: 'Experience Spice of India 2025 - Free cultural and food festival in Hamilton! Live music, dance, DJs, open-air Garba, and food vendors at Bayfront Park on September 13-14, 2025.',
     images: [
       {
         url: 'https://catchtheevent.com/images/logo-no-background.png',
@@ -81,15 +85,15 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@catch_the_event',
     creator: '@catch_the_event',
-    title: 'New Event - Catch The Event | Book Your Tickets Now',
-    description: 'Experience an amazing new event! Book your tickets now for an unforgettable experience with Catch The Event.',
+    title: 'Spice of India 2025 - Free Cultural & Food Festival | Hamilton | Catch The Event',
+    description: 'Experience Spice of India 2025 - Free cultural and food festival in Hamilton! Live music, dance, DJs, open-air Garba, and food vendors at Bayfront Park on September 13-14, 2025.',
     images: ['https://catchtheevent.com/images/logo-no-background.png'],
   },
   alternates: {
     canonical: 'https://catchtheevent.com',
   },
   category: 'Event',
-  classification: 'Event',
+  classification: 'Cultural Festival',
   other: {
     'og:type': 'website',
     'og:site_name': 'Catch The Event',
