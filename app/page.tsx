@@ -376,8 +376,48 @@ export default function Home() {
               Premium Parking & Food Vouchers
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Reserve your parking spot right beside the event venue and get a $5 food voucher to redeem with selected vendors!
+              Choose from 3 exclusive time slots and reserve your parking spot right beside the event venue with a $5 food voucher included!
             </p>
+          </motion.div>
+
+          {/* Time Slot Options */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <h3 className="text-2xl font-bold mb-6 text-center text-gray-900">Available Time Slots</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="text-center p-4 bg-orange-50 rounded-lg border-2 border-orange-200">
+                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-lg font-bold">1</span>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">September 13th</h4>
+                <p className="text-orange-700 font-semibold">3:00 PM Onwards</p>
+                <p className="text-gray-600 text-sm">Afternoon & Evening</p>
+              </div>
+              
+              <div className="text-center p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-lg font-bold">2</span>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">September 14th</h4>
+                <p className="text-blue-700 font-semibold">9:00 AM - 2:00 PM</p>
+                <p className="text-gray-600 text-sm">Live Cricket Match</p>
+                <span className="inline-block bg-blue-500 text-white text-xs px-2 py-1 rounded-full mt-2">CRICKET MATCH</span>
+              </div>
+              
+              <div className="text-center p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-lg font-bold">3</span>
+                </div>
+                <h4 className="font-bold text-gray-900 mb-2">September 14th</h4>
+                <p className="text-red-700 font-semibold">3:00 PM Onwards</p>
+                <p className="text-gray-600 text-sm">Afternoon & Evening</p>
+              </div>
+            </div>
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -526,8 +566,8 @@ export default function Home() {
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Parking Reservation</h4>
-                  <p className="text-gray-600">Parking spots are limited to 150 vehicles for both days. Reservations are first-come, first-served.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Parking Time Slots</h4>
+                  <p className="text-gray-600">Choose from 3 exclusive time slots: September 13th (3:00 PM onwards), September 14th morning (9:00 AM - 2:00 PM) for cricket match, or September 14th afternoon (3:00 PM onwards).</p>
                 </div>
               </div>
               
@@ -535,7 +575,15 @@ export default function Home() {
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Food Voucher</h4>
-                  <p className="text-gray-600">$5 food voucher is included with parking reservation and can be redeemed with selected food vendors at the venue.</p>
+                  <p className="text-gray-600">$5 food voucher is included with each parking reservation and can be redeemed with selected food vendors during your specific time slot.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Cricket Match Special</h4>
+                  <p className="text-gray-600">September 14th morning slot (9:00 AM - 2:00 PM) includes access to the live cricket match at the venue.</p>
                 </div>
               </div>
               
