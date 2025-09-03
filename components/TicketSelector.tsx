@@ -27,10 +27,10 @@ interface TicketSelectorProps {
 export default function TicketSelector({ 
   onClose, 
   eventDetails, 
-  eventName = "Rangtaali Hamilton 2025",
-  basePrice = 20.00,
-  convenienceFee = 1.00,
-  processingFee = 1.10,
+  eventName = "Spice of India 2025",
+  basePrice = 10.00,
+  convenienceFee = 1.10,
+  processingFee = 1.50,
   taxRate = 0.13
 }: TicketSelectorProps) {
   const [selectedTickets, setSelectedTickets] = useState<{ [key: string]: number }>({})
@@ -43,28 +43,43 @@ export default function TicketSelector({
 
   const ticketTypes: TicketType[] = [
     {
-      id: 'exclusive-pass',
-      name: eventName === "Meet & Greet with Aishwarya Majmudar" 
-        ? 'Meet & Greet Ticket' 
-        : 'Catch The Event Exclusive Rangtaali Garba Pass',
-      price: basePrice,
-      description: eventName === "Meet & Greet with Aishwarya Majmudar"
-        ? 'Exclusive meet & greet with Aishwarya Majmudar including photo opportunity and autograph session'
-        : 'Exclusive admission to the Garba event with special benefits',
-      available: 1000,
-      benefits: eventName === "Meet & Greet with Aishwarya Majmudar" 
-        ? [
-            'Meet & Greet with Aishwarya Majmudar',
-            'Photo Opportunity',
-            'Autograph Session',
-            'Limited Spots Available'
-          ]
-        : [
-            'Exclusive event access',
-            'Special Garba experience',
-            'Priority entry',
-            'Event memorabilia'
-          ]
+      id: 'september-13-afternoon',
+      name: 'September 13th - Afternoon & Evening',
+      price: 10.00,
+      description: 'Parking reservation for September 13th from 3:00 PM onwards. Includes $5 food voucher.',
+      available: 50,
+      benefits: [
+        'Parking spot from 3:00 PM onwards',
+        '$5 food voucher included',
+        'Valid for September 13th only',
+        'Redeemable with selected vendors'
+      ]
+    },
+    {
+      id: 'september-14-morning',
+      name: 'September 14th - Morning (Cricket Match)',
+      price: 10.00,
+      description: 'Parking reservation for September 14th from 9:00 AM to 2:00 PM. Includes live cricket match access and $5 food voucher.',
+      available: 50,
+      benefits: [
+        'Parking spot from 9:00 AM - 2:00 PM',
+        'Live cricket match access',
+        '$5 food voucher included',
+        'Valid for September 14th morning only'
+      ]
+    },
+    {
+      id: 'september-14-afternoon',
+      name: 'September 14th - Afternoon & Evening',
+      price: 10.00,
+      description: 'Parking reservation for September 14th from 3:00 PM onwards. Includes $5 food voucher.',
+      available: 50,
+      benefits: [
+        'Parking spot from 3:00 PM onwards',
+        '$5 food voucher included',
+        'Valid for September 14th only',
+        'Redeemable with selected vendors'
+      ]
     }
   ]
 
@@ -234,8 +249,8 @@ export default function TicketSelector({
               <CreditCard className="w-5 h-5 text-white" />
             </div>
             <div className="text-center">
-              <h2 className="text-xl font-bold text-gray-900">Select Your Tickets</h2>
-              <p className="text-sm text-gray-600">Rangtaali Hamilton 2025</p>
+              <h2 className="text-xl font-bold text-gray-900">Select Your Parking Time Slot</h2>
+              <p className="text-sm text-gray-600">Spice of India 2025 - Hamilton</p>
             </div>
           </div>
           <button
@@ -467,7 +482,7 @@ export default function TicketSelector({
                   disabled={getTotalTickets() === 0}
                   className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
                 >
-                  Proceed to Checkout
+                  Reserve Parking Spot
                 </button>
               </div>
             </div>
