@@ -2,15 +2,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import Image from 'next/image'
 import { Calendar, Clock, MapPin, Sparkles, ArrowRight, Star, Users } from 'lucide-react'
 
-// Import TicketSelector directly to test
 import TicketSelector from '../components/TicketSelector'
 import Newsletter from '../components/Newsletter'
-
-
-
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 
@@ -45,43 +40,29 @@ export default function Home() {
   }, [showTicketSelector])
 
   const eventDetails = {
-    title: "RANGTAALI Hamilton 2025",
-    subtitle: "By Aishwarya Majmudar | Experience an Unforgettable Night of Garba in Hamilton!",
-    date: "Sunday, August 31st, 2025",
-    time: "6:30 PM",
-    venue: "Gage Park",
-    address: "1000 Main St E, Hamilton, ON L8M 1N2, Canada",
-    description: "Catch The Event proudly presents Rangtaali Hamilton 2025 featuring the sensational Aishwarya Majmudar – one of the most loved voices in the Garba world. Get ready for an evening filled with vibrant rhythms, cultural pride, and electrifying energy. Aishwarya Majmudar is set to light up the stage with her dynamic vocals and captivating performance. This Navratri celebration promises an authentic experience for all ages, uniting the community through music, tradition, and joy.",
-    seoDescription: "Experience an Unforgettable Night of Garba in Hamilton! Purchase exclusive $20 Rangtaali Garba Pass for Rangtaali Hamilton 2025 featuring Aishwarya Majmudar. Live Navratri celebration at Gage Park, Hamilton, ON. Book your tickets now!",
+    title: "NEW EVENT",
+    subtitle: "Event Subtitle - Experience Something Amazing!",
+    date: "Date TBA",
+    time: "Time TBA",
+    venue: "Venue TBA",
+    address: "Address TBA",
+    description: "This is a placeholder description for your new event. Please update with your actual event details.",
+    seoDescription: "Experience an amazing new event! Book your tickets now for an unforgettable experience.",
     features: [
-      "Live Garba performance by Aishwarya Majmudar",
-      "Authentic Navratri celebration experience",
-      "Open ground venue - India's Open Ground Garba experience in Canada",
-      "Community gathering for all ages",
-      "Cultural pride and tradition celebration",
-      "Vibrant rhythms and electrifying energy"
+      "Feature 1 - Update with your event features",
+      "Feature 2 - Update with your event features",
+      "Feature 3 - Update with your event features",
+      "Feature 4 - Update with your event features",
+      "Feature 5 - Update with your event features",
+      "Feature 6 - Update with your event features"
     ],
     seoKeywords: [
-      "rangtaali hamilton 2025",
-      "aishwarya majmudar",
-      "garba event hamilton",
-      "navratri celebration canada",
-      "live garba performance",
-      "hamilton event tickets",
-      "gage park hamilton",
-      "indian cultural event",
-      "garba dance hamilton",
-      "rangtaali tickets",
-      "aishwarya majmudar concert",
-      "navratri hamilton 2025",
-      "indian music event",
-      "cultural celebration hamilton",
-      "garba night hamilton",
-      "exclusive garba pass",
-      "$20 tickets hamilton",
-      "hamilton navratri 2025",
-      "canada garba event",
-      "ontario cultural festival"
+      "new event",
+      "event tickets",
+      "event booking",
+      "event venue",
+      "event date",
+      "event time"
     ],
     image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
   }
@@ -93,7 +74,7 @@ export default function Home() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Rangtaali Hamilton 2025</h2>
+            <h2 className="text-xl font-semibold text-slate-700 mb-2">Loading Event</h2>
             <p className="text-slate-500">Preparing your amazing experience...</p>
           </div>
         </div>
@@ -115,7 +96,7 @@ export default function Home() {
       
       {/* Live Region for Screen Readers */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
-        <div id="page-status">Rangtaali Hamilton 2025 event page loaded successfully</div>
+        <div id="page-status">Event page loaded successfully</div>
       </div>
       
       {/* Hero Section with Cross-Device Compatibility */}
@@ -125,7 +106,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
           
           {/* Subtle Color Accents */}
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/30 via-transparent to-pink-900/30"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-green-900/30"></div>
           
           {/* Additional Depth Layer */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
@@ -133,16 +114,16 @@ export default function Home() {
           {/* Subtle Animated Elements */}
           <div className="absolute inset-0 overflow-hidden">
             {/* Floating Orbs */}
-            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-purple-600/15 to-pink-600/15 rounded-full blur-xl animate-pulse"></div>
-            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-pink-600/15 to-purple-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-            <div className="absolute bottom-40 left-20 w-40 h-40 bg-gradient-to-r from-purple-600/10 to-pink-600/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '4s'}}></div>
-            <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-r from-pink-600/15 to-purple-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-600/15 to-green-600/15 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-green-600/15 to-blue-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-40 left-20 w-40 h-40 bg-gradient-to-r from-blue-600/10 to-green-600/10 rounded-full blur-xl animate-pulse" style={{animationDelay: '4s'}}></div>
+            <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-r from-green-600/15 to-blue-600/15 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
             
             {/* Subtle Light Rays - Repositioned to avoid text overlap */}
-            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-purple-500/5 to-transparent animate-pulse"></div>
-            <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-pink-500/5 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-500/5 to-transparent animate-pulse" style={{animationDelay: '2s'}}></div>
-            <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-pink-500/5 to-transparent animate-pulse" style={{animationDelay: '3s'}}></div>
+            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-blue-500/5 to-transparent animate-pulse"></div>
+            <div className="absolute top-0 left-3/4 w-px h-full bg-gradient-to-b from-transparent via-green-500/5 to-transparent animate-pulse" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-500/5 to-transparent animate-pulse" style={{animationDelay: '2s'}}></div>
+            <div className="absolute bottom-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-green-500/5 to-transparent animate-pulse" style={{animationDelay: '3s'}}></div>
           </div>
           
           {/* Dark overlay for better text readability */}
@@ -151,12 +132,12 @@ export default function Home() {
         
         <div id="main-content" className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl lg:max-w-5xl mx-auto spacing-safe">
           {/* Animated background elements */}
-          <div className="absolute top-20 left-10 w-4 h-4 bg-pink-400 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.2s'}}></div>
-          <div className="absolute top-32 right-16 w-3 h-3 bg-purple-400 rounded-full opacity-50 animate-bounce" style={{animationDelay: '0.8s'}}></div>
-          <div className="absolute bottom-32 left-20 w-5 h-5 bg-pink-300 rounded-full opacity-40 animate-bounce" style={{animationDelay: '1.4s'}}></div>
-          <div className="absolute bottom-20 right-10 w-3 h-3 bg-purple-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.6s'}}></div>
-          <div className="absolute top-40 left-0 w-20 h-0.5 bg-gradient-to-r from-transparent via-pink-400 to-transparent opacity-40 transform rotate-45"></div>
-          <div className="absolute bottom-40 right-0 w-16 h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-40 transform -rotate-45"></div>
+          <div className="absolute top-20 left-10 w-4 h-4 bg-blue-400 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          <div className="absolute top-32 right-16 w-3 h-3 bg-green-400 rounded-full opacity-50 animate-bounce" style={{animationDelay: '0.8s'}}></div>
+          <div className="absolute bottom-32 left-20 w-5 h-5 bg-blue-300 rounded-full opacity-40 animate-bounce" style={{animationDelay: '1.4s'}}></div>
+          <div className="absolute bottom-20 right-10 w-3 h-3 bg-green-300 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0.6s'}}></div>
+          <div className="absolute top-40 left-0 w-20 h-0.5 bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-40 transform rotate-45"></div>
+          <div className="absolute bottom-40 right-0 w-16 h-0.5 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-40 transform -rotate-45"></div>
           
           <div className="space-y-8 gpu-accelerated">
             {/* Organizer Badge */}
@@ -164,14 +145,14 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="relative inline-flex items-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-pink-500/20 to-purple-600/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-white/30 shadow-lg"
+              className="relative inline-flex items-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500/20 to-green-600/20 backdrop-blur-sm rounded-full text-xs sm:text-sm font-medium border border-white/30 shadow-lg"
             >
-              <div className="absolute -top-1 -left-1 w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-pink-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
+              <div className="absolute -top-1 -left-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-green-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '1.5s'}}></div>
               <span className="mr-2 sm:mr-3 text-base sm:text-lg">✨</span>
-              <span className="text-white font-semibold text-xs sm:text-sm lg:text-base">Organized by Panghat Entertainment Ltd.</span>
+              <span className="text-white font-semibold text-xs sm:text-sm lg:text-base">Organized by Catch The Event</span>
             </motion.div>
 
             {/* Main Title */}
@@ -181,15 +162,14 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full opacity-20 animate-pulse"></div>
-              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
-              <div className="absolute -bottom-6 -left-4 w-10 h-10 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-25 animate-pulse" style={{animationDelay: '2s'}}></div>
-              <div className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full opacity-20 animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-60"></div>
-              {/* <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60"></div> */}
+              <div className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -top-4 -right-4 w-12 h-12 bg-gradient-to-r from-green-500 to-blue-600 rounded-full opacity-30 animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="absolute -bottom-6 -left-4 w-10 h-10 bg-gradient-to-r from-blue-400 to-green-500 rounded-full opacity-25 animate-pulse" style={{animationDelay: '2s'}}></div>
+              <div className="absolute -bottom-8 -right-8 w-14 h-14 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-60"></div>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight relative z-10 text-responsive-xl" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6)'}}>
-                RANGTAALI Hamilton 2025
+                {eventDetails.title}
               </h1>
               
               <div className="absolute top-4 right-8 text-2xl animate-bounce" style={{animationDelay: '0.3s'}}>✨</div>
@@ -206,17 +186,17 @@ export default function Home() {
               className="text-base sm:text-lg md:text-xl lg:text-2xl text-white max-w-2xl sm:max-w-3xl mx-auto font-semibold leading-relaxed px-4 text-responsive"
               style={{textShadow: '1px 1px 3px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.8)'}}
             >
-              By Aishwarya Majmudar | Experience an Unforgettable Night of Garba in Hamilton, ON!
+              {eventDetails.subtitle}
             </motion.p>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="text-sm sm:text-base md:text-lg text-pink-300 font-medium max-w-2xl mx-auto leading-relaxed px-4 text-responsive"
+              className="text-sm sm:text-base md:text-lg text-blue-300 font-medium max-w-2xl mx-auto leading-relaxed px-4 text-responsive"
               style={{textShadow: '1px 1px 2px rgba(0,0,0,0.9)'}}
             >
-              Exclusive Discount brought to you by Catch The Event
+              Exclusive Event brought to you by Catch The Event
             </motion.p>
 
             {/* Event Details */}
@@ -256,16 +236,16 @@ export default function Home() {
                   setShowTicketSelector(true)
                 }
               }}
-              aria-label="Purchase tickets for Rangtaali Hamilton 2025"
+              aria-label="Purchase tickets for the event"
               aria-describedby="ticket-description"
-              className="bg-[rgb(175,254,0)] hover:bg-[rgb(155,234,0)] text-black text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl px-8 sm:px-12 md:px-16 lg:px-16 xl:px-20 py-4 sm:py-6 md:py-8 lg:py-8 xl:py-10 flex items-center justify-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-[rgb(175,254,0)] focus:ring-offset-2 touch-target rounded-full font-black transition-all duration-300 transform hover:scale-110 border-3 sm:border-4 md:border-6 border-black/20 min-h-[56px] sm:min-h-[64px] md:min-h-[72px] lg:min-h-[68px] xl:min-h-[75px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-auto text-center"
+              className="bg-[rgb(59,130,246)] hover:bg-[rgb(37,99,235)] text-white text-xl sm:text-2xl md:text-3xl lg:text-3xl xl:text-4xl 2xl:text-5xl px-8 sm:px-12 md:px-16 lg:px-16 xl:px-20 py-4 sm:py-6 md:py-8 lg:py-8 xl:py-10 flex items-center justify-center mx-auto shadow-2xl focus:outline-none focus:ring-4 focus:ring-[rgb(59,130,246)] focus:ring-offset-2 touch-target rounded-full font-black transition-all duration-300 transform hover:scale-110 border-3 sm:border-4 md:border-6 border-black/20 min-h-[56px] sm:min-h-[64px] md:min-h-[72px] lg:min-h-[68px] xl:min-h-[75px] w-[90%] sm:w-[85%] md:w-[80%] lg:w-auto text-center"
               tabIndex={0}
             >
               <Sparkles className="w-5 h-5 mr-3" aria-hidden="true" />
-              Buy for $20 only
+              Get Tickets
               <ArrowRight className="w-5 h-5 ml-3" aria-hidden="true" />
             </motion.button>
-            <div id="ticket-description" className="sr-only">Click to open ticket selection modal for Rangtaali Hamilton 2025 event</div>
+            <div id="ticket-description" className="sr-only">Click to open ticket selection modal for the event</div>
           </div>
         </div>
       </section>
@@ -309,7 +289,7 @@ export default function Home() {
                   className="card card-hover"
                 >
                   <div className="flex items-start">
-                    <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
                       <Star className="w-5 h-5 text-white" />
                     </div>
                     <span className="text-lg text-slate-700 font-medium">{feature}</span>
@@ -338,7 +318,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
                   <MapPin className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Location</h4>
@@ -352,12 +332,12 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
                   <Clock className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Timing</h4>
                 <p className="text-slate-600 font-medium">{eventDetails.time}</p>
-                <p className="text-slate-500 text-sm mt-1">Open ground event</p>
+                <p className="text-slate-500 text-sm mt-1">Event details TBA</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -366,12 +346,12 @@ export default function Home() {
                 viewport={{ once: true }}
                 className="flex flex-col items-center"
               >
-                <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-600 rounded-full flex items-center justify-center mb-6">
                   <Users className="w-8 h-8 text-white" />
                 </div>
                 <h4 className="text-xl font-semibold mb-3 text-slate-800">Event Type</h4>
-                <p className="text-slate-600 font-medium">Open Ground</p>
-                <p className="text-slate-500 text-sm mt-1">Navratri celebration</p>
+                <p className="text-slate-600 font-medium">Details TBA</p>
+                <p className="text-slate-500 text-sm mt-1">More information coming soon</p>
               </motion.div>
             </div>
           </motion.div>
@@ -407,32 +387,24 @@ export default function Home() {
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Open Ground Venue</h4>
-                  <p className="text-gray-600">This is an Open Ground venue. We are bringing India's Open Ground Garba experience to Canada.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Event Details</h4>
+                  <p className="text-gray-600">Event details and information will be updated soon. Please check back for more information.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Footwear Requirement</h4>
-                  <p className="text-gray-600">No barefoot Garba allowed. Make sure to wear adequate shoes/footwear to ensure safety. We are not responsible for any damage.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Ticket Information</h4>
+                  <p className="text-gray-600">Ticket pricing and availability will be announced soon. Stay tuned for updates.</p>
                 </div>
               </div>
               
               <div className="flex items-start">
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Weather Policy</h4>
-                  <p className="text-gray-600">Event Date/Venue might change in case of bad weather conditions. If such a scenario happens you will be given the option of a Refund or still participate on another Date/Venue.</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Pricing Policy</h4>
-                  <p className="text-gray-600">The price of the tickets may increase or decrease based on the availability of tickets and demand. You are not entitled to refund the difference in such a scenario.</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Venue & Timing</h4>
+                  <p className="text-gray-600">Venue and timing details will be confirmed and announced shortly.</p>
                 </div>
               </div>
               
@@ -440,7 +412,7 @@ export default function Home() {
                 <div className="w-2 h-2 bg-primary-500 rounded-full mt-3 mr-4 flex-shrink-0"></div>
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-2">Refund Policy</h4>
-                  <p className="text-gray-600">Strictly No refund in any other scenarios apart from the weather-related changes mentioned above.</p>
+                  <p className="text-gray-600">Refund policy and terms will be clearly communicated when tickets become available.</p>
                 </div>
               </div>
             </div>
@@ -458,10 +430,10 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Don't Miss Hamilton's Most Extravagant Navratri Night!
+              Don't Miss This Amazing Event!
             </h2>
             <p className="text-xl mb-8 text-primary-100">
-              Join us with your friends and family for an unforgettable Garba celebration
+              Join us for an unforgettable experience
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -486,12 +458,10 @@ export default function Home() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900">
-              Rangtaali Hamilton 2025 - Premier Garba Event in Canada
+              New Event - Coming Soon
             </h2>
             <p className="text-lg text-gray-600 mb-8">
-              Join us for the most spectacular Navratri celebration in Hamilton featuring Aishwarya Majmudar, 
-              one of the most loved voices in the Garba world. Experience authentic Indian culture and 
-              traditional Garba dance at Gage Park, Hamilton.
+              We're preparing something amazing for you. Stay tuned for updates about this exciting new event!
             </p>
           </motion.div>
 
@@ -503,27 +473,27 @@ export default function Home() {
             className="grid md:grid-cols-2 gap-8 mb-12"
           >
             <div className="card">
-              <h3 className="text-xl font-bold mb-4 text-gray-900">Why Choose Rangtaali Hamilton 2025?</h3>
+              <h3 className="text-xl font-bold mb-4 text-gray-900">Why Choose This Event?</h3>
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Exclusive $20 Garba Pass - Best value in Hamilton</span>
+                  <span>Amazing experience - Details coming soon</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Live performance by Aishwarya Majmudar</span>
+                  <span>Great venue and atmosphere</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Open ground venue - Authentic Garba experience</span>
+                  <span>Professional organization</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Family-friendly Navratri celebration</span>
+                  <span>Family-friendly event</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">✓</span>
-                  <span>Priority entry and exclusive benefits</span>
+                  <span>Exclusive benefits for attendees</span>
                 </li>
               </ul>
             </div>
@@ -533,23 +503,23 @@ export default function Home() {
               <ul className="space-y-3 text-gray-700">
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🎭</span>
-                  <span>Traditional Garba dance performance</span>
+                  <span>Amazing performances - Details TBA</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🎵</span>
-                  <span>Live music by Aishwarya Majmudar</span>
+                  <span>Great entertainment - Coming soon</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🌟</span>
-                  <span>Cultural celebration and community gathering</span>
+                  <span>Community gathering and celebration</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">🎁</span>
-                  <span>Exclusive event memorabilia included</span>
+                  <span>Special event memorabilia</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-primary-500 mr-2">⚡</span>
-                  <span>Priority entry for all pass holders</span>
+                  <span>Priority entry for attendees</span>
                 </li>
               </ul>
             </div>
@@ -563,19 +533,18 @@ export default function Home() {
             className="card text-center"
           >
             <h3 className="text-2xl font-bold mb-6 text-gray-900">
-              Book Your Rangtaali Hamilton 2025 Tickets Today
+              Book Your Tickets When Available
             </h3>
             <p className="text-lg text-gray-600 mb-6">
-              Don't miss the most extravagant Navratri night in Hamilton! Secure your exclusive 
-              $20 Garba Pass for Rangtaali Hamilton 2025 featuring Aishwarya Majmudar. 
-              Limited tickets available at Gage Park, Hamilton.
+              We're working hard to bring you an amazing event experience. 
+              Ticket information and booking details will be available soon!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => setShowTicketSelector(true)}
                 className="btn-primary text-lg px-8 py-4"
               >
-                Get Your $20 Garba Pass
+                Get Notified
               </button>
             </div>
           </motion.div>
