@@ -1,210 +1,139 @@
-# 🚀 Catch The Event - Hostinger VPS Deployment Guide
+# 🚀 Catch The Event - Production Deployment Guide
 
-## Quick Deployment Steps
+## Quick Deployment Steps for Hostinger VPS
 
-### 1. Prepare Your VPS
+### 1. Prerequisites on VPS
 ```bash
-# Connect to your Hostinger VPS
-ssh root@your-server-ip
+# Update system
+sudo apt update && sudo apt upgrade -y
 
-# Upload your project files
-scp -r . root@your-server-ip:/tmp/catchtheevent/
+# Install Node.js 18+
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Install Nginx
+sudo apt install nginx -y
+
+# Install Git
+sudo apt install git -y
 ```
 
-### 2. Run the Deployment Script
+### 2. SSL Certificate Setup
 ```bash
-# On your VPS, navigate to the uploaded files
-cd /tmp/catchtheevent
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx -y
 
-# Make the script executable and run it
-chmod +x deploy.sh
+# Get SSL certificate
+sudo certbot --nginx -d catchtheevent.com -d www.catchtheevent.com
+```
+
+### 3. Deploy Application
+```bash
+# Clone repository
+sudo git clone https://github.com/yourusername/catchtheevent.git /var/www/catchtheevent
+cd /var/www/catchtheevent
+
+# Copy environment variables
+sudo cp env.production.example .env.local
+sudo nano .env.local  # Update with your production values
+
+# Run deployment script
+sudo chmod +x deploy.sh
 sudo ./deploy.sh
 ```
 
-### 3. Configure Environment Variables
+### 4. Update Nginx Configuration
 ```bash
-# Edit the production environment file
-nano /var/www/catchtheevent/.env.production
+# Copy nginx config
+sudo cp nginx.conf /etc/nginx/sites-available/catchtheevent.com
+sudo ln -s /etc/nginx/sites-available/catchtheevent.com /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
 
-# Update with your actual values:
-# - Stripe keys (live keys for production)
-# - Supabase credentials
-# - SendGrid API key
-# - Domain settings
+# Test and reload nginx
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
-### 4. Verify Deployment
+### 5. Environment Variables to Update
+Update these in `.env.local` on your VPS:
+
+- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
+- `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key
+- `STRIPE_PUBLISHABLE_KEY` - Your live Stripe publishable key
+- `STRIPE_SECRET_KEY` - Your live Stripe secret key
+- `SENDGRID_API_KEY` - Your SendGrid API key
+- `NEXTAUTH_SECRET` - Generate a secure random string
+- `ADMIN_PASSWORD` - Set a secure admin password
+
+### 6. GitHub Repository Setup
+1. Create a new repository on GitHub
+2. Push your code:
 ```bash
-# Check PM2 status
-pm2 status
-
-# Check Nginx status
-systemctl status nginx
-
-# View application logs
-pm2 logs catchtheevent
-
-# Test the website
-curl -I https://catchtheevent.com
+git remote add origin https://github.com/yourusername/catchtheevent.git
+git add .
+git commit -m "Production ready deployment"
+git push -u origin main
 ```
 
-## Post-Deployment Checklist
+### 7. Update Deployment Script
+Edit `deploy.sh` and update:
+- `REPO_URL` with your actual GitHub repository URL
 
-### ✅ Essential Tasks
-- [ ] Update DNS records to point to your VPS IP
-- [ ] Configure environment variables with production keys
-- [ ] Test payment processing with real Stripe keys
-- [ ] Verify SSL certificate is working
-- [ ] Test all website functionality
-- [ ] Set up monitoring and alerts
-
-### ✅ Security Setup
-- [ ] Change default SSH port (optional)
-- [ ] Set up SSH key authentication
-- [ ] Configure fail2ban for brute force protection
-- [ ] Review firewall rules
-- [ ] Set up regular security updates
-
-### ✅ Performance Optimization
-- [ ] Enable Nginx caching
-- [ ] Set up CDN (Cloudflare recommended)
-- [ ] Configure image optimization
-- [ ] Monitor server resources
-- [ ] Set up log rotation
-
-## Monitoring Commands
-
+### 8. Monitoring & Maintenance
 ```bash
 # Check application status
 pm2 status
 pm2 logs catchtheevent
 
-# Check server resources
-htop
-df -h
-free -h
-
-# Check Nginx status
-systemctl status nginx
-nginx -t
-
-# Check SSL certificate
-certbot certificates
-
-# View access logs
-tail -f /var/log/nginx/access.log
-tail -f /var/log/nginx/error.log
-```
-
-## Backup and Recovery
-
-### Automatic Backups
-- Daily backups are automatically created at 2 AM
-- Backups are stored in `/var/backups/catchtheevent/`
-- Old backups (7+ days) are automatically deleted
-
-### Manual Backup
-```bash
-# Create manual backup
-/usr/local/bin/backup-catchtheevent.sh
-
-# Restore from backup
-tar -xzf /var/backups/catchtheevent/app_YYYYMMDD_HHMMSS.tar.gz -C /var/www/
-```
-
-## Troubleshooting
-
-### Common Issues
-
-**1. Application not starting**
-```bash
-pm2 logs catchtheevent
+# Restart application
 pm2 restart catchtheevent
+
+# Check nginx status
+sudo systemctl status nginx
+
+# View nginx logs
+sudo tail -f /var/log/nginx/error.log
 ```
 
-**2. Nginx configuration errors**
-```bash
-nginx -t
-systemctl reload nginx
-```
+### 9. Security Checklist
+- ✅ SSL certificate installed
+- ✅ Firewall configured (ports 80, 443, 22)
+- ✅ Environment variables secured
+- ✅ PM2 process manager running
+- ✅ Nginx reverse proxy configured
+- ✅ Rate limiting enabled
+- ✅ Security headers added
 
-**3. SSL certificate issues**
-```bash
-certbot renew --dry-run
-certbot renew
-```
+### 10. Performance Optimization
+- ✅ Gzip compression enabled
+- ✅ Static file caching configured
+- ✅ Next.js production build optimized
+- ✅ Image optimization enabled
 
-**4. High memory usage**
+## Quick Commands Reference
+
 ```bash
+# Deploy updates
+sudo ./deploy.sh
+
+# Check logs
+pm2 logs catchtheevent --lines 100
+
+# Restart services
 pm2 restart catchtheevent
-# Check for memory leaks in logs
+sudo systemctl reload nginx
+
+# Backup before deployment
+sudo cp -r /var/www/catchtheevent /var/backups/catchtheevent-backup-$(date +%Y%m%d)
 ```
 
-## Performance Monitoring
-
-### Key Metrics to Monitor
-- CPU usage (should be < 80%)
-- Memory usage (should be < 80%)
-- Disk space (should be < 85%)
-- Response time (< 2 seconds)
-- Error rate (< 1%)
-
-### Alerts Setup
-Consider setting up monitoring with:
-- Uptime Robot (free)
-- Pingdom
-- New Relic
-- DataDog
-
-## Security Best Practices
-
-1. **Regular Updates**
-   ```bash
-   apt update && apt upgrade -y
-   ```
-
-2. **Firewall Configuration**
-   ```bash
-   ufw status
-   ufw allow 22
-   ufw allow 80
-   ufw allow 443
-   ```
-
-3. **SSL Certificate Renewal**
-   - Automatic renewal is configured
-   - Check with: `certbot certificates`
-
-4. **Backup Verification**
-   - Test restore process monthly
-   - Verify backup integrity
-
-## Support and Maintenance
-
-### Regular Maintenance Tasks
-- Weekly: Check logs for errors
-- Monthly: Update system packages
-- Quarterly: Review security settings
-- Annually: Review and update SSL certificates
-
-### Emergency Contacts
-- Hostinger Support: [Your support contact]
-- Domain Registrar: [Your domain contact]
-- Payment Processor: Stripe Support
-
----
-
-## 🎉 Your website is now live!
-
-**URL**: https://catchtheevent.com
-**Admin Panel**: https://catchtheevent.com/admin
-**Status Page**: https://catchtheevent.com/api/health
-
-Remember to:
-1. Test all functionality thoroughly
-2. Set up monitoring alerts
-3. Configure your domain DNS
-4. Update environment variables with production keys
-5. Set up regular backups
-
-For support, check the logs first: `pm2 logs catchtheevent`
+## Support
+If you encounter issues:
+1. Check PM2 logs: `pm2 logs catchtheevent`
+2. Check Nginx logs: `sudo tail -f /var/log/nginx/error.log`
+3. Verify environment variables are set correctly
+4. Ensure all services are running: `pm2 status` and `sudo systemctl status nginx`
