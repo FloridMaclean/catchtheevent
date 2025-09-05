@@ -1,322 +1,210 @@
-# 🚀 Production Deployment Guide
+# 🚀 Catch The Event - Hostinger VPS Deployment Guide
 
-## 📋 Pre-Deployment Checklist
+## Quick Deployment Steps
 
-### ✅ Build & Compilation
-- [x] Production build successful (`npm run build`)
-- [x] No TypeScript errors
-- [x] No linting errors
-- [x] All pages compile successfully
-- [x] Static assets optimized
+### 1. Prepare Your VPS
+```bash
+# Connect to your Hostinger VPS
+ssh root@your-server-ip
 
-### 🔧 Environment Configuration
+# Upload your project files
+scp -r . root@your-server-ip:/tmp/catchtheevent/
+```
 
-Create a `.env.production` file with the following variables:
+### 2. Run the Deployment Script
+```bash
+# On your VPS, navigate to the uploaded files
+cd /tmp/catchtheevent
+
+# Make the script executable and run it
+chmod +x deploy.sh
+sudo ./deploy.sh
+```
+
+### 3. Configure Environment Variables
+```bash
+# Edit the production environment file
+nano /var/www/catchtheevent/.env.production
+
+# Update with your actual values:
+# - Stripe keys (live keys for production)
+# - Supabase credentials
+# - SendGrid API key
+# - Domain settings
+```
+
+### 4. Verify Deployment
+```bash
+# Check PM2 status
+pm2 status
+
+# Check Nginx status
+systemctl status nginx
+
+# View application logs
+pm2 logs catchtheevent
+
+# Test the website
+curl -I https://catchtheevent.com
+```
+
+## Post-Deployment Checklist
+
+### ✅ Essential Tasks
+- [ ] Update DNS records to point to your VPS IP
+- [ ] Configure environment variables with production keys
+- [ ] Test payment processing with real Stripe keys
+- [ ] Verify SSL certificate is working
+- [ ] Test all website functionality
+- [ ] Set up monitoring and alerts
+
+### ✅ Security Setup
+- [ ] Change default SSH port (optional)
+- [ ] Set up SSH key authentication
+- [ ] Configure fail2ban for brute force protection
+- [ ] Review firewall rules
+- [ ] Set up regular security updates
+
+### ✅ Performance Optimization
+- [ ] Enable Nginx caching
+- [ ] Set up CDN (Cloudflare recommended)
+- [ ] Configure image optimization
+- [ ] Monitor server resources
+- [ ] Set up log rotation
+
+## Monitoring Commands
 
 ```bash
-# Application
-NODE_ENV=production
-NEXT_PUBLIC_APP_URL=https://catchtheevent.com
-NEXT_PUBLIC_APP_NAME=Catch The Event
+# Check application status
+pm2 status
+pm2 logs catchtheevent
 
-# Database (Supabase)
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+# Check server resources
+htop
+df -h
+free -h
 
-# Stripe Payment Processing
-STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key_here
-STRIPE_SECRET_KEY=your_stripe_secret_key_here
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret_here
+# Check Nginx status
+systemctl status nginx
+nginx -t
 
-# Email Service (SendGrid)
-SENDGRID_API_KEY=your_sendgrid_api_key_here
-SENDGRID_FROM_EMAIL=noreply@catchtheevent.com
+# Check SSL certificate
+certbot certificates
 
-# Security
-NEXTAUTH_SECRET=your_nextauth_secret_here
-NEXTAUTH_URL=https://catchtheevent.com
-
-# Analytics
-NEXT_PUBLIC_GA_ID=your_google_analytics_id_here
-NEXT_PUBLIC_GTM_ID=your_google_tag_manager_id_here
-
-# Performance Monitoring
-NEXT_PUBLIC_SENTRY_DSN=your_sentry_dsn_here
-
-# Feature Flags
-NEXT_PUBLIC_ENABLE_ANALYTICS=true
-NEXT_PUBLIC_ENABLE_PWA=true
-NEXT_PUBLIC_ENABLE_OFFLINE=true
-
-# Rate Limiting
-RATE_LIMIT_MAX=100
-RATE_LIMIT_WINDOW=900000
-
-# Cache Settings
-CACHE_TTL=3600
-REDIS_URL=your_redis_url_here
-
-# Logging
-LOG_LEVEL=info
-LOG_FORMAT=json
-
-# CDN
-NEXT_PUBLIC_CDN_URL=https://cdn.catchtheevent.com
-
-# Social Media
-NEXT_PUBLIC_FACEBOOK_APP_ID=your_facebook_app_id_here
-NEXT_PUBLIC_TWITTER_HANDLE=@catch_the_event
-NEXT_PUBLIC_INSTAGRAM_HANDLE=catch_the_event
-NEXT_PUBLIC_LINKEDIN_URL=https://www.linkedin.com/company/catch-the-event/about/
-
-# Contact Information
-NEXT_PUBLIC_CONTACT_EMAIL=info@catchtheevent.com
-NEXT_PUBLIC_CONTACT_PHONE=+1-905-XXX-XXXX
-NEXT_PUBLIC_BUSINESS_ADDRESS=Bayfront Park, Hamilton, ON L8L 1C8, Canada
-
-# Legal
-NEXT_PUBLIC_PRIVACY_POLICY_URL=https://catchtheevent.com/privacy
-NEXT_PUBLIC_TERMS_URL=https://catchtheevent.com/terms
-NEXT_PUBLIC_ACCESSIBILITY_URL=https://catchtheevent.com/accessibility
-
-# SEO
-NEXT_PUBLIC_SITE_NAME=Catch The Event
-NEXT_PUBLIC_SITE_DESCRIPTION=Premier event platform and event management software for Hamilton, Toronto, and across Ontario
-NEXT_PUBLIC_SITE_KEYWORDS=event platform,event management software,online ticketing platform,event registration software,hamilton events,toronto events,ontario events,cultural festival,live music events,sports events,family events,food festival,parking reservation,event tickets,hamilton ontario,canada events,indian cultural festival,garba event,spice of india 2025,bayfront park hamilton,event management,ticket booking,online ticketing
-
-# Maintenance Mode
-NEXT_PUBLIC_MAINTENANCE_MODE=false
-NEXT_PUBLIC_MAINTENANCE_MESSAGE=We're currently performing scheduled maintenance. Please check back soon.
-
-# Development/Testing
-NEXT_PUBLIC_DEBUG=false
-NEXT_PUBLIC_MOCK_PAYMENTS=false
+# View access logs
+tail -f /var/log/nginx/access.log
+tail -f /var/log/nginx/error.log
 ```
 
-## 🛡️ Security Configuration
+## Backup and Recovery
 
-### ✅ Security Headers Implemented
-- [x] Content Security Policy (CSP)
-- [x] Strict Transport Security (HSTS)
-- [x] X-Frame-Options
-- [x] X-Content-Type-Options
-- [x] X-XSS-Protection
-- [x] Referrer Policy
-- [x] Permissions Policy
+### Automatic Backups
+- Daily backups are automatically created at 2 AM
+- Backups are stored in `/var/backups/catchtheevent/`
+- Old backups (7+ days) are automatically deleted
 
-### 🔐 SSL/TLS Requirements
-- [ ] SSL certificate installed
-- [ ] HTTPS redirect configured
-- [ ] HSTS headers enabled
-- [ ] Certificate auto-renewal setup
-
-## 🚀 Deployment Options
-
-### Option 1: Vercel (Recommended)
+### Manual Backup
 ```bash
-# Install Vercel CLI
-npm i -g vercel
+# Create manual backup
+/usr/local/bin/backup-catchtheevent.sh
 
-# Deploy to production
-vercel --prod
-
-# Set environment variables
-vercel env add NEXT_PUBLIC_APP_URL production
-vercel env add STRIPE_SECRET_KEY production
-# ... add all other environment variables
+# Restore from backup
+tar -xzf /var/backups/catchtheevent/app_YYYYMMDD_HHMMSS.tar.gz -C /var/www/
 ```
 
-### Option 2: Netlify
+## Troubleshooting
+
+### Common Issues
+
+**1. Application not starting**
 ```bash
-# Install Netlify CLI
-npm i -g netlify-cli
-
-# Build and deploy
-npm run build
-netlify deploy --prod --dir=out
+pm2 logs catchtheevent
+pm2 restart catchtheevent
 ```
 
-### Option 3: Docker
-```dockerfile
-FROM node:18-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-COPY package.json package-lock.json* ./
-RUN npm ci
-
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build
-
-# Production image, copy all the files and run next
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
-
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
-
-CMD ["node", "server.js"]
+**2. Nginx configuration errors**
+```bash
+nginx -t
+systemctl reload nginx
 ```
 
-## 📊 Performance Optimization
+**3. SSL certificate issues**
+```bash
+certbot renew --dry-run
+certbot renew
+```
 
-### ✅ Core Web Vitals Targets
-- **LCP (Largest Contentful Paint)**: < 2.5s
-- **FID (First Input Delay)**: < 100ms
-- **CLS (Cumulative Layout Shift)**: < 0.1
-- **INP (Interaction to Next Paint)**: < 200ms
+**4. High memory usage**
+```bash
+pm2 restart catchtheevent
+# Check for memory leaks in logs
+```
 
-### 🖼️ Image Optimization
-- [x] Next.js Image component implemented
-- [x] WebP and AVIF formats enabled
-- [x] Responsive image sizes configured
-- [x] Lazy loading enabled
-- [x] Image caching headers set
+## Performance Monitoring
 
-### 📦 Bundle Optimization
-- [x] Code splitting enabled
-- [x] Tree shaking configured
-- [x] SWC minification enabled
-- [x] Compression enabled
-- [x] Static assets cached
+### Key Metrics to Monitor
+- CPU usage (should be < 80%)
+- Memory usage (should be < 80%)
+- Disk space (should be < 85%)
+- Response time (< 2 seconds)
+- Error rate (< 1%)
 
-## 🔍 Monitoring & Analytics
+### Alerts Setup
+Consider setting up monitoring with:
+- Uptime Robot (free)
+- Pingdom
+- New Relic
+- DataDog
 
-### 📈 Analytics Setup
-- [ ] Google Analytics 4 configured
-- [ ] Google Tag Manager setup
-- [ ] Conversion tracking enabled
-- [ ] E-commerce tracking configured
+## Security Best Practices
 
-### 🚨 Error Monitoring
-- [ ] Sentry error tracking setup
-- [ ] Performance monitoring enabled
-- [ ] Uptime monitoring configured
-- [ ] Log aggregation setup
+1. **Regular Updates**
+   ```bash
+   apt update && apt upgrade -y
+   ```
 
-## 🧪 Testing
+2. **Firewall Configuration**
+   ```bash
+   ufw status
+   ufw allow 22
+   ufw allow 80
+   ufw allow 443
+   ```
 
-### ✅ Pre-Deployment Tests
-- [ ] Production build test
-- [ ] All pages load correctly
-- [ ] Payment flow works
-- [ ] Email notifications work
-- [ ] QR code generation works
-- [ ] Mobile responsiveness test
-- [ ] Cross-browser compatibility test
+3. **SSL Certificate Renewal**
+   - Automatic renewal is configured
+   - Check with: `certbot certificates`
 
-### 🔧 Post-Deployment Tests
-- [ ] SSL certificate validation
-- [ ] Security headers check
-- [ ] Performance audit
-- [ ] SEO audit
-- [ ] Accessibility audit
-- [ ] Payment processing test
-- [ ] Email delivery test
+4. **Backup Verification**
+   - Test restore process monthly
+   - Verify backup integrity
 
-## 📱 PWA Configuration
+## Support and Maintenance
 
-### ✅ Progressive Web App Features
-- [x] Web App Manifest configured
-- [x] Service Worker implemented
-- [x] Offline functionality
-- [x] Install prompt
-- [x] Push notifications ready
-- [x] App icons generated
+### Regular Maintenance Tasks
+- Weekly: Check logs for errors
+- Monthly: Update system packages
+- Quarterly: Review security settings
+- Annually: Review and update SSL certificates
 
-## 🌐 Domain & DNS
-
-### ✅ Domain Configuration
-- [ ] Domain registered (catchtheevent.com)
-- [ ] DNS records configured
-- [ ] SSL certificate installed
-- [ ] WWW redirect setup
-- [ ] CDN configured (optional)
-
-## 📋 Post-Deployment Checklist
-
-### 🔍 Immediate Checks
-- [ ] Website loads on production URL
-- [ ] All pages accessible
-- [ ] Images load correctly
-- [ ] Forms submit successfully
-- [ ] Payment processing works
-- [ ] Email notifications sent
-- [ ] Mobile app installable
-
-### 📊 Performance Checks
-- [ ] PageSpeed Insights score > 90
-- [ ] Core Web Vitals pass
-- [ ] Lighthouse audit > 90
-- [ ] GTmetrix grade A
-- [ ] WebPageTest results good
-
-### 🔒 Security Checks
-- [ ] SSL Labs grade A+
-- [ ] Security headers present
-- [ ] No mixed content warnings
-- [ ] CSP violations resolved
-- [ ] Penetration test passed
-
-## 🚨 Emergency Procedures
-
-### 🔧 Rollback Plan
-1. Keep previous deployment ready
-2. Database backup before deployment
-3. Environment variable backup
-4. Quick rollback procedure documented
-
-### 📞 Support Contacts
-- **Technical Issues**: [Your technical contact]
-- **Payment Issues**: [Your payment processor support]
-- **Domain Issues**: [Your domain registrar support]
-- **Hosting Issues**: [Your hosting provider support]
-
-## 📈 Success Metrics
-
-### 🎯 Key Performance Indicators
-- **Uptime**: > 99.9%
-- **Page Load Time**: < 3 seconds
-- **Conversion Rate**: Track ticket sales
-- **User Engagement**: Time on site, bounce rate
-- **Mobile Usage**: > 60% mobile traffic
-- **SEO Rankings**: Top 3 for target keywords
+### Emergency Contacts
+- Hostinger Support: [Your support contact]
+- Domain Registrar: [Your domain contact]
+- Payment Processor: Stripe Support
 
 ---
 
-## 🎉 Deployment Complete!
+## 🎉 Your website is now live!
 
-Once all checklist items are completed, your Catch The Event platform will be production-ready and live at **https://catchtheevent.com**!
+**URL**: https://catchtheevent.com
+**Admin Panel**: https://catchtheevent.com/admin
+**Status Page**: https://catchtheevent.com/api/health
 
-### 📞 Need Help?
-If you encounter any issues during deployment, refer to this guide or contact your technical team for assistance.
+Remember to:
+1. Test all functionality thoroughly
+2. Set up monitoring alerts
+3. Configure your domain DNS
+4. Update environment variables with production keys
+5. Set up regular backups
+
+For support, check the logs first: `pm2 logs catchtheevent`

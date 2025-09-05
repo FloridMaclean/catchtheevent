@@ -1,26 +1,27 @@
 #!/bin/bash
 
-# Production Deployment Script for Catch The Event
-# This script automates the deployment process
+# Catch The Event - Hostinger VPS Deployment Script
+# Quick deployment for production
 
-set -e  # Exit on any error
+set -e
 
-echo "🚀 Starting production deployment for Catch The Event..."
+echo "🚀 Starting Catch The Event deployment to Hostinger VPS..."
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+# Configuration
+DOMAIN="catchtheevent.com"
+APP_DIR="/var/www/catchtheevent"
+NGINX_DIR="/etc/nginx/sites-available"
+PM2_LOG_DIR="/var/log/pm2"
 
 # Function to print colored output
 print_status() {
-    echo -e "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    echo -e "${GREEN}[INFO]${NC} $1"
 }
 
 print_warning() {
@@ -31,157 +32,152 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if required files exist
-check_requirements() {
-    print_status "Checking deployment requirements..."
-    
-    if [ ! -f "package.json" ]; then
-        print_error "package.json not found!"
-        exit 1
-    fi
-    
-    if [ ! -f "next.config.js" ]; then
-        print_error "next.config.js not found!"
-        exit 1
-    fi
-    
-    if [ ! -f ".env.production" ]; then
-        print_warning ".env.production not found. Please create it from the template."
-        print_status "You can copy from .env.production.template"
-    fi
-    
-    print_success "Requirements check completed"
-}
+# Check if running as root
+if [ "$EUID" -ne 0 ]; then
+    print_error "Please run as root (use sudo)"
+    exit 1
+fi
+
+# Update system packages
+print_status "Updating system packages..."
+apt update && apt upgrade -y
+
+# Install required packages
+print_status "Installing required packages..."
+apt install -y nginx nodejs npm certbot python3-certbot-nginx ufw fail2ban htop
+
+# Create application directory
+print_status "Creating application directory..."
+mkdir -p $APP_DIR
+mkdir -p $PM2_LOG_DIR
+
+# Install PM2 globally
+print_status "Installing PM2..."
+npm install -g pm2
+
+# Copy application files
+print_status "Copying application files..."
+cp -r . $APP_DIR/
+cd $APP_DIR
 
 # Install dependencies
-install_dependencies() {
-    print_status "Installing dependencies..."
-    npm ci --only=production
-    print_success "Dependencies installed"
-}
-
-# Run tests
-run_tests() {
-    print_status "Running tests..."
-    
-    # Type check
-    npm run type-check || {
-        print_error "TypeScript type check failed!"
-        exit 1
-    }
-    
-    # Lint check
-    npm run lint || {
-        print_error "Linting failed!"
-        exit 1
-    }
-    
-    print_success "All tests passed"
-}
+print_status "Installing dependencies..."
+npm ci --production
 
 # Build the application
-build_application() {
-    print_status "Building application for production..."
-    
-    # Clean previous build
-    rm -rf .next
-    
-    # Build the application
-    npm run build || {
-        print_error "Build failed!"
-        exit 1
-    }
-    
-    print_success "Application built successfully"
-}
+print_status "Building application..."
+npm run build
 
-# Test production build
-test_production_build() {
-    print_status "Testing production build..."
-    
-    # Start the production server in background
-    npm start &
-    SERVER_PID=$!
-    
-    # Wait for server to start
-    sleep 10
-    
-    # Test if server is responding
-    if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
-        print_success "Production build test passed"
-    else
-        print_error "Production build test failed!"
-        kill $SERVER_PID 2>/dev/null || true
-        exit 1
-    fi
-    
-    # Stop the test server
-    kill $SERVER_PID 2>/dev/null || true
-}
+# Set up environment variables
+print_status "Setting up environment variables..."
+cat > $APP_DIR/.env.production << EOF
+NODE_ENV=production
+NEXT_PUBLIC_SITE_URL=https://$DOMAIN
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_your_stripe_publishable_key
+STRIPE_SECRET_KEY=sk_live_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SENDGRID_API_KEY=your_sendgrid_api_key
+FROM_EMAIL=noreply@$DOMAIN
+ADMIN_EMAIL=admin@$DOMAIN
+EOF
 
-# Deploy to production
-deploy_to_production() {
-    print_status "Deploying to production..."
-    
-    # Check deployment method
-    if command -v vercel &> /dev/null; then
-        print_status "Deploying to Vercel..."
-        vercel --prod
-    elif command -v netlify &> /dev/null; then
-        print_status "Deploying to Netlify..."
-        netlify deploy --prod --dir=out
-    elif [ -f "docker-compose.yml" ]; then
-        print_status "Deploying with Docker..."
-        docker-compose up -d --build
-    else
-        print_warning "No deployment method detected. Please deploy manually."
-        print_status "Build files are ready in .next/ directory"
-    fi
-    
-    print_success "Deployment completed"
-}
+# Configure Nginx
+print_status "Configuring Nginx..."
+cp nginx.conf $NGINX_DIR/$DOMAIN
+ln -sf $NGINX_DIR/$DOMAIN /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/default
 
-# Post-deployment checks
-post_deployment_checks() {
-    print_status "Running post-deployment checks..."
-    
-    # Wait a bit for deployment to complete
-    sleep 30
-    
-    # Check if the site is accessible
-    if curl -f https://catchtheevent.com/api/health > /dev/null 2>&1; then
-        print_success "Site is accessible and healthy"
-    else
-        print_warning "Site health check failed. Please verify manually."
-    fi
-    
-    print_success "Post-deployment checks completed"
-}
+# Test Nginx configuration
+nginx -t
 
-# Main deployment flow
-main() {
-    echo "🎯 Catch The Event - Production Deployment"
-    echo "=========================================="
-    
-    check_requirements
-    install_dependencies
-    run_tests
-    build_application
-    test_production_build
-    deploy_to_production
-    post_deployment_checks
-    
-    echo ""
-    echo "🎉 Deployment completed successfully!"
-    echo "🌐 Your site should be live at: https://catchtheevent.com"
-    echo ""
-    echo "📊 Next steps:"
-    echo "1. Verify the site is working correctly"
-    echo "2. Check analytics and monitoring"
-    echo "3. Test payment processing"
-    echo "4. Monitor error logs"
-    echo ""
-}
+# Start and enable services
+print_status "Starting services..."
+systemctl start nginx
+systemctl enable nginx
+systemctl start fail2ban
+systemctl enable fail2ban
 
-# Run main function
-main "$@"
+# Configure firewall
+print_status "Configuring firewall..."
+ufw --force enable
+ufw allow 22
+ufw allow 80
+ufw allow 443
+ufw allow 'Nginx Full'
+
+# Start application with PM2
+print_status "Starting application with PM2..."
+pm2 start ecosystem.config.js --env production
+pm2 save
+pm2 startup
+
+# Set up SSL certificate
+print_status "Setting up SSL certificate..."
+certbot --nginx -d $DOMAIN -d www.$DOMAIN --non-interactive --agree-tos --email admin@$DOMAIN
+
+# Set up log rotation
+print_status "Setting up log rotation..."
+cat > /etc/logrotate.d/catchtheevent << EOF
+$PM2_LOG_DIR/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 644 root root
+    postrotate
+        pm2 reloadLogs
+    endscript
+}
+EOF
+
+# Set up monitoring
+print_status "Setting up monitoring..."
+cat > /etc/cron.d/catchtheevent-monitor << EOF
+# Catch The Event Health Check
+*/5 * * * * root curl -f http://localhost:3000/api/health || pm2 restart catchtheevent
+EOF
+
+# Set proper permissions
+print_status "Setting permissions..."
+chown -R www-data:www-data $APP_DIR
+chmod -R 755 $APP_DIR
+
+# Create backup script
+print_status "Creating backup script..."
+cat > /usr/local/bin/backup-catchtheevent.sh << 'EOF'
+#!/bin/bash
+BACKUP_DIR="/var/backups/catchtheevent"
+DATE=$(date +%Y%m%d_%H%M%S)
+mkdir -p $BACKUP_DIR
+
+# Backup application
+tar -czf $BACKUP_DIR/app_$DATE.tar.gz -C /var/www catchtheevent
+
+# Keep only last 7 days of backups
+find $BACKUP_DIR -name "app_*.tar.gz" -mtime +7 -delete
+
+echo "Backup completed: app_$DATE.tar.gz"
+EOF
+
+chmod +x /usr/local/bin/backup-catchtheevent.sh
+
+# Set up daily backups
+echo "0 2 * * * root /usr/local/bin/backup-catchtheevent.sh" >> /etc/crontab
+
+print_status "Deployment completed successfully! 🎉"
+print_status "Your website is now live at: https://$DOMAIN"
+print_status "PM2 Status: pm2 status"
+print_status "Nginx Status: systemctl status nginx"
+print_status "Logs: pm2 logs catchtheevent"
+
+echo ""
+print_warning "Don't forget to:"
+print_warning "1. Update environment variables in $APP_DIR/.env.production"
+print_warning "2. Configure your domain DNS to point to this server"
+print_warning "3. Test the website functionality"
+print_warning "4. Set up monitoring alerts"
