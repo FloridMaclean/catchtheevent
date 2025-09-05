@@ -445,12 +445,12 @@ export default function PurchaseSummary({
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto modal-container"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-0 sm:p-4 overflow-y-auto modal-container"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col my-2 mx-auto overflow-hidden modal-content"
+        className="bg-white rounded-none sm:rounded-2xl shadow-2xl max-w-2xl w-full h-full sm:h-auto max-h-full sm:max-h-[90vh] flex flex-col my-0 sm:my-2 mx-0 sm:mx-auto overflow-hidden modal-content"
       >
         {/* Header - Fixed */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
@@ -467,7 +467,7 @@ export default function PurchaseSummary({
 
         {/* Content - Scrollable */}
         <div className="flex-1 overflow-y-auto modal-content min-h-0">
-          <div className="p-4 flex flex-col items-center w-full max-w-2xl mx-auto">
+          <div className="p-4 sm:p-4 flex flex-col items-center w-full max-w-2xl mx-auto">
             {/* Purchase Summary */}
             <div className="card mb-6 w-full">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -654,7 +654,7 @@ export default function PurchaseSummary({
           <div className="flex items-center justify-center w-full max-w-2xl mx-auto">
             <button
               onClick={onClose}
-              className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold text-sm"
+              className="w-full px-4 py-3 sm:py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold text-sm"
             >
               Done
             </button>
