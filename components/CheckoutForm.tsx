@@ -96,9 +96,8 @@ const getProcessingFee = (selectedTickets: { [key: string]: number }, isDiscount
 
 const getHST = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false, basePrice: number = 20.00, convenienceFee: number = 1.00, processingFee: number = 1.10, taxRate: number = 0.13) => {
   const subtotal = getSubtotal(selectedTickets, ticketTypes, isDiscountApplied, basePrice)
-  const convenienceFeeAmount = getConvenienceFee(selectedTickets, isDiscountApplied, convenienceFee)
-  const processingFeeAmount = getProcessingFee(selectedTickets, isDiscountApplied, processingFee)
-  return isDiscountApplied ? 0 : (subtotal + convenienceFeeAmount + processingFeeAmount) * taxRate // No HST for discount codes
+  // HST only applies to the base ticket price (subtotal), not to fees
+  return isDiscountApplied ? 0 : subtotal * taxRate
 }
 
 const getTotalAmount = (selectedTickets: { [key: string]: number }, ticketTypes: any[], isDiscountApplied: boolean = false, basePrice: number = 20.00, convenienceFee: number = 1.00, processingFee: number = 1.10, taxRate: number = 0.13) => {
@@ -151,7 +150,8 @@ function FreeTicketForm({
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    licensePlate: ''
   })
 
   const handleInputChange = (field: string, value: string) => {
@@ -164,8 +164,15 @@ function FreeTicketForm({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
+    // Check parking capacity limit (200 spots maximum)
+    const totalTickets = Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
+    if (totalTickets > 200) {
+      setError('Sorry, we have reached our maximum capacity of 200 parking spots. No more tickets can be issued.')
+      return
+    }
+
     // Validate customer info
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone) {
+    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone || !customerInfo.licensePlate) {
       setError('Please fill in all required fields')
       return
     }
@@ -309,7 +316,7 @@ function FreeTicketForm({
                 <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied, processingFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">HST (13%):</span>
+                <span className="text-gray-600">HST (13% on base price):</span>
                 <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</span>
               </div>
             </div>
@@ -325,7 +332,7 @@ function FreeTicketForm({
         </div>
 
         {/* Customer Information */}
-        <div className="card">
+        <div className="card customer-info-form">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <User className="w-5 h-5 mr-2" />
             Customer Information
@@ -380,6 +387,19 @@ function FreeTicketForm({
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 className="input-field"
                 placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                License Plate Number *
+              </label>
+              <input
+                type="text"
+                value={customerInfo.licensePlate}
+                onChange={(e) => handleInputChange('licensePlate', e.target.value)}
+                className="input-field"
+                placeholder="Enter your license plate number"
                 required
               />
             </div>
@@ -461,7 +481,8 @@ function PaymentForm({
     firstName: '',
     lastName: '',
     email: '',
-    phone: ''
+    phone: '',
+    licensePlate: ''
   })
   
   // Add timeout for Stripe loading with debugging
@@ -553,8 +574,15 @@ function PaymentForm({
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
 
+    // Check parking capacity limit (200 spots maximum)
+    const totalTickets = Object.values(selectedTickets).reduce((sum, count) => sum + count, 0)
+    if (totalTickets > 200) {
+      setError('Sorry, we have reached our maximum capacity of 200 parking spots. No more tickets can be issued.')
+      return
+    }
+
     // Validate customer info
-    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone) {
+    if (!customerInfo.firstName || !customerInfo.lastName || !customerInfo.email || !customerInfo.phone || !customerInfo.licensePlate) {
       setError('Please fill in all required fields')
       return
     }
@@ -807,7 +835,7 @@ function PaymentForm({
                 <span className="text-gray-900">${getProcessingFee(selectedTickets, isDiscountApplied, processingFee).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">HST (13%):</span>
+                <span className="text-gray-600">HST (13% on base price):</span>
                 <span className="text-gray-900">${getHST(selectedTickets, ticketTypes, isDiscountApplied, basePrice, convenienceFee, processingFee, taxRate).toFixed(2)}</span>
               </div>
             </div>
@@ -823,7 +851,7 @@ function PaymentForm({
         </div>
 
         {/* Customer Information */}
-        <div className="card">
+        <div className="card customer-info-form">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <User className="w-5 h-5 mr-2" />
             Customer Information
@@ -878,6 +906,19 @@ function PaymentForm({
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 className="input-field"
                 placeholder="Enter your phone number"
+                required
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                License Plate Number *
+              </label>
+              <input
+                type="text"
+                value={customerInfo.licensePlate}
+                onChange={(e) => handleInputChange('licensePlate', e.target.value)}
+                className="input-field"
+                placeholder="Enter your license plate number"
                 required
               />
             </div>

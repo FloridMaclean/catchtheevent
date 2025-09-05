@@ -1,95 +1,187 @@
 #!/bin/bash
 
-# 🚀 SIMPLE DEPLOYMENT SCRIPT
-# One command to deploy your website
+# Production Deployment Script for Catch The Event
+# This script automates the deployment process
 
-set -e
+set -e  # Exit on any error
 
-# Colors
-GREEN='\033[0;32m'
+echo "🚀 Starting production deployment for Catch The Event..."
+
+# Colors for output
 RED='\033[0;31m'
+GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-echo -e "${GREEN}🚀 Starting deployment...${NC}"
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
 
-# Check if we're in the right directory
-if [ ! -f "package.json" ]; then
-    echo -e "${RED}❌ Error: Not in the application directory${NC}"
-    echo "Please run this script from /catchtheevent"
-    exit 1
-fi
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
 
-# Step 1: Create backup
-echo -e "${YELLOW}📦 Creating backup...${NC}"
-BACKUP_DATE=$(date +"%Y%m%d_%H%M%S")
-mkdir -p /var/backups
-tar -czf "/var/backups/catchtheevent_backup_$BACKUP_DATE.tar.gz" .
-echo -e "${GREEN}✅ Backup created${NC}"
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
 
-# Step 2: Stop application
-echo -e "${YELLOW}⏹️ Stopping application...${NC}"
-pm2 stop catchtheevent || true
-echo -e "${GREEN}✅ Application stopped${NC}"
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
 
-# Step 3: Download latest code
-echo -e "${YELLOW}📥 Downloading latest code...${NC}"
-git pull origin main
-echo -e "${GREEN}✅ Code updated${NC}"
+# Check if required files exist
+check_requirements() {
+    print_status "Checking deployment requirements..."
+    
+    if [ ! -f "package.json" ]; then
+        print_error "package.json not found!"
+        exit 1
+    fi
+    
+    if [ ! -f "next.config.js" ]; then
+        print_error "next.config.js not found!"
+        exit 1
+    fi
+    
+    if [ ! -f ".env.production" ]; then
+        print_warning ".env.production not found. Please create it from the template."
+        print_status "You can copy from .env.production.template"
+    fi
+    
+    print_success "Requirements check completed"
+}
 
-# Step 4: Install dependencies
-echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-# Remove old lock file and node_modules to ensure clean install
-rm -f package-lock.json
-rm -rf node_modules
-npm install --omit=dev --legacy-peer-deps
-echo -e "${GREEN}✅ Dependencies installed${NC}"
+# Install dependencies
+install_dependencies() {
+    print_status "Installing dependencies..."
+    npm ci --only=production
+    print_success "Dependencies installed"
+}
 
-# Step 5: Build application
-echo -e "${YELLOW}🔨 Building application...${NC}"
-npm run build
-echo -e "${GREEN}✅ Application built${NC}"
+# Run tests
+run_tests() {
+    print_status "Running tests..."
+    
+    # Type check
+    npm run type-check || {
+        print_error "TypeScript type check failed!"
+        exit 1
+    }
+    
+    # Lint check
+    npm run lint || {
+        print_error "Linting failed!"
+        exit 1
+    }
+    
+    print_success "All tests passed"
+}
 
-# Step 6: Start application
-echo -e "${YELLOW}▶️ Starting application...${NC}"
-pm2 start ecosystem.config.js
-pm2 save
-echo -e "${GREEN}✅ Application started${NC}"
+# Build the application
+build_application() {
+    print_status "Building application for production..."
+    
+    # Clean previous build
+    rm -rf .next
+    
+    # Build the application
+    npm run build || {
+        print_error "Build failed!"
+        exit 1
+    }
+    
+    print_success "Application built successfully"
+}
 
-# Step 7: Wait and verify
-echo -e "${YELLOW}⏳ Waiting for application to start...${NC}"
-sleep 10
+# Test production build
+test_production_build() {
+    print_status "Testing production build..."
+    
+    # Start the production server in background
+    npm start &
+    SERVER_PID=$!
+    
+    # Wait for server to start
+    sleep 10
+    
+    # Test if server is responding
+    if curl -f http://localhost:3000/api/health > /dev/null 2>&1; then
+        print_success "Production build test passed"
+    else
+        print_error "Production build test failed!"
+        kill $SERVER_PID 2>/dev/null || true
+        exit 1
+    fi
+    
+    # Stop the test server
+    kill $SERVER_PID 2>/dev/null || true
+}
 
-# Step 8: Check status
-echo -e "${YELLOW}🔍 Checking application status...${NC}"
-if pm2 list | grep -q "catchtheevent.*online"; then
-    echo -e "${GREEN}✅ Application is running${NC}"
-else
-    echo -e "${RED}❌ Application failed to start${NC}"
-    pm2 logs catchtheevent --lines 10
-    exit 1
-fi
+# Deploy to production
+deploy_to_production() {
+    print_status "Deploying to production..."
+    
+    # Check deployment method
+    if command -v vercel &> /dev/null; then
+        print_status "Deploying to Vercel..."
+        vercel --prod
+    elif command -v netlify &> /dev/null; then
+        print_status "Deploying to Netlify..."
+        netlify deploy --prod --dir=out
+    elif [ -f "docker-compose.yml" ]; then
+        print_status "Deploying with Docker..."
+        docker-compose up -d --build
+    else
+        print_warning "No deployment method detected. Please deploy manually."
+        print_status "Build files are ready in .next/ directory"
+    fi
+    
+    print_success "Deployment completed"
+}
 
-# Step 9: Test website
-echo -e "${YELLOW}🌐 Testing website...${NC}"
-if curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200"; then
-    echo -e "${GREEN}✅ Website is responding${NC}"
-else
-    echo -e "${RED}❌ Website is not responding${NC}"
-    exit 1
-fi
+# Post-deployment checks
+post_deployment_checks() {
+    print_status "Running post-deployment checks..."
+    
+    # Wait a bit for deployment to complete
+    sleep 30
+    
+    # Check if the site is accessible
+    if curl -f https://catchtheevent.com/api/health > /dev/null 2>&1; then
+        print_success "Site is accessible and healthy"
+    else
+        print_warning "Site health check failed. Please verify manually."
+    fi
+    
+    print_success "Post-deployment checks completed"
+}
 
-# Success message
-echo ""
-echo -e "${GREEN}🎉 DEPLOYMENT COMPLETED SUCCESSFULLY!${NC}"
-echo ""
-echo -e "${GREEN}✅ Your website is now live at: https://catchtheevent.com${NC}"
-echo ""
-echo -e "${YELLOW}📋 Next steps:${NC}"
-echo "1. Visit https://catchtheevent.com"
-echo "2. Test the 'Buy for $20' button"
-echo "3. Test the admin panel: https://catchtheevent.com/admin/login"
-echo "4. Check logs if needed: pm2 logs catchtheevent"
-echo ""
-echo -e "${YELLOW}🔄 Backup created: catchtheevent_backup_$BACKUP_DATE.tar.gz${NC}"
-echo ""
+# Main deployment flow
+main() {
+    echo "🎯 Catch The Event - Production Deployment"
+    echo "=========================================="
+    
+    check_requirements
+    install_dependencies
+    run_tests
+    build_application
+    test_production_build
+    deploy_to_production
+    post_deployment_checks
+    
+    echo ""
+    echo "🎉 Deployment completed successfully!"
+    echo "🌐 Your site should be live at: https://catchtheevent.com"
+    echo ""
+    echo "📊 Next steps:"
+    echo "1. Verify the site is working correctly"
+    echo "2. Check analytics and monitoring"
+    echo "3. Test payment processing"
+    echo "4. Monitor error logs"
+    echo ""
+}
+
+# Run main function
+main "$@"

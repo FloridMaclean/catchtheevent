@@ -40,6 +40,10 @@ export default function TicketSelector({
   const [isDiscountApplied, setIsDiscountApplied] = useState(false)
   const [discountError, setDiscountError] = useState('')
   const [isSpecialDiscount, setIsSpecialDiscount] = useState(false)
+  
+  // Parking spot limit - 200 tickets maximum
+  const MAX_PARKING_SPOTS = 200
+  const [ticketsSold, setTicketsSold] = useState(0) // This would typically come from your database
 
   const ticketTypes: TicketType[] = [
     {
@@ -111,10 +115,8 @@ export default function TicketSelector({
 
   const getHST = () => {
     const subtotal = getSubtotal()
-    const convenienceFee = getConvenienceFee()
-    const processingFee = getProcessingFee()
-    // No HST when discount is applied
-    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * taxRate
+    // HST only applies to the base ticket price, not to fees
+    return isDiscountApplied ? 0 : subtotal * taxRate
   }
 
   const getTotalAmount = () => {
@@ -129,14 +131,24 @@ export default function TicketSelector({
     const currentCount = selectedTickets[ticketId] || 0
     const newCount = Math.max(0, currentCount + change)
     
+    // Check if adding this ticket would exceed the 200 parking spot limit
+    const currentTotalTickets = getTotalTickets()
+    const otherTicketsCount = currentTotalTickets - currentCount
+    const newTotalTickets = otherTicketsCount + newCount
+    
+    if (newTotalTickets > MAX_PARKING_SPOTS) {
+      setDiscountError(`Sorry, we have reached our maximum capacity of ${MAX_PARKING_SPOTS} parking spots. No more tickets can be issued.`)
+      return
+    }
+    
     // If discount is applied and this is a regular discount code (not special), limit to 1 ticket
     if (isDiscountApplied && !isSpecialDiscount && newCount > 1) {
       setDiscountError('Regular discount codes can only be used for 1 ticket. Please remove the discount code to buy multiple tickets.')
       return
     }
     
-    // Clear any previous error when user reduces quantity
-    if (newCount <= 1) {
+    // Clear any previous error when user reduces quantity or when within limits
+    if (newCount <= 1 || newTotalTickets <= MAX_PARKING_SPOTS) {
       setDiscountError('')
     }
     
@@ -216,6 +228,12 @@ export default function TicketSelector({
   const handleProceedToCheckout = () => {
     // Proceed to checkout validation
     
+    // Check if total tickets exceed the parking limit
+    if (getTotalTickets() > MAX_PARKING_SPOTS) {
+      setDiscountError(`Sorry, we have reached our maximum capacity of ${MAX_PARKING_SPOTS} parking spots. No more tickets can be issued.`)
+      return
+    }
+    
     // Validate ticket quantity for regular discount codes
     if (isDiscountApplied && !isSpecialDiscount && getTotalTickets() > 1) {
       setDiscountError('Regular discount codes can only be used for 1 ticket. Please reduce the quantity or remove the discount code.')
@@ -240,7 +258,7 @@ export default function TicketSelector({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] flex flex-col my-2 mx-auto"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col my-2 mx-auto overflow-hidden modal-content"
       >
         {/* Header - Fixed */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
@@ -263,9 +281,9 @@ export default function TicketSelector({
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 flex">
+        <div className="flex-1 overflow-y-auto modal-content min-h-0">
           {currentStep === 'selection' ? (
-            <div className="p-4 flex flex-col items-center w-full max-w-2xl">
+                         <div className="p-4 flex flex-col items-center w-full max-w-2xl mx-auto">
               {/* Event Details */}
               <div className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 mb-6 w-full">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 text-center">Event Details</h3>
@@ -337,8 +355,8 @@ export default function TicketSelector({
                 {ticketTypes.map((ticket) => (
                   <div key={ticket.id} className="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-shadow">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 gap-4">
-                      <div className="flex-1">
-                        <h4 className="text-base font-semibold text-gray-900 mb-2">{ticket.name}</h4>
+                                             <div className="flex-1 min-w-0">
+                                                 <h4 className="text-base font-semibold text-gray-900 mb-2 break-words ticket-name">{ticket.name}</h4>
                         <p className="text-sm text-gray-600 mb-2">{ticket.description}</p>
                         <div className="text-xl font-bold text-pink-600">${ticket.price.toFixed(2)}</div>
                       </div>
@@ -426,7 +444,7 @@ export default function TicketSelector({
                         <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between text-xs">
-                        <span className="text-gray-600">HST (13%):</span>
+                        <span className="text-gray-600">HST (13% on base price):</span>
                         <span className="text-gray-900">${getHST().toFixed(2)}</span>
                       </div>
                     </div>
@@ -479,10 +497,10 @@ export default function TicketSelector({
                 </button>
                 <button
                   onClick={handleProceedToCheckout}
-                  disabled={getTotalTickets() === 0}
+                  disabled={getTotalTickets() === 0 || getTotalTickets() > MAX_PARKING_SPOTS}
                   className="px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm"
                 >
-                  Reserve Parking Spot
+                  {getTotalTickets() > MAX_PARKING_SPOTS ? 'Capacity Reached' : 'Reserve Parking Spot'}
                 </button>
               </div>
             </div>

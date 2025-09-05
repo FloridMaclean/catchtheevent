@@ -29,12 +29,12 @@ export default function NotFound() {
         </div>
         
         <div className="mt-8 text-sm text-slate-500">
-          <p>Looking for Rangtaali Hamilton 2025 tickets?</p>
+          <p>Navigate to Catch The Event homepage</p>
           <Link 
             href="/"
             className="text-primary-600 hover:text-primary-700 font-medium"
           >
-            Book your tickets here
+            Go to homepage
           </Link>
         </div>
       </div>

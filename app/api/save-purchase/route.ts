@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
 import { createUser, createTicketPurchase, getUserByEmail, updateUser } from '../../../lib/database'
+import { createSecureQRData } from '../../../lib/security'
 
 export async function POST(request: NextRequest) {
   try {
@@ -55,6 +56,7 @@ export async function POST(request: NextRequest) {
       if (!existingUser.first_name && customerInfo.firstName) updateData.first_name = customerInfo.firstName
       if (!existingUser.last_name && customerInfo.lastName) updateData.last_name = customerInfo.lastName
       if (!existingUser.phone_number && customerInfo.phone) updateData.phone_number = customerInfo.phone
+      if (!existingUser.license_plate && customerInfo.licensePlate) updateData.license_plate = customerInfo.licensePlate
       
       if (Object.keys(updateData).length > 0) {
         console.log('Updating user with:', updateData)
@@ -66,7 +68,8 @@ export async function POST(request: NextRequest) {
         firstName: customerInfo.firstName,
         lastName: customerInfo.lastName,
         email: customerInfo.email,
-        phone: customerInfo.phone
+        phone: customerInfo.phone,
+        licensePlate: customerInfo.licensePlate
       })
       
       const newUser = await createUser({
@@ -74,6 +77,7 @@ export async function POST(request: NextRequest) {
         last_name: customerInfo.lastName,
         email: customerInfo.email,
         phone_number: customerInfo.phone,
+        license_plate: customerInfo.licensePlate,
         user_type: 'ticket_buyer'
       })
       
@@ -88,10 +92,13 @@ export async function POST(request: NextRequest) {
     // Calculate total tickets
     const totalTickets = Object.values(selectedTickets).reduce((sum: number, count: any) => sum + (count as number), 0)
 
+    // Generate secure booking data for QR code
+    const secureQRData = createSecureQRData()
+    
     // Create ticket purchase record
     const purchaseData = {
       user_id: userId,
-      event_name: eventDetails.title || 'RANGTAALI Hamilton 2025',
+      event_name: eventDetails.title || 'SPICE OF INDIA 2025',
       ticket_type: discountCode ? 'discounted_ticket' : Object.keys(selectedTickets).join(', '),
       quantity: totalTickets,
       total_amount: totalAmount,
@@ -99,7 +106,10 @@ export async function POST(request: NextRequest) {
       discount_code: discountCode,
       qr_code_url: qrCodeDataUrl,
       stripe_payment_intent_id: stripePaymentIntentId || null,
-      purchase_date: new Date().toISOString()
+      purchase_date: new Date().toISOString(),
+      booking_id: secureQRData.bookingId,
+      security_token: secureQRData.token,
+      qr_generated_at: secureQRData.timestamp
     }
 
     console.log('Creating ticket purchase with data:', purchaseData)

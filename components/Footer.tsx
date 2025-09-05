@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, Phone, MapPin, Instagram } from 'lucide-react'
+import { Mail, Phone, MapPin, Instagram, Linkedin } from 'lucide-react'
 
 export default function Footer() {
   const [isClient, setIsClient] = useState(false)
@@ -84,6 +84,15 @@ export default function Footer() {
                 aria-label="Follow us on Instagram"
               >
                 <Instagram className="w-6 h-6" />
+              </a>
+              <a 
+                href="https://www.linkedin.com/company/catch-the-event/about/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-slate-500 hover:text-slate-800 transition-all duration-300 hover:scale-110"
+                aria-label="Follow us on LinkedIn"
+              >
+                <Linkedin className="w-6 h-6" />
               </a>
             </div>
           </div>

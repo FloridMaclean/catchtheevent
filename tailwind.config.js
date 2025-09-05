@@ -7,6 +7,40 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '375px',
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',
+        '2xl': '1536px',
+        '3xl': '1920px',
+        '4xl': '2560px',
+        // Device-specific breakpoints
+        'iphone-se': '375px',
+        'iphone-12': '390px',
+        'iphone-12-pro-max': '428px',
+        'ipad': '768px',
+        'ipad-pro': '1024px',
+        'surface': '912px',
+        'galaxy-fold': '280px',
+        'galaxy-fold-unfolded': '653px',
+        // Orientation-specific
+        'landscape': { 'raw': '(orientation: landscape)' },
+        'portrait': { 'raw': '(orientation: portrait)' },
+        // High DPI displays
+        'retina': { 'raw': '(-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi)' },
+        'super-retina': { 'raw': '(-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi)' },
+        // Touch devices
+        'touch': { 'raw': '(pointer: coarse)' },
+        'mouse': { 'raw': '(pointer: fine)' },
+        // Reduced motion
+        'motion-reduce': { 'raw': '(prefers-reduced-motion: reduce)' },
+        // High contrast
+        'high-contrast': { 'raw': '(prefers-contrast: high)' },
+        // Dark mode
+        'dark': { 'raw': '(prefers-color-scheme: dark)' },
+      },
       colors: {
         primary: {
           50: '#fdf2f8',
@@ -47,6 +81,20 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      spacing: {
+        'safe-top': 'env(safe-area-inset-top)',
+        'safe-bottom': 'env(safe-area-inset-bottom)',
+        'safe-left': 'env(safe-area-inset-left)',
+        'safe-right': 'env(safe-area-inset-right)',
+      },
+      minHeight: {
+        'touch': '44px',
+        'touch-lg': '48px',
+      },
+      minWidth: {
+        'touch': '44px',
+        'touch-lg': '48px',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

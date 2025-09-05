@@ -12,6 +12,7 @@ export interface User {
   last_name: string
   email: string
   phone_number?: string
+  license_plate?: string
   created_at: string
   updated_at: string
   user_type: 'ticket_buyer' | 'subscriber'
@@ -28,6 +29,11 @@ export interface TicketPurchase {
   discount_code?: string
   purchase_date: string
   qr_code_url?: string
+  booking_id?: string
+  security_token?: string
+  qr_generated_at?: string
+  qr_used?: boolean
+  qr_used_at?: string
 }
 
 export interface NewsletterSubscription {

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Download, QrCode, Calendar, MapPin, User, AlertCircle } from 'lucide-react'
 import QRCode from 'qrcode'
+import { createSecureQRData } from '../lib/security'
 
 interface PurchaseSummaryProps {
   paymentIntent: any
@@ -19,6 +20,7 @@ interface PurchaseSummaryProps {
     lastName: string
     email: string
     phone: string
+    licensePlate: string
   }
   onClose: () => void
   isDiscountApplied?: boolean
@@ -66,9 +68,8 @@ export default function PurchaseSummary({
 
   const getHST = () => {
     const subtotal = getSubtotal()
-    const convenienceFee = getConvenienceFee()
-    const processingFee = getProcessingFee()
-    return isDiscountApplied ? 0 : (subtotal + convenienceFee + processingFee) * taxRate // No HST for discount codes
+    // HST only applies to the base ticket price (subtotal), not to fees
+    return isDiscountApplied ? 0 : subtotal * taxRate
   }
 
   const totalAmount = (getSubtotal() + getConvenienceFee() + getProcessingFee() + getHST()).toFixed(2)
@@ -84,6 +85,9 @@ export default function PurchaseSummary({
     try {
       setIsGenerating(true)
       
+      // Generate secure QR code data
+      const secureQRData = createSecureQRData()
+      
       // Create purchase summary data with detailed user information
       const purchaseData = {
         // Event Information
@@ -98,6 +102,7 @@ export default function PurchaseSummary({
         customerFullName: `${customerInfo.firstName} ${customerInfo.lastName}`,
         customerEmail: customerInfo.email,
         customerPhone: customerInfo.phone,
+        customerLicensePlate: customerInfo.licensePlate,
         
         // Ticket Information
         totalTickets: totalTickets,
@@ -114,13 +119,15 @@ export default function PurchaseSummary({
         paymentIntentId: paymentIntent.id,
         purchaseDate: new Date().toISOString(),
         
-        // QR Code Metadata
-        qrGeneratedAt: new Date().toISOString(),
-        qrVersion: '1.0'
+        // Secure QR Code Data
+        bookingId: secureQRData.bookingId,
+        securityToken: secureQRData.token,
+        qrGeneratedAt: secureQRData.timestamp,
+        qrVersion: '2.0'
       }
 
-      // Generate QR code with purchase data
-      const qrDataUrl = await QRCode.toDataURL(JSON.stringify(purchaseData), {
+      // Generate QR code with secure data format
+      const qrDataUrl = await QRCode.toDataURL(secureQRData.qrData, {
         width: 200,
         margin: 2,
         color: {
@@ -369,7 +376,7 @@ export default function PurchaseSummary({
                 <span>$${getProcessingFee().toFixed(2)}</span>
               </div>
               <div class="pricing-row">
-                <span>HST (13%)</span>
+                <span>HST (13% on base price)</span>
                 <span>$${getHST().toFixed(2)}</span>
               </div>
               <div class="pricing-row total-row">
@@ -514,7 +521,7 @@ export default function PurchaseSummary({
                    <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
                  </div>
                  <div className="flex justify-between items-center text-sm">
-                   <span className="text-gray-600">HST (13%)</span>
+                   <span className="text-gray-600">HST (13% on base price)</span>
                    <span className="text-gray-900">${getHST().toFixed(2)}</span>
                  </div>
                  <div className="flex justify-between items-center text-lg font-bold border-t pt-2 mt-2">

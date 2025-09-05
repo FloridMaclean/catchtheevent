@@ -408,6 +408,74 @@ body {
   @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
 }
 
+/* Ensure form inputs always have black text on all devices */
+input, textarea, select {
+  color: #000000 !important;
+}
+
+/* Customer information form specific styling */
+.customer-info-form input,
+.customer-info-form label,
+.customer-info-form span,
+.customer-info-form p {
+  color: #000000 !important;
+}
+
+/* Force black text on all form elements */
+.card input,
+.card label,
+.card span,
+.card p {
+  color: #000000 !important;
+}
+
+/* Additional specificity for customer information forms */
+.customer-info-form h3,
+.customer-info-form label,
+.customer-info-form input,
+.customer-info-form input::placeholder {
+  color: #000000 !important;
+}
+
+/* Override any Tailwind text color classes */
+.text-gray-700,
+.text-gray-900 {
+  color: #000000 !important;
+}
+
+/* Ensure form inputs have proper contrast */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+textarea,
+select {
+  color: #000000 !important;
+  background-color: #ffffff !important;
+}
+
+/* Override dark mode for form elements */
+@media (prefers-color-scheme: dark) {
+  input, textarea, select {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+  }
+  
+  input::placeholder, textarea::placeholder {
+    color: #6b7280 !important;
+  }
+  
+  /* Ensure form labels and text remain black */
+  .card label, .card span, .card p {
+    color: #000000 !important;
+  }
+  
+  /* Override any inherited white text */
+  .text-gray-700, .text-gray-900 {
+    color: #000000 !important;
+  }
+}
+
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-2;
 }
@@ -442,6 +510,85 @@ body {
   bottom: 0;
   background: white;
   z-index: 10;
+}
+
+/* Modal-specific styles for proper overflow handling */
+.modal-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.modal-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure modal content stays within bounds */
+.modal-content {
+  max-height: calc(90vh - 120px); /* Account for header and footer */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Modal flexbox scrolling fix */
+.modal-content .flex-1 {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Prevent text overflow in ticket names */
+.ticket-name {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  line-height: 1.3;
+  max-width: 100%;
+}
+
+/* Ensure buttons don't shrink */
+.modal-button {
+  flex-shrink: 0;
+}
+
+/* Responsive modal adjustments */
+@media (max-width: 640px) {
+  .modal-container {
+    padding: 8px;
+  }
+  
+  .modal-content {
+    max-height: calc(90vh - 100px);
+  }
+  
+  .ticket-name {
+    font-size: 0.875rem;
+    line-height: 1.2;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .modal-container {
+    padding: 4px;
+  }
+  
+  .ticket-name {
+    font-size: 0.8rem;
+    line-height: 1.1;
+  }
 }
 
 /* Animation utilities */
@@ -535,4 +682,333 @@ body {
   padding-right: env(safe-area-inset-right);
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Additional device-specific optimizations */
+
+/* iPhone X and newer with notches */
+@supports (padding: max(0px)) {
+  .safe-area-inset-top {
+    height: env(safe-area-inset-top);
+  }
+  
+  .safe-area-inset-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-inset-left {
+    width: env(safe-area-inset-left);
+  }
+  
+  .safe-area-inset-right {
+    width: env(safe-area-inset-right);
+  }
+}
+
+/* Touch target optimization for all interactive elements */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent zoom on input focus for iOS */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select, textarea, input[type="text"], input[type="password"], 
+  input[type="datetime"], input[type="datetime-local"], 
+  input[type="date"], input[type="month"], input[type="time"], 
+  input[type="week"], input[type="number"], input[type="email"], 
+  input[type="url"], input[type="search"], input[type="tel"], 
+  input[type="color"] {
+    font-size: 16px !important;
+  }
+}
+
+/* Android Chrome specific optimizations */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (min-resolution: .001dpcm) {
+  .android-optimized {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* iPad specific optimizations */
+@media only screen 
+  and (min-device-width: 768px) 
+  and (max-device-width: 1024px) 
+  and (-webkit-min-device-pixel-ratio: 1) {
+  
+  .ipad-optimized {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  
+  .ipad-optimized .btn-primary,
+  .ipad-optimized .btn-secondary {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+}
+
+/* iPad Pro specific optimizations */
+@media only screen 
+  and (min-device-width: 1024px) 
+  and (max-device-width: 1366px) 
+  and (-webkit-min-device-pixel-ratio: 2) {
+  
+  .ipad-pro-optimized {
+    font-size: 20px;
+    line-height: 1.7;
+  }
+}
+
+/* Surface and Windows tablet optimizations */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (pointer: coarse) {
+  .surface-optimized {
+    touch-action: manipulation;
+  }
+  
+  .surface-optimized .btn-primary,
+  .surface-optimized .btn-secondary {
+    min-height: 48px;
+    padding: 1rem 2rem;
+  }
+}
+
+/* MacBook and laptop optimizations */
+@media screen and (min-width: 1024px) and (pointer: fine) {
+  .laptop-optimized {
+    cursor: pointer;
+  }
+  
+  .laptop-optimized .btn-primary:hover,
+  .laptop-optimized .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Large desktop and 4K displays */
+@media screen and (min-width: 1920px) {
+  .large-desktop-optimized {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  .large-desktop-optimized .text-responsive-xl {
+    font-size: 5rem;
+  }
+}
+
+/* Ultra-wide displays */
+@media screen and (min-width: 2560px) {
+  .ultra-wide-optimized {
+    max-width: 2000px;
+    margin: 0 auto;
+  }
+}
+
+/* Foldable device support */
+@media screen and (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+  .foldable-optimized {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+}
+
+/* Samsung Galaxy Fold specific */
+@media screen and (min-width: 280px) and (max-width: 653px) and (min-height: 653px) and (max-height: 280px) {
+  .galaxy-fold-optimized {
+    padding: 1rem;
+  }
+  
+  .galaxy-fold-optimized .btn-primary {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Performance optimizations for low-end devices */
+@media (prefers-reduced-data: reduce) {
+  .low-data-optimized {
+    background-image: none;
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Battery saving mode optimizations */
+@media (prefers-reduced-motion: reduce) {
+  .battery-save-optimized {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+/* High contrast mode for accessibility */
+@media (prefers-contrast: high) {
+  .high-contrast-optimized {
+    border: 2px solid currentColor;
+  }
+  
+  .high-contrast-optimized .btn-primary {
+    background: #000000;
+    color: #ffffff;
+    border: 2px solid #ffffff;
+  }
+  
+  .high-contrast-optimized .btn-secondary {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+  }
+}
+
+/* Force hardware acceleration for smooth scrolling */
+.smooth-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Prevent layout shift on image load */
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Optimize for different pixel densities */
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+  .high-dpi-optimized {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .retina-optimized {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 288dpi) {
+  .super-retina-optimized {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Ensure proper text rendering across all devices */
+.text-optimized {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+}
+
+/* Prevent text selection on UI elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Allow text selection on content */
+.selectable {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Optimize for different input methods */
+@media (pointer: coarse) {
+  .touch-optimized {
+    min-height: 44px;
+    min-width: 44px;
+    touch-action: manipulation;
+  }
+}
+
+@media (pointer: fine) {
+  .mouse-optimized {
+    cursor: pointer;
+  }
+  
+  .mouse-optimized:hover {
+    opacity: 0.8;
+  }
+}
+
+/* Ensure proper focus indicators for keyboard navigation */
+.keyboard-navigation:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #000000;
+  color: #ffffff;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Ensure proper contrast for all text */
+.contrast-optimized {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  .contrast-optimized {
+    color: #ffffff;
+    background-color: #000000;
+  }
+}
+
+/* Loading state optimizations */
+.loading-optimized {
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Error state optimizations */
+.error-optimized {
+  border: 2px solid #ef4444;
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* Success state optimizations */
+.success-optimized {
+  border: 2px solid #10b981;
+  background-color: #f0fdf4;
+  color: #059669;
 } 

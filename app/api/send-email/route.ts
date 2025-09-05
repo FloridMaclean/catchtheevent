@@ -50,7 +50,8 @@ export async function POST(request: NextRequest) {
             firstName: customerInfo.firstName || dbUser.first_name,
             lastName: customerInfo.lastName || dbUser.last_name,
             email: customerInfo.email,
-            phone: customerInfo.phone || dbUser.phone_number || ''
+            phone: customerInfo.phone || dbUser.phone_number || '',
+            licensePlate: customerInfo.licensePlate || dbUser.license_plate || ''
           }
         }
       }
@@ -80,9 +81,8 @@ export async function POST(request: NextRequest) {
 
     const getHST = (totalTickets: number) => {
       const subtotal = getSubtotal(totalTickets)
-      const convenienceFeeAmount = getConvenienceFee(totalTickets)
-      const processingFeeAmount = getProcessingFee(totalTickets)
-      return isFreeTicket ? 0 : (subtotal + convenienceFeeAmount + processingFeeAmount) * taxRate
+      // HST only applies to the base ticket price (subtotal), not to fees
+      return isFreeTicket ? 0 : subtotal * taxRate
     }
 
     const totalAmount = isFreeTicket ? '0.00' : (getSubtotal(totalTickets) + getConvenienceFee(totalTickets) + getProcessingFee(totalTickets) + getHST(totalTickets)).toFixed(2)
@@ -154,11 +154,12 @@ export async function POST(request: NextRequest) {
               <p><strong>Venue:</strong> ${eventDetails.venue}</p>
               <p><strong>Address:</strong> ${eventDetails.address}</p>
               <p><strong>Phone:</strong> ${enhancedCustomerInfo.phone}</p>
+              <p><strong>License Plate:</strong> ${enhancedCustomerInfo.licensePlate || 'Not provided'}</p>
               <p><strong>Tickets:</strong> ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}</p>
               ${isFreeTicket ? '<p><strong>Discount Applied:</strong> <span style="color: #28a745; font-weight: bold;">FREE TICKET</span></p>' : ''}
               <p><strong>Convenience Fee:</strong> $${getConvenienceFee(totalTickets).toFixed(2)}</p>
               <p><strong>Payment Processing:</strong> $${getProcessingFee(totalTickets).toFixed(2)}</p>
-              <p><strong>HST (13%):</strong> $${getHST(totalTickets).toFixed(2)}</p>
+              <p><strong>HST (13% on base price):</strong> $${getHST(totalTickets).toFixed(2)}</p>
               <p><strong>Total:</strong> <span style="color: #28a745; font-weight: bold;">$${totalAmount}</span></p>
             </div>
             
@@ -167,9 +168,11 @@ export async function POST(request: NextRequest) {
               <p><strong>Your QR code is attached to this email. Present it at the event entrance.</strong></p>
               <p style="margin-top: 10px; font-size: 13px; color: #666; background: #f0f8ff; padding: 10px; border-radius: 5px;">
                 <strong>QR Code contains:</strong><br>
+                • Secure Booking ID and Security Token<br>
                 • Your name: ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName}<br>
                 • Email: ${enhancedCustomerInfo.email}<br>
                 • Phone: ${enhancedCustomerInfo.phone}<br>
+                • License Plate: ${enhancedCustomerInfo.licensePlate || 'Not provided'}<br>
                 • Ticket details and payment information
               </p>
               <p style="margin-top: 15px; font-size: 14px; color: #666;">
@@ -209,20 +212,23 @@ export async function POST(request: NextRequest) {
       - Venue: ${eventDetails.venue}
       - Address: ${eventDetails.address}
       - Phone: ${enhancedCustomerInfo.phone}
+      - License Plate: ${enhancedCustomerInfo.licensePlate || 'Not provided'}
       - Tickets: ${totalTickets} × $${getTicketPrice(totalTickets).toFixed(2)} = $${getSubtotal(totalTickets).toFixed(2)}
       ${isFreeTicket ? '- Discount Applied: FREE TICKET' : ''}
       - Convenience Fee: $${getConvenienceFee(totalTickets).toFixed(2)}
       - Payment Processing: $${getProcessingFee(totalTickets).toFixed(2)}
-      - HST (13%): $${getHST(totalTickets).toFixed(2)}
+      - HST (13% on base price): $${getHST(totalTickets).toFixed(2)}
       - Total: $${totalAmount}
 
       Entry QR Code:
       Your QR code is attached to this email. Present it at the event entrance.
 
       QR Code contains:
+      - Secure Booking ID and Security Token
       - Your name: ${enhancedCustomerInfo.firstName} ${enhancedCustomerInfo.lastName}
       - Email: ${enhancedCustomerInfo.email}
       - Phone: ${enhancedCustomerInfo.phone}
+      - License Plate: ${enhancedCustomerInfo.licensePlate || 'Not provided'}
       - Ticket details and payment information
 
       Payment ID: ${paymentIntentId}

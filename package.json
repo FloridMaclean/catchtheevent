@@ -7,7 +7,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:analyze": "ANALYZE=true npm run build",
+    "build:production": "NODE_ENV=production npm run build",
+    "start:production": "NODE_ENV=production npm run start",
+    "type-check": "tsc --noEmit",
+    "lint:fix": "next lint --fix",
+    "test:build": "npm run build && npm run start",
+    "clean": "rm -rf .next out",
+    "deploy": "./deploy.sh",
+    "docker:build": "docker build -t catchtheevent .",
+    "docker:run": "docker run -p 3000:3000 catchtheevent",
+    "docker:compose": "docker-compose up -d --build",
+    "health": "curl -f http://localhost:3000/api/health"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
