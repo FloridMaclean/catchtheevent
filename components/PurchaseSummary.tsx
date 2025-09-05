@@ -445,89 +445,93 @@ export default function PurchaseSummary({
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto modal-container"
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col my-2 mx-auto overflow-hidden modal-content"
       >
-        {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-gray-200">
-          <div className="flex items-center justify-center mb-3 sm:mb-4">
-            <CheckCircle className="w-8 h-8 sm:w-12 sm:h-12 text-green-500 mr-2 sm:mr-3" />
-            <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Payment Successful!</h2>
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center space-x-3 flex-1 justify-center">
+            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-5 h-5 text-white" />
+            </div>
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-gray-900">Payment Successful!</h2>
+              <p className="text-sm text-gray-600">Your tickets have been confirmed</p>
+            </div>
           </div>
-          <p className="text-center text-sm sm:text-base text-gray-600">
-            Your tickets have been confirmed. Here's your purchase summary and QR code.
-          </p>
         </div>
 
-        <div className="p-4 sm:p-6">
-          {/* Purchase Summary */}
-          <div className="card mb-4 sm:mb-6">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center">
-              <User className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              Purchase Summary
-            </h3>
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto modal-content min-h-0">
+          <div className="p-4 flex flex-col items-center w-full max-w-2xl mx-auto">
+            {/* Purchase Summary */}
+            <div className="card mb-6 w-full">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <User className="w-5 h-5 mr-2" />
+                Purchase Summary
+              </h3>
             
-            <div className="space-y-3 sm:space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500">Event</p>
-                  <p className="text-sm sm:text-base font-semibold text-gray-900">{eventName || eventDetails?.title || 'Event'}</p>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500">Date</p>
-                  <p className="text-sm sm:text-base font-semibold text-gray-900 flex items-center">
-                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    {formatDate(eventDetails?.date || 'Date TBA')}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500">Venue</p>
-                  <p className="text-sm sm:text-base font-semibold text-gray-900 flex items-center">
-                    <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                    {eventDetails?.venue || 'Venue TBA'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm text-gray-500">Customer</p>
-                  <p className="text-sm sm:text-base font-semibold text-gray-900">{customerInfo.firstName} {customerInfo.lastName}</p>
-                </div>
-              </div>
-
-              <div className="border-t pt-3 sm:pt-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs sm:text-sm text-gray-600">Tickets</span>
-                  <span className="text-xs sm:text-sm font-semibold">{totalTickets} × ${getTicketPrice().toFixed(2)}</span>
-                </div>
-                {isDiscountApplied && (
-                  <div className="flex justify-between items-center text-xs sm:text-sm text-green-600 font-semibold mb-2">
-                    <span>Discount Applied ({discountCode})</span>
-                    <span>-${(20.00 * totalTickets).toFixed(2)}</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Event</p>
+                    <p className="font-semibold text-gray-900">{eventName || eventDetails?.title || 'Event'}</p>
                   </div>
-                )}
-                <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
+                  <div>
+                    <p className="text-sm text-gray-500">Date</p>
+                    <p className="font-semibold text-gray-900 flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {formatDate(eventDetails?.date || 'Date TBA')}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Venue</p>
+                    <p className="font-semibold text-gray-900 flex items-center">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      {eventDetails?.venue || 'Venue TBA'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Customer</p>
+                    <p className="font-semibold text-gray-900">{customerInfo.firstName} {customerInfo.lastName}</p>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="text-gray-600">Convenience Fee</span>
-                  <span className="text-gray-900">${getConvenienceFee().toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="text-gray-600">Payment Processing</span>
-                  <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-xs sm:text-sm">
-                  <span className="text-gray-600">HST (13% on base price)</span>
-                  <span className="text-gray-900">${getHST().toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between items-center text-base sm:text-lg font-bold border-t pt-2 mt-2">
-                  <span>Total</span>
-                  <span className="text-primary-600">${totalAmount}</span>
-                </div>
+
+                <div className="border-t pt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-600">Tickets</span>
+                    <span className="font-semibold">{totalTickets} × ${getTicketPrice().toFixed(2)}</span>
+                  </div>
+                  {isDiscountApplied && (
+                    <div className="flex justify-between items-center text-sm text-green-600 font-semibold mb-2">
+                      <span>Discount Applied ({discountCode})</span>
+                      <span>-${(20.00 * totalTickets).toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="text-gray-900">${getSubtotal().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Convenience Fee</span>
+                    <span className="text-gray-900">${getConvenienceFee().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Payment Processing</span>
+                    <span className="text-gray-900">${getProcessingFee().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">HST (13% on base price)</span>
+                    <span className="text-gray-900">${getHST().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-lg font-bold border-t pt-2 mt-2">
+                    <span>Total</span>
+                    <span className="text-primary-600">${totalAmount}</span>
+                  </div>
                  {isDiscountApplied && (
                    <p className="text-center text-sm text-green-600 font-medium mt-2">
                      🎉 Free ticket with discount code {discountCode}!
@@ -551,103 +555,106 @@ export default function PurchaseSummary({
             </div>
           </div>
 
-          {/* QR Code */}
-          <div className="card text-center">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center justify-center">
-              <QrCode className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              Entry QR Code
-            </h3>
+            {/* QR Code */}
+            <div className="card text-center w-full">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-center">
+                <QrCode className="w-5 h-5 mr-2" />
+                Entry QR Code
+              </h3>
             
-            {isGenerating ? (
-              <div className="py-6 sm:py-8">
-                <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary-600 mx-auto mb-3 sm:mb-4"></div>
-                <p className="text-xs sm:text-sm text-gray-600">Generating QR Code...</p>
-              </div>
-            ) : (
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex justify-center">
-                  <img 
-                    src={qrCodeDataUrl} 
-                    alt="Ticket QR Code" 
-                    className="border-2 border-gray-200 rounded-lg w-32 h-32 sm:w-40 sm:h-40"
-                  />
+              {isGenerating ? (
+                <div className="py-8">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Generating QR Code...</p>
                 </div>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Present this QR code at the event entrance
-                </p>
-                <div className="bg-blue-50 p-2 sm:p-3 rounded-lg mt-3">
-                  <p className="text-xs text-blue-700 font-medium mb-2">
-                    QR Code contains your details:
-                  </p>
-                  <div className="text-xs text-blue-600 space-y-1">
-                    <p>• Name: {customerInfo.firstName} {customerInfo.lastName}</p>
-                    <p>• Email: {customerInfo.email}</p>
-                    <p>• Phone: {customerInfo.phone}</p>
-                    <p>• Tickets: {totalTickets} × ${getTicketPrice()}</p>
-                    {isDiscountApplied && (
-                      <p>• Discount: {discountCode} (Free Ticket)</p>
-                    )}
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex justify-center">
+                    <img 
+                      src={qrCodeDataUrl} 
+                      alt="Ticket QR Code" 
+                      className="border-2 border-gray-200 rounded-lg"
+                    />
                   </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-center">
-                  <button
-                    onClick={downloadQRCode}
-                    className="btn-secondary flex items-center justify-center text-sm py-2 px-3"
-                  >
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                    Download QR Code
-                  </button>
-                  <button
-                    onClick={printSummary}
-                    className="btn-secondary flex items-center justify-center text-sm py-2 px-3"
-                  >
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
-                    Print Summary
-                  </button>
-                </div>
+                  <p className="text-sm text-gray-600">
+                    Present this QR code at the event entrance
+                  </p>
+                  <div className="bg-blue-50 p-3 rounded-lg mt-3">
+                    <p className="text-xs text-blue-700 font-medium mb-2">
+                      QR Code contains your details:
+                    </p>
+                    <div className="text-xs text-blue-600 space-y-1">
+                      <p>• Name: {customerInfo.firstName} {customerInfo.lastName}</p>
+                      <p>• Email: {customerInfo.email}</p>
+                      <p>• Phone: {customerInfo.phone}</p>
+                      <p>• Tickets: {totalTickets} × ${getTicketPrice()}</p>
+                      {isDiscountApplied && (
+                        <p>• Discount: {discountCode} (Free Ticket)</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex gap-3 justify-center">
+                    <button
+                      onClick={downloadQRCode}
+                      className="btn-secondary flex items-center"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download QR Code
+                    </button>
+                    <button
+                      onClick={printSummary}
+                      className="btn-secondary flex items-center"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Print Summary
+                    </button>
+                  </div>
               </div>
             )}
           </div>
 
-          {/* Email Status */}
-          {emailSending && (
-            <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-blue-500 mr-2"></div>
-                <span className="text-blue-700 text-xs sm:text-sm">
-                  Sending email confirmation...
-                </span>
+            {/* Email Status */}
+            {emailSending && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg w-full">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500 mr-2"></div>
+                  <span className="text-blue-700 text-sm">
+                    Sending email confirmation...
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          
-          {emailSent && (
-            <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 mr-2" />
-                <span className="text-green-700 text-xs sm:text-sm">
-                  Email confirmation sent to {customerInfo.email}
-                </span>
+            )}
+            
+            {emailSent && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg w-full">
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                  <span className="text-green-700 text-sm">
+                    Email confirmation sent to {customerInfo.email}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
-          
-          {emailError && (
-            <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center">
-                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 mr-2" />
-                <span className="text-red-700 text-xs sm:text-sm">
-                  {emailError}
-                </span>
+            )}
+            
+            {emailError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg w-full">
+                <div className="flex items-center">
+                  <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                  <span className="text-red-700 text-sm">
+                    {emailError}
+                  </span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="mt-4 sm:mt-6">
+        {/* Footer - Fixed */}
+        <div className="border-t border-gray-200 p-4 flex-shrink-0 bg-white modal-footer">
+          <div className="flex items-center justify-center w-full max-w-2xl mx-auto">
             <button
               onClick={onClose}
-              className="btn-primary w-full text-sm sm:text-base py-3 sm:py-4"
+              className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all font-semibold text-sm"
             >
               Done
             </button>
