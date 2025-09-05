@@ -62,7 +62,8 @@ cd $APP_DIR
 
 # Install dependencies
 print_status "Installing dependencies..."
-npm ci --production
+rm -f package-lock.json
+npm install --production
 
 # Build the application
 print_status "Building application..."
